@@ -1,7 +1,7 @@
 package main
 
 import (
-	"etomne/app/controller"
+	"etomne/app/controllers"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -21,7 +21,12 @@ func main() {
 
 func routes(r *gin.Engine) {
 
-	r.LoadHTMLGlob("app/view/*.html")
+	r.LoadHTMLGlob("app/views/*.html")
 
-	r.Any("/", controller.Index)
+	r.Any("/", controllers.Index)
+
+	r.GET("/models", controllers.Models)
+	r.GET("/models/:id", controllers.Model)
+
+	r.NoRoute(controllers.NotFound)
 }
