@@ -1,11 +1,17 @@
 package controllers
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"etomne/app/entities"
 	"etomne/app/models"
 	"etomne/app/server"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"path/filepath"
+	"strconv"
+	"time"
 )
 
 type getModelRequest struct {
@@ -48,11 +54,27 @@ func Upload(c *gin.Context) {
 		log.Fatal(err)
 	}
 
-	//TODO сделать запись в бд + сгенерить имя файла
+	h := md5.New()
+	tmpFileName :=
+		strconv.FormatInt(time.Now().Unix(), 10) +
+			file.Filename +
+			strconv.FormatInt(time.Now().UnixNano()%0x100000, 10)
+	h.Write([]byte(tmpFileName))
+	newFileName := hex.EncodeToString(h.Sum(nil))
+	fileExtension := filepath.Ext(file.Filename)
 
-	if err := c.SaveUploadedFile(file, "upload/"+file.Filename); err != nil {
+	path := "upload/" + newFileName + fileExtension
+
+	if err := c.SaveUploadedFile(file, path); err != nil {
 		log.Fatal(err)
 	}
+
+	a, err := models.CreateFile(&entities.File{Path: path}, server.Connect())
+	if err != nil {
+		return
+	}
+
+	log.Println(a)
 
 	c.JSON(http.StatusOK, gin.H{
 		"Chisa": "nice body",
