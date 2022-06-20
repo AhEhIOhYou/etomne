@@ -16,7 +16,7 @@ func GetAllModels(db *sql.DB) ([]entities.Model, error) {
 
 	for rows.Next() {
 		var model entities.Model
-		if err := rows.Scan(&model.Id, &model.Name, &model.CreateDate, &model.Description); err != nil {
+		if err := rows.Scan(&model.Id, &model.Name, &model.CreateDate, &model.Description, &model.FileId); err != nil {
 			return models, fmt.Errorf("%v", err)
 		}
 		models = append(models, model)
