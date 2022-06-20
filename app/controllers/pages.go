@@ -2,16 +2,17 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func Index(c *gin.Context) {
-	c.HTML(200, "index.html", gin.H{
+	c.HTML(http.StatusOK, "index.html", gin.H{
 		"title": "Index",
 	})
 }
 
 func NotFound(c *gin.Context) {
-	c.HTML(200, "404.html", gin.H{
+	c.HTML(http.StatusOK, "404.html", gin.H{
 		"title": "Not found",
 	})
 }

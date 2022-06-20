@@ -18,7 +18,6 @@ func Models(c *gin.Context) {
 		log.Fatal(err)
 	}
 	c.JSON(http.StatusOK, modelsList)
-	return
 }
 
 func Model(c *gin.Context) {
@@ -31,6 +30,5 @@ func Model(c *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	c.JSON(200, m)
-	return
+	c.JSON(http.StatusOK, m)
 }
