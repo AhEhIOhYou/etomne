@@ -74,12 +74,10 @@ func Upload(c *gin.Context) {
 		log.Fatal(err)
 	}
 
-	fileId, err := models.CreateFile(&entities.File{Path: path}, server.Connect())
+	model.FileId, err = models.CreateFile(&entities.File{Path: path}, server.Connect())
 	if err != nil {
 		return
 	}
-
-	model.FileId = fileId
 
 	models.CreateModel(model, server.Connect())
 
