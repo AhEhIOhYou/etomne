@@ -46,7 +46,12 @@ func Up(c *gin.Context) {
 }
 
 func Upload(c *gin.Context) {
-	var err error
+
+	model := entities.Model{
+		Name:        c.PostForm("name"),
+		CreateDate:  time.Now().Format(time.RFC3339),
+		Description: c.PostForm("descr"),
+	}
 
 	c.Request.ParseMultipartForm(32 << 20)
 	file, err := c.FormFile("file")
@@ -69,12 +74,14 @@ func Upload(c *gin.Context) {
 		log.Fatal(err)
 	}
 
-	a, err := models.CreateFile(&entities.File{Path: path}, server.Connect())
+	fileId, err := models.CreateFile(&entities.File{Path: path}, server.Connect())
 	if err != nil {
 		return
 	}
 
-	log.Println(a)
+	model.FileId = fileId
+
+	models.CreateModel(model, server.Connect())
 
 	c.JSON(http.StatusOK, gin.H{
 		"Chisa": "nice body",

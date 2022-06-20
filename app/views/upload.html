@@ -3,7 +3,15 @@
 <h1 class="border-bottom">upload here</h1>
 
 <form method="post" enctype="multipart/form-data" action="/upload">
-    <input name="file" id="file" type="file">
+    <div>
+        <label for="name">Name</label>
+        <input name="name" id="name" type="text" required autocomplete="off">
+    </div>
+    <div>
+        <label for="descr">Description</label>
+        <textarea name="descr" id="descr" type="text" autocomplete="off"></textarea>
+    </div>
+    <input name="file" type="file" required>
     <button type="submit">Upload!!!</button>
 </form>
 
