@@ -5,4 +5,5 @@ type Model struct {
 	Name        string `json:"name"`
 	CreateDate  string `json:"createDate"`
 	Description string `json:"description"`
+	FileId      int64  `json:"fileId"`
 }

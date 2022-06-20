@@ -4,13 +4,14 @@ import (
 	"database/sql"
 	"etomne/app/entities"
 	"fmt"
+	"log"
 )
 
 func GetAllModels(db *sql.DB) ([]entities.Model, error) {
 
 	var models []entities.Model
 
-	rows, _ := db.Query("SELECT * FROM models")
+	rows, _ := db.Query("select *from models")
 	defer rows.Close()
 
 	for rows.Next() {
@@ -31,7 +32,7 @@ func GetModelById(id int, db *sql.DB) (entities.Model, error) {
 
 	var model entities.Model
 
-	rows, _ := db.Query("SELECT * FROM models WHERE models.id = ?", id)
+	rows, _ := db.Query("select * from models where models.id = ?", id)
 	defer rows.Close()
 
 	if rows.Next() {
@@ -46,15 +47,21 @@ func GetModelById(id int, db *sql.DB) (entities.Model, error) {
 
 	return model, nil
 }
-func EditModel(name string, createDate string, description string, db *sql.DB) (bool, error) {
-
-	return true, nil
+func CreateModel(model entities.Model, db *sql.DB) (int64, error) {
+	result, err := db.Exec("insert into models(name, cre_date, descr, file_id) values(?, ?, ?, ?)",
+		model.Name, model.CreateDate, model.Description, model.FileId)
+	if err != nil {
+		log.Fatal(err)
+		return 0, err
+	}
+	lastId, _ := result.LastInsertId()
+	return lastId, nil
 }
-func CreateModel(name string, createDate string, description string, db *sql.DB) (bool, error) {
+func EditModel(name string, createDate string, description string, db *sql.DB) (int64, error) {
 
-	return true, nil
+	return 0, nil
 }
-func DeleteModel(id int, db *sql.DB) (bool, error) {
+func DeleteModel(id int, db *sql.DB) (int64, error) {
 
-	return true, nil
+	return 0, nil
 }
