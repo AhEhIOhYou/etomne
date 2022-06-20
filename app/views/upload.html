@@ -1,0 +1,10 @@
+{{template "header" .}}
+
+<h1 class="border-bottom">upload here</h1>
+
+<form method="post" enctype="multipart/form-data" action="/upload">
+    <input name="file" id="file" type="file">
+    <button type="submit">Upload!!!</button>
+</form>
+
+{{template "footer"}}

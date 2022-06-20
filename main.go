@@ -24,9 +24,12 @@ func routes(r *gin.Engine) {
 	r.LoadHTMLGlob("app/views/*.html")
 
 	r.Any("/", controllers.Index)
+	r.NoRoute(controllers.NotFound)
 
 	r.GET("/models", controllers.Models)
 	r.GET("/models/:id", controllers.Model)
 
-	r.NoRoute(controllers.NotFound)
+	r.GET("/upload", controllers.Up)
+	r.POST("/upload", controllers.Upload)
+
 }
