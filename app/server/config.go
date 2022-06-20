@@ -8,6 +8,6 @@ func GetConfig() mysql.Config {
 		Passwd: "Password10$",
 		Net:    "tcp",
 		Addr:   "localhost:3306",
-		DBName: "mydb",
+		DBName: "models_db",
 	}
 }
