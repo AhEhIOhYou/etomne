@@ -36,7 +36,7 @@ func GetModelById(id int, db *sql.DB) (entities.Model, error) {
 	defer rows.Close()
 
 	if rows.Next() {
-		if err := rows.Scan(&model.Id, &model.Name, &model.CreateDate, &model.Description); err != nil {
+		if err := rows.Scan(&model.Id, &model.Name, &model.CreateDate, &model.Description, &model.FileId); err != nil {
 			return model, fmt.Errorf("%v", err)
 		}
 	}
