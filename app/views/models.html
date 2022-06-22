@@ -1,0 +1,14 @@
+{{template "header" .}}
+
+<h1 class="border-bottom">Indexx here</h1>
+
+{{ range $key, $model := .data }}
+<div>
+  <p>{{ $model }}</p>
+  <a href="/delete?id={{ $model.Id }}" >delete {{ $key }}</a>
+</div>
+{{ else }}
+<p>Нет данных!</p>
+{{ end }}
+
+{{template "footer"}}

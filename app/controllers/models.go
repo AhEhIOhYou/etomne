@@ -29,7 +29,7 @@ func Models(c *gin.Context) {
 		log.Fatal(err)
 	}
 
-	c.HTML(http.StatusOK, "index.html", gin.H{
+	c.HTML(http.StatusOK, "models.html", gin.H{
 		"title": "Models",
 		"data":  modelsList,
 	})
