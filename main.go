@@ -30,7 +30,8 @@ func routes(r *gin.Engine) {
 	r.GET("/models", controllers.Models)
 	r.GET("/models/:id", controllers.Model)
 
-	r.GET("/upload", controllers.Up)
-	r.POST("/upload", controllers.Upload)
+	r.GET("/upload", controllers.Upload)
+	r.POST("/upload", controllers.UploadModel)
 
+	r.GET("/delete", controllers.Delete)
 }

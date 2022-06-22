@@ -28,7 +28,11 @@ func Models(c *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	c.JSON(http.StatusOK, modelsList)
+
+	c.HTML(http.StatusOK, "index.html", gin.H{
+		"title": "Models",
+		"data":  modelsList,
+	})
 }
 
 func Model(c *gin.Context) {
@@ -49,13 +53,13 @@ func Model(c *gin.Context) {
 	c.JSON(http.StatusOK, m)
 }
 
-func Up(c *gin.Context) {
+func Upload(c *gin.Context) {
 	c.HTML(http.StatusOK, "upload.html", gin.H{
 		"title": "Upload!",
 	})
 }
 
-func Upload(c *gin.Context) {
+func UploadModel(c *gin.Context) {
 
 	model := entities.Model3d{
 		Name:        c.PostForm("name"),
@@ -98,4 +102,17 @@ func Upload(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"Chisa": "nice body",
 	})
+}
+
+func Delete(c *gin.Context) {
+	idString := c.Query("id")
+	id, _ := strconv.Atoi(idString)
+
+	modelModels := models.Model3dModel{
+		Db: server.Connect(),
+	}
+
+	modelModels.DeleteModel(id)
+
+	c.Redirect(http.StatusPermanentRedirect, "/models")
 }
