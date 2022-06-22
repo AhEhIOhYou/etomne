@@ -19,7 +19,12 @@ type getModelRequest struct {
 }
 
 func Models(c *gin.Context) {
-	modelsList, err := models.GetAllModels(server.Connect())
+
+	modelModels := models.Model3dModel{
+		Db: server.Connect(),
+	}
+
+	modelsList, err := modelModels.GetAllModels()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,7 +37,12 @@ func Model(c *gin.Context) {
 		log.Fatal(err)
 		return
 	}
-	m, err := models.GetModelById(req.ID, server.Connect())
+
+	modelModels := models.Model3dModel{
+		Db: server.Connect(),
+	}
+
+	m, err := modelModels.GetModelById(req.ID)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -47,7 +57,7 @@ func Up(c *gin.Context) {
 
 func Upload(c *gin.Context) {
 
-	model := entities.Model{
+	model := entities.Model3d{
 		Name:        c.PostForm("name"),
 		CreateDate:  time.Now().Format(time.RFC3339),
 		Description: c.PostForm("descr"),
@@ -74,12 +84,16 @@ func Upload(c *gin.Context) {
 		log.Fatal(err)
 	}
 
+	modelModels := models.Model3dModel{
+		Db: server.Connect(),
+	}
+
 	model.FileId, err = models.CreateFile(&entities.File{Path: path}, server.Connect())
 	if err != nil {
 		return
 	}
 
-	models.CreateModel(model, server.Connect())
+	modelModels.CreateModel(model)
 
 	c.JSON(http.StatusOK, gin.H{
 		"Chisa": "nice body",
