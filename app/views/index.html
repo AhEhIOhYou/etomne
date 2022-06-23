@@ -1,9 +1,28 @@
 {{template "header" .}}
 
-<h1 class="border-bottom">{{ .title }} here</h1>
-
-<a href="/models">Models list</a>
-<br>
-<a href="/upload">Upload model</a>
+<div class="wrapper">
+    <main>
+        <header class="header">
+            <div class="container">
+              <nav class="main-nav">
+                <div class="main-nav__wrapper">
+                  <ul class="main-nav__list">
+                    <li class="main-nav__item">
+                      <a class="main-nav__link">Страница 1</a>
+                    </li>
+                    <li class="main-nav__item">
+                      <a class="main-nav__link">Страница 2</a>
+                    </li>
+                    <li class="main-nav__item">
+                      <a class="main-nav__link">Страница 3</a>
+                    </li>
+                  </ul>
+                </div>
+              </nav>
+            </div>
+          </header>
+    </main>
+</div>
+<!-- <model-viewer src="../../upload/Shark.glb" camera-controls></model-viewer> -->
 
 {{template "footer"}}

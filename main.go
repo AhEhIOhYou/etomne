@@ -2,8 +2,9 @@ package main
 
 import (
 	"etomne/app/controllers"
-	"github.com/gin-gonic/gin"
 	"log"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -12,6 +13,7 @@ func main() {
 	router.Static("assets/js/", "assets/js/")
 	router.Static("assets/css/", "assets/css/")
 	router.Static("upload/", "upload/")
+	router.Static("/app/styles/", "app/styles/")
 	router.StaticFile("favicon.ico", "assets/images/favicon.ico")
 
 	routes(router)
