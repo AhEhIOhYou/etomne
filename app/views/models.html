@@ -5,6 +5,7 @@
 {{ range $key, $model := .data }}
 <div>
   <p>{{ $model }}</p>
+  <model-viewer src="{{ $model.FilePath }}" camera-controls></model-viewer>
   <a href="/delete?id={{ $model.Id }}" >delete {{ $key }}</a>
 </div>
 {{ else }}

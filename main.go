@@ -11,6 +11,7 @@ func main() {
 
 	router.Static("assets/js/", "assets/js/")
 	router.Static("assets/css/", "assets/css/")
+	router.Static("upload/", "upload/")
 	router.StaticFile("favicon.ico", "assets/images/favicon.ico")
 
 	routes(router)
