@@ -8,3 +8,4 @@
 /dataSources.local.xml
 # Custom ignored
 ../upload/*
+../app/server/config.go
