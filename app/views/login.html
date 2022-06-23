@@ -1,0 +1,17 @@
+{{template "header" .}}
+
+<h1 class="border-bottom">{{ .title }} here</h1>
+
+<form action="/login" method="post" class="form-control">
+    <div>
+        <label for="login">Login</label>
+        <input type="text" id="login" name="login" autocomplete="off">
+    </div>
+    <div>
+        <label for="password">Pass</label>
+        <input type="password" id="password" name="password" autocomplete="off">
+    </div>
+    <button type="submit" name="submitBtn">Log In</button>
+</form>
+
+{{template "footer"}}
