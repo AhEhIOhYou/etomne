@@ -99,9 +99,7 @@ func UploadModel(c *gin.Context) {
 
 	modelModels.CreateModel(model)
 
-	c.JSON(http.StatusOK, gin.H{
-		"Chisa": "nice body",
-	})
+	c.Redirect(http.StatusFound, "/models")
 }
 
 func Delete(c *gin.Context) {
@@ -114,5 +112,5 @@ func Delete(c *gin.Context) {
 
 	modelModels.DeleteModel(id)
 
-	c.Redirect(http.StatusPermanentRedirect, "/models")
+	c.Redirect(http.StatusFound, "/models")
 }
