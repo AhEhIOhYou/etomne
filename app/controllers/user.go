@@ -41,14 +41,14 @@ func UserLogin(c *gin.Context) {
 			})
 		} else {
 
+			livingTime := int(60 * time.Minute)
 			timeInt := strconv.FormatInt(time.Now().Unix(), 10)
+
 			token := login + pass + timeInt
 			hashToken := md5.Sum([]byte(token))
 			hashedToken := hex.EncodeToString(hashToken[:])
-			livingTime := int(60 * time.Minute)
 
 			c.SetCookie("token", hashedToken, livingTime, "/", "localhost", false, true)
-
 			c.Redirect(http.StatusPermanentRedirect, "/")
 		}
 	}
