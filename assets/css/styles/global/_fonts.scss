@@ -1,19 +1,79 @@
-// @font-face {
-//   font-style: normal;
-//   font-weight: 400;
-//   font-family: "Rouble";
+@font-face {
+  font-style: normal;
+  font-weight: 100;
+  font-family: "IBM Plex Sans";
+  font-display: swap;
+  src:
+    url("../../fonts/ibmplexsansthin.woff2") format("woff2"),
+    url("../../fonts/ibmplexsansthin.woff") format("woff");
+}
 
-//   font-display: swap;
-//   src:
-//     url("../fonts/rouble.woff2") format("woff2"),
-//     url("../fonts/rouble.woff") format("woff");
-// }
+@font-face {
+  font-style: normal;
+  font-weight: 200;
+  font-family: "IBM Plex Sans";
+  font-display: swap;
+  src:
+    url("../../fonts/ibmplexsansextralight.woff2") format("woff2"),
+    url("../../fonts/ibmplexsansextralight.woff") format("woff");
+}
+
+@font-face {
+  font-style: normal;
+  font-weight: 300;
+  font-family: "IBM Plex Sans";
+  font-display: swap;
+  src:
+    url("../../fonts/ibmplexsanslight.woff2") format("woff2"),
+    url("../../fonts/ibmplexsanslight.woff") format("woff");
+}
 
 @font-face {
   font-style: normal;
   font-weight: 400;
-  font-family: 'FontAwesome';
-
+  font-family: "IBM Plex Sans";
   font-display: swap;
-  src: url("../fonts/fontawesome-webfont.woff") format("woff");
+  src:
+    url("../../fonts/ibmplexsans.woff2") format("woff2"),
+    url("../../fonts/ibmplexsans.woff") format("woff");
+}
+
+@font-face {
+  font-style: normal;
+  font-weight: 500;
+  font-family: "IBM Plex Sans";
+  font-display: swap;
+  src:
+    url("../../fonts/ibmplexsanstext.woff2") format("woff2"),
+    url("../../fonts/ibmplexsanstext.woff") format("woff");
+}
+
+@font-face {
+  font-style: normal;
+  font-weight: 600;
+  font-family: "IBM Plex Sans";
+  font-display: swap;
+  src:
+    url("../../fonts/ibmplexsansmedium.woff2") format("woff2"),
+    url("../../fonts/ibmplexsansmedium.woff") format("woff");
+}
+
+@font-face {
+  font-style: normal;
+  font-weight: 700;
+  font-family: "IBM Plex Sans";
+  font-display: swap;
+  src:
+    url("../../fonts/ibmplexsanssemibold.woff2") format("woff2"),
+    url("../../fonts/ibmplexsanssemibold.woff") format("woff");
+}
+
+@font-face {
+  font-style: normal;
+  font-weight: 800;
+  font-family: "IBM Plex Sans";
+  font-display: swap;
+  src:
+    url("../../fonts/ibmplexsansbold.woff2") format("woff2"),
+    url("../../fonts/ibmplexsansbold.woff") format("woff");
 }
