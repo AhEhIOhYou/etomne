@@ -10,11 +10,10 @@ import (
 func main() {
 	router := gin.Default()
 
+	router.StaticFile("favicon.ico", "assets/images/favicon.ico")
 	router.Static("assets/js/", "assets/js/")
 	router.Static("assets/css/", "assets/css/")
 	router.Static("upload/", "upload/")
-	router.Static("/app/styles/", "app/styles/")
-	router.StaticFile("favicon.ico", "assets/images/favicon.ico")
 
 	routes(router)
 	err := router.Run(":8091")
