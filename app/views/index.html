@@ -20,18 +20,21 @@
         <div class="container">
           <h1 class="models__title">Модели</h1>
           <ul class="models__list">
+
+            {{ range $key, $model := .data }}
+
             <li class="models__item">
               <div class="models__content">
-                <h2 class="models__model-title">Акула</h2>
-                <model-viewer class="models__model" src="../../upload/Shark.glb" camera-controls></model-viewer>
+                <h2 class="models__model-title">{{ $model.Name }}</h2>
+                <model-viewer class="models__model" src="{{ $model.FilePath }}" camera-controls></model-viewer>
                 <span class="models__author">Created by AlucardOpp</span>
-                <span class="models__data">24.06.2022</span>
+                <span class="models__data">{{ $model.CreateDate }}</span>
               </div>
               <div class="models__panel">
                 <div class="models__info">
                   <h3 class="models__sub-title">Описание</h3>
                   <div class="models__info-container">
-                    <p class="models__description">Это акула, акула это рыба, вооот</p>
+                    <p class="models__description">{{ $model.Description }}</p>
                     <ul class="models__actions">
                       <li class="models__action">
                         <button class="models__action-btn btn">Редактировать</button>
@@ -60,6 +63,9 @@
                 </div>
               </div>
             </li>
+
+            {{end}}
+
             <li class="models__item">
               <div class="models__content">
                 <h2 class="models__model-title">Акула</h2>

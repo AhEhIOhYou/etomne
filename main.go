@@ -27,7 +27,7 @@ func routes(r *gin.Engine) {
 
 	r.LoadHTMLGlob("app/views/*")
 
-	r.Any("/", controllers.Index)
+	r.Any("/", controllers.Models)
 	r.NoRoute(controllers.NotFound)
 
 	r.GET("/models", controllers.Models)
