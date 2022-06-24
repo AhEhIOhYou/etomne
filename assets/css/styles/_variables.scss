@@ -12,6 +12,14 @@ $color-transparent:                 rgba(255, 255, 255, 0);
 
 $color-neon-blue:                   #2c39f2;
 $color-torch-red:                   #ff1553;
+$color-aqua-spring:                 #eafce9;
+$color-navy-blue:                   #0079d3;
+$color-nero:                        #1c1c1c;
+$color-aero-blue:                   #c5ead9;
+$color-rustic-red:                  #28000f;
+$color-regent-grey:                 #787c7e;
+$color-very-light-grey:             #cccccc;
+$color-classic-rose:                #fcc7dc;
 
 // Gradient
 
@@ -23,11 +31,7 @@ $black-to-right:                    linear-gradient(90deg, rgba(0, 0, 0, 0.75) 0
 // переменная используемая в html для подключения скейлинга
 $fz-default:                        16px;
 
-// у некоторых шрифтов в ios возникают проблемы с символом рубля
-// https://www.artlebedev.ru/kovodstvo/sections/159/#13
-$ff-rouble:                         "Rouble", "Arial", sans-serif;
-
-$ff-placeholder:                    "Placeholder", "Arial", sans-serif;
+$ff-ibmplexsans:                    "IBM Plex Sans", "Arial", sans-serif;
 
 // Animation
 // ---------------------------------

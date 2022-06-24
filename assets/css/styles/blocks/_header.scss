@@ -1,7 +1,8 @@
 .header {
-  padding: 28px 0;
-
-  background-color: $color-neon-blue;
+  padding: 8px 20px;
+  position: fixed;
+  background-color: $color-default-white;
+  width: 100%;
 
   .container {
     display: flex;

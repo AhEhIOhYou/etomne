@@ -1,18 +1,29 @@
 .btn {
-  display: inline-flex;
-  margin: 10px 0;
-  padding: 10px 20px;
+  display: flex;
+  margin: 0;
+  padding: 9px 16px;
 
   color: $color-default-white;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 16px;
+  min-height: 32px;
+  min-width: 32px;
+  align-items: center;
+  justify-content: center;
 
-  background-color: $color-neon-blue;
+  border-radius: 9999px;
+
+  background-color: $color-navy-blue;
   border: none;
   cursor: pointer;
 
   transition: opacity $trans-default;
 
-  &--red {
-    background-color: $color-torch-red;
+  &--white {
+    background-color: $color-default-white;
+    border: 1px solid $color-navy-blue;
+    color: $color-navy-blue;
   }
 
   &:disabled {
@@ -20,9 +31,8 @@
     pointer-events: none;
   }
 
-  @media (hover: hover), screen and (min-width: 0\0) {
-    &:hover,
-    &:focus {
+  @include hover {
+    &:hover {
       opacity: 0.8;
     }
   }
