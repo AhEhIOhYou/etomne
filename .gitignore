@@ -1,2 +1,2 @@
 /upload/
-app/server/config.go
+*.yaml
