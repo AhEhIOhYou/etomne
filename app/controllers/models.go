@@ -110,6 +110,11 @@ func Delete(c *gin.Context) {
 		Db: server.Connect(),
 	}
 
+	m, err := modelModels.GetModelById(id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	models.DeleteFile(m.FileId, server.Connect())
 	modelModels.DeleteModel(id)
 
 	c.Redirect(http.StatusFound, "/models")
