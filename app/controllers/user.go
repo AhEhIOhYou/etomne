@@ -49,7 +49,7 @@ func UserLogin(c *gin.Context) {
 			hashedToken := hex.EncodeToString(hashToken[:])
 
 			c.SetCookie("token", hashedToken, livingTime, "/", "localhost", false, true)
-			c.Redirect(http.StatusPermanentRedirect, "/")
+			c.Redirect(http.StatusFound, "/")
 		}
 	}
 }
@@ -80,7 +80,8 @@ func UserReg(c *gin.Context) {
 		}
 	}
 }
+
 func UserLogout(c *gin.Context) {
-	c.SetCookie("token", " ", 1, "/", "localhost", false, true)
-	c.Redirect(http.StatusPermanentRedirect, "/")
+	c.SetCookie("token", " ", -10, "/", "localhost", false, true)
+	c.Redirect(http.StatusFound, "/")
 }

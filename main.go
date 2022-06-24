@@ -39,6 +39,5 @@ func routes(r *gin.Engine) {
 
 	r.Any("/login", controllers.UserLogin)
 	r.Any("/reg", controllers.UserReg)
-	r.GET("/logout", controllers.UserLogout)
-
+	r.GET("/exit", controllers.UserLogout)
 }
