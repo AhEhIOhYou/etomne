@@ -3,6 +3,7 @@ module etomne
 go 1.18
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-sql-driver/mysql v1.6.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b

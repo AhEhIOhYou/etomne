@@ -2,9 +2,8 @@ package main
 
 import (
 	"etomne/app/controllers"
-	"log"
-
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
 func main() {
@@ -16,6 +15,8 @@ func main() {
 	router.Static("assets/fonts/", "assets/fonts/")
 	router.Static("upload/", "upload/")
 
+	router.LoadHTMLGlob("app/views/*")
+
 	routes(router)
 	err := router.Run(":8092")
 	if err != nil {
@@ -25,18 +26,22 @@ func main() {
 
 func routes(r *gin.Engine) {
 
-	r.LoadHTMLGlob("app/views/*")
-
-	r.Any("/", controllers.Models)
 	r.NoRoute(controllers.NotFound)
 
-	r.GET("/models", controllers.Models)
-	r.GET("/models/:id", controllers.Model)
+	api := r.Group("/api")
+	{
+		api.GET("/models", controllers.GetModels)
+		api.GET("/model/:id", controllers.GetModel)
+		api.POST("/model/create", controllers.CreateModel)
+		api.DELETE("/models/:id", controllers.DeleteModel)
+	}
+	//r.GET("/models", controllers.Models)
+	//r.GET("/models/:id", controllers.Model)
 
 	r.GET("/upload", controllers.Upload)
-	r.POST("/upload", controllers.UploadModel)
+	//r.POST("/upload", controllers.UploadModel)
 
-	r.GET("/delete", controllers.Delete)
+	//r.GET("/delete", controllers.Delete)
 
 	r.Any("/login", controllers.UserLogin)
 	r.Any("/reg", controllers.UserReg)

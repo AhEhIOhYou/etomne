@@ -18,7 +18,7 @@ type getModelRequest struct {
 	ID int `uri:"id" binding:"required,min=1"`
 }
 
-func Models(c *gin.Context) {
+func GetModels(c *gin.Context) {
 
 	modelModels := models.Model3dModel{
 		Db: server.Connect(),
@@ -29,13 +29,13 @@ func Models(c *gin.Context) {
 		log.Fatal(err)
 	}
 
-	c.HTML(http.StatusOK, "index.html", gin.H{
-		"title": "Models",
-		"data":  modelsList,
+	c.Header("Content-Type", "application/json")
+	c.JSON(http.StatusOK, gin.H{
+		"response": modelsList,
 	})
 }
 
-func Model(c *gin.Context) {
+func GetModel(c *gin.Context) {
 	var req getModelRequest
 	if err := c.ShouldBindUri(&req); err != nil {
 		log.Fatal(err)
@@ -50,7 +50,11 @@ func Model(c *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	c.JSON(http.StatusOK, m)
+
+	c.Header("Content-Type", "application/json")
+	c.JSON(http.StatusOK, gin.H{
+		"response": m,
+	})
 }
 
 func Upload(c *gin.Context) {
@@ -59,7 +63,7 @@ func Upload(c *gin.Context) {
 	})
 }
 
-func UploadModel(c *gin.Context) {
+func CreateModel(c *gin.Context) {
 
 	model := entities.Model3d{
 		Name:        c.PostForm("name"),
@@ -97,25 +101,35 @@ func UploadModel(c *gin.Context) {
 		return
 	}
 
-	modelModels.CreateModel(model)
+	lastId, _ := modelModels.CreateModel(model)
 
-	c.Redirect(http.StatusFound, "/models")
+	c.JSON(http.StatusOK, gin.H{
+		"response": gin.H{
+			"success": lastId,
+		},
+	})
 }
 
-func Delete(c *gin.Context) {
-	idString := c.Query("id")
-	id, _ := strconv.Atoi(idString)
+func DeleteModel(c *gin.Context) {
+
+	var req getModelRequest
+	if err := c.ShouldBindUri(&req); err != nil {
+		log.Fatal(err)
+		return
+	}
 
 	modelModels := models.Model3dModel{
 		Db: server.Connect(),
 	}
 
-	m, err := modelModels.GetModelById(id)
+	m, err := modelModels.GetModelById(req.ID)
 	if err != nil {
 		log.Fatal(err)
 	}
 	models.DeleteFile(m.FileId, server.Connect())
-	modelModels.DeleteModel(id)
+	lastId, _ := modelModels.DeleteModel(req.ID)
 
-	c.Redirect(http.StatusFound, "/models")
+	c.JSON(http.StatusOK, gin.H{
+		"response": lastId,
+	})
 }
