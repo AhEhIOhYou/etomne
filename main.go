@@ -17,7 +17,7 @@ func main() {
 	router.Static("upload/", "upload/")
 
 	routes(router)
-	err := router.Run(":8091")
+	err := router.Run(":8092")
 	if err != nil {
 		log.Fatal(err)
 	}
