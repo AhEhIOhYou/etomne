@@ -28,13 +28,13 @@ func routes(r *gin.Engine) {
 
 	r.NoRoute(controllers.NotFound)
 
-	api := r.Group("/api")
+	ApiModels := r.Group("/api/models")
 	{
-		api.GET("/models", controllers.GetModels)
-		api.GET("/models/:id", controllers.GetModel)
-		api.POST("/model/create", controllers.CreateModel)
-		api.DELETE("/models/:id", controllers.DeleteModel)
-		api.PUT("/models/update/:id", controllers.EditModel)
+		ApiModels.GET("/", controllers.GetModels)
+		ApiModels.GET("/:id", controllers.GetModel)
+		ApiModels.POST("/create", controllers.CreateModel)
+		ApiModels.DELETE("/:id", controllers.DeleteModel)
+		ApiModels.PUT(":id", controllers.EditModel)
 	}
 	//r.GET("/models", controllers.Models)
 	//r.GET("/models/:id", controllers.Model)

@@ -18,12 +18,8 @@ type getModelRequest struct {
 	ID int `uri:"id" binding:"required,min=1"`
 }
 
-type Login struct {
-	User     string `form:"user" json:"user" xml:"user"  binding:"required"`
-	Password string `form:"password" json:"password" xml:"password" binding:"required"`
-}
-
 func GetModels(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
 
 	modelModels := models.Model3dModel{
 		Db: server.Connect(),
@@ -34,7 +30,9 @@ func GetModels(c *gin.Context) {
 		log.Fatal(err)
 	}
 
-	c.Header("Content-Type", "application/json")
+	server.WriteLog(server.Info, "пояснение для инфы")
+	server.WriteLogToFile(server.Error, "ФАТАЛЬНАЯ", "import")
+
 	c.JSON(http.StatusOK, gin.H{
 		"response": modelsList,
 	})
