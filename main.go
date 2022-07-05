@@ -31,14 +31,15 @@ func routes(r *gin.Engine) {
 	api := r.Group("/api")
 	{
 		api.GET("/models", controllers.GetModels)
-		api.GET("/model/:id", controllers.GetModel)
+		api.GET("/models/:id", controllers.GetModel)
 		api.POST("/model/create", controllers.CreateModel)
 		api.DELETE("/models/:id", controllers.DeleteModel)
+		api.PUT("/models/update/:id", controllers.EditModel)
 	}
 	//r.GET("/models", controllers.Models)
 	//r.GET("/models/:id", controllers.Model)
 
-	r.GET("/upload", controllers.Upload)
+	//r.GET("/upload", controllers.Upload)
 	//r.POST("/upload", controllers.UploadModel)
 
 	//r.GET("/delete", controllers.Delete)

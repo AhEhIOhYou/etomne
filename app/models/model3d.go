@@ -60,9 +60,15 @@ func (model3dModel Model3dModel) CreateModel(model entities.Model3d) (int64, err
 	lastId, _ := result.LastInsertId()
 	return lastId, nil
 }
-func (model3dModel Model3dModel) EditModel(name string, createDate string, description string) (int64, error) {
-
-	return 0, nil
+func (model3dModel Model3dModel) EditModel(model entities.Model3d) (int64, error) {
+	result, err := model3dModel.Db.Exec("update models set name = ?, cre_date = ?, descr = ?, file_id = ? where id = ?",
+		model.Name, model.CreateDate, model.Description, model.FileId, model.Id)
+	if err != nil {
+		log.Fatal(err)
+		return 0, err
+	}
+	lastId, _ := result.LastInsertId()
+	return lastId, nil
 }
 func (model3dModel Model3dModel) DeleteModel(id int) (int64, error) {
 	result, err := model3dModel.Db.Exec("delete from models where id = ?", id)
