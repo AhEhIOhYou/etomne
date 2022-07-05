@@ -18,6 +18,14 @@ type getModelRequest struct {
 	ID int `uri:"id" binding:"required,min=1"`
 }
 
+// GetModels godoc
+// @Summary      Get models
+// @Description  Get list models
+// @Tags         Models
+// @Success      200  {object} 	entities.Model3d
+// @Success      204  {string}  string    "Empty"
+// @Failure      500  {object}  server.HTTPError
+// @Router       /models [get]
 func GetModels(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 
@@ -28,11 +36,7 @@ func GetModels(c *gin.Context) {
 	modelsList, err := modelModels.GetAllModels()
 	if err != nil {
 		server.WriteLog(server.Error, err.Error())
-		c.JSON(http.StatusOK, gin.H{
-			"response": gin.H{
-				"error": err.Error(),
-			},
-		})
+		server.NewError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -47,6 +51,16 @@ func GetModels(c *gin.Context) {
 	}
 }
 
+// GetModel godoc
+// @Summary      Get model
+// @Description  Get model by ID
+// @Tags         Models
+// @Param        id   path      string  true  "Model ID"
+// @Success      200  {object}  entities.Model3d
+// @Failure      400  {object}  server.HTTPError
+// @Failure      400  {object}  server.HTTPError
+// @Failure      404  {object}  server.HTTPError
+// @Router       /models/{id} [get]
 func GetModel(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 
@@ -54,11 +68,7 @@ func GetModel(c *gin.Context) {
 
 	if err := c.ShouldBindUri(&req); err != nil {
 		server.WriteLog(server.Error, err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{
-			"response": gin.H{
-				"error": err.Error(),
-			},
-		})
+		server.NewError(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -69,18 +79,12 @@ func GetModel(c *gin.Context) {
 	m, err := modelModels.GetModelById(req.ID)
 	if err != nil {
 		server.WriteLog(server.Error, err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"response": gin.H{
-				"error": err.Error(),
-			},
-		})
+		server.NewError(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if m == (entities.Model3d{}) {
-		c.JSON(http.StatusNotFound, gin.H{
-			"response": "empty",
-		})
+		server.NewError(c, http.StatusNotFound, "Empty")
 	} else {
 		c.JSON(http.StatusOK, gin.H{
 			"response": m,

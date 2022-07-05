@@ -6,6 +6,11 @@ import (
 	"log"
 )
 
+import "github.com/swaggo/gin-swagger" // gin-swagger middleware
+import "github.com/swaggo/files"       // swagger embed files
+
+import "etomne/docs"
+
 func main() {
 	router := gin.Default()
 
@@ -16,6 +21,14 @@ func main() {
 	router.Static("upload/", "upload/")
 
 	router.LoadHTMLGlob("app/views/*")
+
+	// programmatically set swagger info
+	docs.SwaggerInfo.Title = "Swagger Models API"
+	docs.SwaggerInfo.Description = "This is documentation"
+	docs.SwaggerInfo.Version = "0.2"
+	docs.SwaggerInfo.Host = "localhost:8092"
+	docs.SwaggerInfo.BasePath = "/api"
+	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	routes(router)
 	err := router.Run(":8092")
@@ -36,6 +49,8 @@ func routes(r *gin.Engine) {
 		ApiModels.DELETE("/:id", controllers.DeleteModel)
 		ApiModels.PUT(":id", controllers.EditModel)
 	}
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	//r.GET("/models", controllers.Models)
 	//r.GET("/models/:id", controllers.Model)
 
