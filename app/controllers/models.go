@@ -27,21 +27,38 @@ func GetModels(c *gin.Context) {
 
 	modelsList, err := modelModels.GetAllModels()
 	if err != nil {
-		log.Fatal(err)
+		server.WriteLog(server.Error, err.Error())
+		c.JSON(http.StatusOK, gin.H{
+			"response": gin.H{
+				"error": err.Error(),
+			},
+		})
+		return
 	}
 
-	server.WriteLog(server.Info, "пояснение для инфы")
-	server.WriteLogToFile(server.Error, "ФАТАЛЬНАЯ", "import")
-
-	c.JSON(http.StatusOK, gin.H{
-		"response": modelsList,
-	})
+	if len(modelsList) > 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"response": modelsList,
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"response": "empty",
+		})
+	}
 }
 
 func GetModel(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+
 	var req getModelRequest
+
 	if err := c.ShouldBindUri(&req); err != nil {
-		log.Fatal(err)
+		server.WriteLog(server.Error, err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"response": gin.H{
+				"error": err.Error(),
+			},
+		})
 		return
 	}
 
@@ -51,16 +68,28 @@ func GetModel(c *gin.Context) {
 
 	m, err := modelModels.GetModelById(req.ID)
 	if err != nil {
-		log.Fatal(err)
+		server.WriteLog(server.Error, err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"response": gin.H{
+				"error": err.Error(),
+			},
+		})
+		return
 	}
 
-	c.Header("Content-Type", "application/json")
-	c.JSON(http.StatusOK, gin.H{
-		"response": m,
-	})
+	if m == (entities.Model3d{}) {
+		c.JSON(http.StatusNotFound, gin.H{
+			"response": "empty",
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"response": m,
+		})
+	}
 }
 
 func CreateModel(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
 
 	model := entities.Model3d{
 		Name:        c.PostForm("name"),
@@ -71,7 +100,13 @@ func CreateModel(c *gin.Context) {
 	c.Request.ParseMultipartForm(32 << 20)
 	file, err := c.FormFile("file")
 	if err != nil {
-		log.Fatal(err)
+		server.WriteLog(server.Error, err.Error())
+		c.JSON(http.StatusOK, gin.H{
+			"response": gin.H{
+				"error": err.Error(),
+			},
+		})
+		return
 	}
 
 	h := md5.New()
@@ -86,7 +121,13 @@ func CreateModel(c *gin.Context) {
 	path := "upload/" + newFileName + fileExtension
 
 	if err := c.SaveUploadedFile(file, path); err != nil {
-		log.Fatal(err)
+		server.WriteLog(server.Error, err.Error())
+		c.JSON(http.StatusOK, gin.H{
+			"response": gin.H{
+				"error": err.Error(),
+			},
+		})
+		return
 	}
 
 	modelModels := models.Model3dModel{
@@ -95,6 +136,12 @@ func CreateModel(c *gin.Context) {
 
 	model.FileId, err = models.CreateFile(&entities.File{Path: path}, server.Connect())
 	if err != nil {
+		server.WriteLog(server.Error, err.Error())
+		c.JSON(http.StatusOK, gin.H{
+			"response": gin.H{
+				"error": err.Error(),
+			},
+		})
 		return
 	}
 
@@ -108,10 +155,16 @@ func CreateModel(c *gin.Context) {
 }
 
 func DeleteModel(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
 
 	var req getModelRequest
 	if err := c.ShouldBindUri(&req); err != nil {
-		log.Fatal(err)
+		server.WriteLog(server.Error, err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"response": gin.H{
+				"error": err.Error(),
+			},
+		})
 		return
 	}
 
@@ -121,7 +174,23 @@ func DeleteModel(c *gin.Context) {
 
 	m, err := modelModels.GetModelById(req.ID)
 	if err != nil {
-		log.Fatal(err)
+		server.WriteLog(server.Error, err.Error())
+		c.JSON(http.StatusOK, gin.H{
+			"response": gin.H{
+				"error": err.Error(),
+			},
+		})
+		return
+	}
+	if m == (entities.Model3d{}) {
+		errMsg := "model not found"
+		server.WriteLog(server.Error, errMsg)
+		c.JSON(http.StatusOK, gin.H{
+			"response": gin.H{
+				"error": errMsg,
+			},
+		})
+		return
 	}
 	models.DeleteFile(m.FileId, server.Connect())
 	lastId, _ := modelModels.DeleteModel(req.ID)
