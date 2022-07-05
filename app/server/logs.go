@@ -8,11 +8,13 @@ import (
 const (
 	Error = 0
 	Info  = 1
+	Debug = 2
 )
 
 var tagText = map[int]string{
 	Error: "ERROR",
 	Info:  "INFO",
+	Debug: "DEBUG",
 }
 
 func TagText(tag int) string {
