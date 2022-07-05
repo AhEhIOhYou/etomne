@@ -1,0 +1,73 @@
+definitions:
+  entities.Model3d:
+    properties:
+      create_date:
+        type: string
+      description:
+        type: string
+      file_path:
+        type: string
+      fileId:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  server.HTTPError:
+    properties:
+      code:
+        example: 400
+        type: integer
+      message:
+        example: status bad request
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /models:
+    get:
+      description: Get list models
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Model3d'
+        "204":
+          description: Empty
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/server.HTTPError'
+      summary: Get models
+      tags:
+      - Models
+  /models/{id}:
+    get:
+      description: Get model by ID
+      parameters:
+      - description: Model ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Model3d'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/server.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/server.HTTPError'
+      summary: Get model
+      tags:
+      - Models
+swagger: "2.0"
