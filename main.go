@@ -47,7 +47,7 @@ func routes(r *gin.Engine) {
 		ApiModels.GET("/:id", controllers.GetModel)
 		ApiModels.POST("/create", controllers.CreateModel)
 		ApiModels.DELETE("/:id", controllers.DeleteModel)
-		ApiModels.PUT(":id", controllers.EditModel)
+		ApiModels.PUT("/:id", controllers.EditModel)
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

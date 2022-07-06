@@ -76,6 +76,6 @@ func (model3dModel Model3dModel) DeleteModel(id int) (int64, error) {
 		log.Fatal(err)
 		return 0, err
 	}
-	lastId, _ := result.RowsAffected()
-	return lastId, nil
+	rowsAffected, _ := result.RowsAffected()
+	return rowsAffected, nil
 }
