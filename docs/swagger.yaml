@@ -23,6 +23,16 @@ definitions:
         example: status bad request
         type: string
     type: object
+  server.HTTPResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      message:
+        additionalProperties:
+          type: any
+        type: object
+    type: object
 info:
   contact: {}
 paths:
@@ -46,6 +56,34 @@ paths:
       tags:
       - Models
   /models/{id}:
+    delete:
+      description: Delete model
+      parameters:
+      - description: Model ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.HTTPResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/server.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/server.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/server.HTTPError'
+      summary: Delete model
+      tags:
+      - Models
     get:
       description: Get model by ID
       parameters:
@@ -68,6 +106,73 @@ paths:
           schema:
             $ref: '#/definitions/server.HTTPError'
       summary: Get model
+      tags:
+      - Models
+    put:
+      description: Edit model
+      parameters:
+      - description: Model Name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Model Description
+        in: formData
+        name: descr
+        type: string
+      - description: Model File
+        in: formData
+        name: file
+        required: true
+        type: file
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.HTTPResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/server.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/server.HTTPError'
+      summary: Edit model
+      tags:
+      - Models
+  /models/create:
+    post:
+      description: Create model
+      parameters:
+      - description: Model Name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Model Description
+        in: formData
+        name: descr
+        type: string
+      - description: Model File
+        in: formData
+        name: file
+        required: true
+        type: file
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.HTTPResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/server.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/server.HTTPError'
+      summary: Create model
       tags:
       - Models
 swagger: "2.0"

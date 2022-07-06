@@ -45,8 +45,9 @@ func GetModels(c *gin.Context) {
 			"response": modelsList,
 		})
 	} else {
-		c.JSON(http.StatusOK, gin.H{
-			"response": "empty",
+		server.NewResponse(c, http.StatusOK, gin.H{
+			"count": len(modelsList),
+			"items": modelsList,
 		})
 	}
 }
@@ -67,7 +68,6 @@ func GetModel(c *gin.Context) {
 	var req getModelRequest
 
 	if err := c.ShouldBindUri(&req); err != nil {
-		server.WriteLog(server.Error, err.Error())
 		server.NewError(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -78,7 +78,6 @@ func GetModel(c *gin.Context) {
 
 	m, err := modelModels.GetModelById(req.ID)
 	if err != nil {
-		server.WriteLog(server.Error, err.Error())
 		server.NewError(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -86,15 +85,24 @@ func GetModel(c *gin.Context) {
 	if m == (entities.Model3d{}) {
 		server.NewError(c, http.StatusNotFound, "Empty")
 	} else {
-		c.JSON(http.StatusOK, gin.H{
-			"response": m,
+		server.NewResponse(c, http.StatusOK, gin.H{
+			"model": m,
 		})
 	}
 }
 
+// CreateModel godoc
+// @Summary      Create model
+// @Description  Create model
+// @Tags         Models
+// @Param        name	formData      string	true	"Model Name"
+// @Param        descr	formData      string	false	"Model Description"
+// @Param        file   formData      file		true	"Model File"
+// @Success      200  {object}  server.HTTPResponse
+// @Failure      400  {object}  server.HTTPError
+// @Failure      404  {object}  server.HTTPError
+// @Router       /models/create [post]
 func CreateModel(c *gin.Context) {
-	c.Header("Content-Type", "application/json")
-
 	model := entities.Model3d{
 		Name:        c.PostForm("name"),
 		CreateDate:  time.Now().Format(time.RFC3339),
@@ -104,12 +112,7 @@ func CreateModel(c *gin.Context) {
 	c.Request.ParseMultipartForm(32 << 20)
 	file, err := c.FormFile("file")
 	if err != nil {
-		server.WriteLog(server.Error, err.Error())
-		c.JSON(http.StatusOK, gin.H{
-			"response": gin.H{
-				"error": err.Error(),
-			},
-		})
+		server.NewError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -125,12 +128,7 @@ func CreateModel(c *gin.Context) {
 	path := "upload/" + newFileName + fileExtension
 
 	if err := c.SaveUploadedFile(file, path); err != nil {
-		server.WriteLog(server.Error, err.Error())
-		c.JSON(http.StatusOK, gin.H{
-			"response": gin.H{
-				"error": err.Error(),
-			},
-		})
+		server.NewError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -140,35 +138,33 @@ func CreateModel(c *gin.Context) {
 
 	model.FileId, err = models.CreateFile(&entities.File{Path: path}, server.Connect())
 	if err != nil {
-		server.WriteLog(server.Error, err.Error())
-		c.JSON(http.StatusOK, gin.H{
-			"response": gin.H{
-				"error": err.Error(),
-			},
-		})
+		server.NewError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	lastId, _ := modelModels.CreateModel(model)
 
-	c.JSON(http.StatusOK, gin.H{
-		"response": gin.H{
-			"success": lastId,
-		},
+	server.NewResponse(c, http.StatusOK, gin.H{
+		"create": lastId,
 	})
 }
 
+// DeleteModel godoc
+// @Summary      Delete model
+// @Description  Delete model
+// @Tags         Models
+// @Param        id   path      string  true  "Model ID"
+// @Success      200  {object}  server.HTTPResponse
+// @Failure      400  {object}  server.HTTPError
+// @Failure      404  {object}  server.HTTPError
+// @Failure      500  {object}  server.HTTPError
+// @Router       /models/{id} [delete]
 func DeleteModel(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 
 	var req getModelRequest
 	if err := c.ShouldBindUri(&req); err != nil {
-		server.WriteLog(server.Error, err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{
-			"response": gin.H{
-				"error": err.Error(),
-			},
-		})
+		server.NewError(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -178,32 +174,32 @@ func DeleteModel(c *gin.Context) {
 
 	m, err := modelModels.GetModelById(req.ID)
 	if err != nil {
-		server.WriteLog(server.Error, err.Error())
-		c.JSON(http.StatusOK, gin.H{
-			"response": gin.H{
-				"error": err.Error(),
-			},
-		})
+		server.NewError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 	if m == (entities.Model3d{}) {
-		errMsg := "model not found"
-		server.WriteLog(server.Error, errMsg)
-		c.JSON(http.StatusOK, gin.H{
-			"response": gin.H{
-				"error": errMsg,
-			},
-		})
+		server.NewError(c, http.StatusNotFound, "model not found")
 		return
 	}
 	models.DeleteFile(m.FileId, server.Connect())
-	lastId, _ := modelModels.DeleteModel(req.ID)
+	rowsAffected, _ := modelModels.DeleteModel(req.ID)
 
-	c.JSON(http.StatusOK, gin.H{
-		"response": lastId,
+	server.NewResponse(c, http.StatusOK, gin.H{
+		"rows affected": rowsAffected,
 	})
 }
 
+// EditModel godoc
+// @Summary      Edit model
+// @Description  Edit model
+// @Tags         Models
+// @Param        name	formData      string	true	"Model Name"
+// @Param        descr	formData      string	false	"Model Description"
+// @Param        file   formData      file		true	"Model File"
+// @Success      200  {object}  server.HTTPResponse
+// @Failure      400  {object}  server.HTTPError
+// @Failure      404  {object}  server.HTTPError
+// @Router       /models/{id} [put]
 func EditModel(c *gin.Context) {
 
 	var m entities.Model3d
