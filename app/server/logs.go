@@ -30,7 +30,7 @@ func WriteLog(tag int, msg string) {
 	defer f.Close()
 
 	newLog := log.New(f, TagText(tag)+"\t", log.Ldate|log.Ltime|log.Lshortfile)
-	newLog.Output(2, "\t"+msg)
+	newLog.Output(3, "\t"+msg)
 }
 
 func WriteLogToFile(tag int, msg string, fileName string) {
