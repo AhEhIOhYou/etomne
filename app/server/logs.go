@@ -3,6 +3,7 @@ package server
 import (
 	"log"
 	"os"
+	"time"
 )
 
 const (
@@ -23,7 +24,7 @@ func TagText(tag int) string {
 
 func WriteLog(tag int, msg string) {
 
-	f, err := os.OpenFile("logs/main_log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, err := os.OpenFile("logs/"+time.Now().Format("Jan_02_2006_main_log")+".txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("error opening file: %v", err)
 	}
