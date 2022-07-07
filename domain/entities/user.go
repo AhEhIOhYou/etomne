@@ -1,6 +1,8 @@
 package entities
 
 import (
+	"etomne/infrastructure/security"
+	"github.com/badoux/checkmail"
 	"html"
 	"strings"
 )

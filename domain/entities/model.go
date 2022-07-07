@@ -7,11 +7,10 @@ import (
 
 type Model struct {
 	Id          uint64 `json:"id"`
-	Title       string `json:"name" binding:"required,min=2"`
+	Title       string `json:"name"`
 	CreateDate  string `json:"create_date"`
 	Description string `json:"description"`
-	FileId      int64  `json:"fileId" binding:"required,min=1"`
-	FilePath    string `json:"file_path"`
+	File        string `json:"file_model"`
 }
 
 func (m *Model) BeforeSave() {
