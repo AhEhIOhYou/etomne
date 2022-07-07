@@ -29,9 +29,7 @@ definitions:
         example: 200
         type: integer
       message:
-        additionalProperties:
-          type: any
-        type: object
+        type: any
     type: object
 info:
   contact: {}

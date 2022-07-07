@@ -259,10 +259,7 @@
                     "example": 200
                 },
                 "message": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "any"
-                    }
+                    "type": "any"
                 }
             }
         }

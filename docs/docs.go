@@ -55,7 +55,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Model Name",
+                        "description": "Model Title",
                         "name": "name",
                         "in": "formData",
                         "required": true
@@ -142,7 +142,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Model Name",
+                        "description": "Model Title",
                         "name": "name",
                         "in": "formData",
                         "required": true
@@ -271,10 +271,7 @@ const docTemplate = `{
                     "example": 200
                 },
                 "message": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "any"
-                    }
+                    "type": "any"
                 }
             }
         }

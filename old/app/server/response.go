@@ -3,8 +3,8 @@ package server
 import "github.com/gin-gonic/gin"
 
 type HTTPResponse struct {
-	Code    int            `json:"code" example:"200"`
-	Message map[string]any `json:"message"`
+	Code    int `json:"code" example:"200"`
+	Message any `json:"message"`
 }
 
 type HTTPError struct {
@@ -15,10 +15,8 @@ type HTTPError struct {
 func NewResponse(ctx *gin.Context, status int, msg map[string]any) {
 	ctx.Header("Content-Type", "application/json")
 	resp := HTTPResponse{
-		Code: status,
-		Message: map[string]any{
-			"response": msg,
-		},
+		Code:    status,
+		Message: msg,
 	}
 	ctx.JSON(status, resp)
 }

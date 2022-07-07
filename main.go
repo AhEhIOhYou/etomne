@@ -1,7 +1,7 @@
 package main
 
 import (
-	"etomne/app/controllers"
+	controllers2 "etomne/old/app/controllers"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -39,15 +39,15 @@ func main() {
 
 func routes(r *gin.Engine) {
 
-	r.NoRoute(controllers.NotFound)
+	r.NoRoute(controllers2.NotFound)
 
 	ApiModels := r.Group("/api/models")
 	{
-		ApiModels.GET("/", controllers.GetModels)
-		ApiModels.GET("/:id", controllers.GetModel)
-		ApiModels.POST("/create", controllers.CreateModel)
-		ApiModels.DELETE("/:id", controllers.DeleteModel)
-		ApiModels.PUT("/:id", controllers.EditModel)
+		ApiModels.GET("/", controllers2.GetModels)
+		ApiModels.GET("/:id", controllers2.GetModel)
+		ApiModels.POST("/create", controllers2.CreateModel)
+		ApiModels.DELETE("/:id", controllers2.DeleteModel)
+		ApiModels.PUT("/:id", controllers2.EditModel)
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -59,8 +59,8 @@ func routes(r *gin.Engine) {
 
 	//r.GET("/delete", controllers.Delete)
 
-	r.Any("/login", controllers.UserLogin)
-	r.Any("/reg", controllers.UserReg)
-	r.GET("/logout", controllers.UserLogout)
+	r.Any("/login", controllers2.UserLogin)
+	r.Any("/reg", controllers2.UserReg)
+	r.GET("/logout", controllers2.UserLogout)
 
 }

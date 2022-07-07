@@ -4,10 +4,9 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"etomne/app/entities"
-	"etomne/app/models"
-	"etomne/app/server"
+	models2 "etomne/old/app/models"
+	server2 "etomne/old/app/server"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -22,21 +21,21 @@ type getModelRequest struct {
 // @Summary      Get models
 // @Description  Get list models
 // @Tags         Models
-// @Success      200  {object} 	entities.Model3d
+// @Success      200  {object} 	entities.Model
 // @Success      204  {string}  string    "Empty"
 // @Failure      500  {object}  server.HTTPError
 // @Router       /models [get]
 func GetModels(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 
-	modelModels := models.Model3dModel{
-		Db: server.Connect(),
+	modelModels := models2.Model3dModel{
+		Db: server2.Connect(),
 	}
 
 	modelsList, err := modelModels.GetAllModels()
 	if err != nil {
-		server.WriteLog(server.Error, err.Error())
-		server.NewError(c, http.StatusInternalServerError, err.Error())
+		server2.WriteLog(server2.Error, err.Error())
+		server2.NewError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -45,7 +44,7 @@ func GetModels(c *gin.Context) {
 			"response": modelsList,
 		})
 	} else {
-		server.NewResponse(c, http.StatusOK, gin.H{
+		server2.NewResponse(c, http.StatusOK, gin.H{
 			"count": len(modelsList),
 			"items": modelsList,
 		})
@@ -57,7 +56,7 @@ func GetModels(c *gin.Context) {
 // @Description  Get model by ID
 // @Tags         Models
 // @Param        id   path      string  true  "Model ID"
-// @Success      200  {object}  entities.Model3d
+// @Success      200  {object}  entities.Model
 // @Failure      400  {object}  server.HTTPError
 // @Failure      400  {object}  server.HTTPError
 // @Failure      404  {object}  server.HTTPError
@@ -68,24 +67,24 @@ func GetModel(c *gin.Context) {
 	var req getModelRequest
 
 	if err := c.ShouldBindUri(&req); err != nil {
-		server.NewError(c, http.StatusBadRequest, err.Error())
+		server2.NewError(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	modelModels := models.Model3dModel{
-		Db: server.Connect(),
+	modelModels := models2.Model3dModel{
+		Db: server2.Connect(),
 	}
 
 	m, err := modelModels.GetModelById(req.ID)
 	if err != nil {
-		server.NewError(c, http.StatusBadRequest, err.Error())
+		server2.NewError(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if m == (entities.Model3d{}) {
-		server.NewError(c, http.StatusNotFound, "Empty")
+		server2.NewError(c, http.StatusNotFound, "Empty")
 	} else {
-		server.NewResponse(c, http.StatusOK, gin.H{
+		server2.NewResponse(c, http.StatusOK, gin.H{
 			"model": m,
 		})
 	}
@@ -95,7 +94,7 @@ func GetModel(c *gin.Context) {
 // @Summary      Create model
 // @Description  Create model
 // @Tags         Models
-// @Param        name	formData      string	true	"Model Name"
+// @Param        name	formData      string	true	"Model Title"
 // @Param        descr	formData      string	false	"Model Description"
 // @Param        file   formData      file		true	"Model File"
 // @Success      200  {object}  server.HTTPResponse
@@ -103,6 +102,19 @@ func GetModel(c *gin.Context) {
 // @Failure      404  {object}  server.HTTPError
 // @Router       /models/create [post]
 func CreateModel(c *gin.Context) {
+
+	var m entities.NewModel3d
+	err := c.ShouldBindJSON(&m)
+	if err != nil {
+		server2.NewError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	server2.NewResponse(c, http.StatusOK, gin.H{
+		"data": m,
+	})
+	return
+
 	model := entities.Model3d{
 		Name:        c.PostForm("name"),
 		CreateDate:  time.Now().Format(time.RFC3339),
@@ -112,7 +124,7 @@ func CreateModel(c *gin.Context) {
 	c.Request.ParseMultipartForm(32 << 20)
 	file, err := c.FormFile("file")
 	if err != nil {
-		server.NewError(c, http.StatusInternalServerError, err.Error())
+		server2.NewError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -128,23 +140,23 @@ func CreateModel(c *gin.Context) {
 	path := "upload/" + newFileName + fileExtension
 
 	if err := c.SaveUploadedFile(file, path); err != nil {
-		server.NewError(c, http.StatusInternalServerError, err.Error())
+		server2.NewError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	modelModels := models.Model3dModel{
-		Db: server.Connect(),
+	modelModels := models2.Model3dModel{
+		Db: server2.Connect(),
 	}
 
-	model.FileId, err = models.CreateFile(&entities.File{Path: path}, server.Connect())
+	model.FileId, err = models2.CreateFile(&entities.File{Path: path}, server2.Connect())
 	if err != nil {
-		server.NewError(c, http.StatusInternalServerError, err.Error())
+		server2.NewError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	lastId, _ := modelModels.CreateModel(model)
 
-	server.NewResponse(c, http.StatusOK, gin.H{
+	server2.NewResponse(c, http.StatusOK, gin.H{
 		"create": lastId,
 	})
 }
@@ -164,27 +176,27 @@ func DeleteModel(c *gin.Context) {
 
 	var req getModelRequest
 	if err := c.ShouldBindUri(&req); err != nil {
-		server.NewError(c, http.StatusBadRequest, err.Error())
+		server2.NewError(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	modelModels := models.Model3dModel{
-		Db: server.Connect(),
+	modelModels := models2.Model3dModel{
+		Db: server2.Connect(),
 	}
 
 	m, err := modelModels.GetModelById(req.ID)
 	if err != nil {
-		server.NewError(c, http.StatusInternalServerError, err.Error())
+		server2.NewError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 	if m == (entities.Model3d{}) {
-		server.NewError(c, http.StatusNotFound, "model not found")
+		server2.NewError(c, http.StatusNotFound, "model not found")
 		return
 	}
-	models.DeleteFile(m.FileId, server.Connect())
+	models2.DeleteFile(m.FileId, server2.Connect())
 	rowsAffected, _ := modelModels.DeleteModel(req.ID)
 
-	server.NewResponse(c, http.StatusOK, gin.H{
+	server2.NewResponse(c, http.StatusOK, gin.H{
 		"rows affected": rowsAffected,
 	})
 }
@@ -193,7 +205,7 @@ func DeleteModel(c *gin.Context) {
 // @Summary      Edit model
 // @Description  Edit model
 // @Tags         Models
-// @Param        name	formData      string	true	"Model Name"
+// @Param        name	formData      string	true	"Model Title"
 // @Param        descr	formData      string	false	"Model Description"
 // @Param        file   formData      file		true	"Model File"
 // @Success      200  {object}  server.HTTPResponse
@@ -203,16 +215,14 @@ func DeleteModel(c *gin.Context) {
 func EditModel(c *gin.Context) {
 
 	var m entities.Model3d
-	c.ShouldBindJSON(&m)
-	var arr map[string]any
-	arr = make(map[string]any)
-	arr["id"] = m.Id
-	arr["name"] = m.Name
+	err := c.ShouldBindJSON(&m)
+	if err != nil {
+		server2.NewError(c, http.StatusBadRequest, err.Error())
+		return
+	}
 
-	log.Println(arr)
-
-	//model := entities.Model3d{
-	//	Name:        c.PostForm("name"),
+	//model := entities.Model{
+	//	Title:        c.PostForm("name"),
 	//	CreateDate:  c.uri
 	//	Description: c.PostForm("descr"),
 	//}
@@ -251,7 +261,7 @@ func EditModel(c *gin.Context) {
 	//
 	c.JSON(http.StatusOK, gin.H{
 		"response": gin.H{
-			"success": arr,
+			"success": m,
 		},
 	})
 }
