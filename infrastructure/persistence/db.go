@@ -14,11 +14,10 @@ type Repos struct {
 	db    *gorm.DB
 }
 
-func NewRepo(DbDriver, DbUser, DbPassword, DbPort, DbHost, DbName string) (*Repos, error) {
+func NewRepo(DbUser, DbPassword, DbPort, DbHost, DbName string) (*Repos, error) {
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		DbUser, DbPassword, DbHost, DbPort, DbName)
-	//dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {

@@ -23,25 +23,26 @@ func init() {
 
 func main() {
 
-	//DB vars
-	dbDriver := os.Getenv("DB_DRIVER")
+	//Main DB vars
 	dbHost := os.Getenv("DB_HOST")
 	dbPassword := os.Getenv("DB_PASSWORD")
 	dbUser := os.Getenv("DB_USER")
 	dbName := os.Getenv("DB_NAME")
 	dbPort := os.Getenv("DB_PORT")
 
-	redis_host := os.Getenv("REDIS_HOST")
-	redis_port := os.Getenv("REDIS_PORT")
-	redis_password := os.Getenv("REDIS_PASSWORD")
+	//Redis vars
+	redisHost := os.Getenv("REDIS_HOST")
+	redisPort := os.Getenv("REDIS_PORT")
+	redisPassword := os.Getenv("REDIS_PASSWORD")
 
-	services, err := persistence.NewRepo(dbDriver, dbUser, dbPassword, dbPort, dbHost, dbName)
+	services, err := persistence.NewRepo(dbUser, dbPassword, dbPort, dbHost, dbName)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	//services.Migrate()
 
-	redisService, err := auth.NewRedisDb(redis_host, redis_port, redis_password)
+	redisService, err := auth.NewRedisDb(redisHost, redisPort, redisPassword)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -54,29 +55,26 @@ func main() {
 	authenticate := interfaces.NewAuthenticate(services.User, redisService.Auth, tk)
 
 	r := gin.Default()
-	r.Use(middleware.CORSMiddleware()) //For CORS
+	r.Use(middleware.CORSMiddleware())
 
-	//user routes
-	r.POST("/users", users.SaveUser)
-	r.GET("/users", users.GetUsers)
-	r.GET("/users/:user_id", users.GetUser)
+	u := r.Group("/users")
+	{
+		u.POST("", users.SaveUser)
+		u.GET("", users.GetUsers)
+		u.GET("/:user_id", users.GetUser)
+		u.POST("/login", authenticate.Login)
+		u.POST("/logout", authenticate.Logout)
+		u.POST("/refresh", authenticate.Refresh)
+	}
 
 	m := r.Group("/model")
 	{
 		m.POST("", middleware.AuthMiddleware(), models.SaveModel)
-		m.PUT("/:food_id", middleware.AuthMiddleware(), models.UpdateModel)
-		m.GET("/:food_id", models.GetModelAndAuthor)
-		m.DELETE("/:food_id", middleware.AuthMiddleware(), models.DeleteModel)
+		m.PUT("/:model_id", middleware.AuthMiddleware(), models.UpdateModel)
+		m.GET("/:model_id", models.GetModelAndAuthor)
+		m.DELETE("/:model_id", middleware.AuthMiddleware(), models.DeleteModel)
 		m.GET("", models.GetAllModel)
 	}
 
-	r.POST("/login", authenticate.Login)
-	r.POST("/logout", authenticate.Logout)
-	r.POST("/refresh", authenticate.Refresh)
-
-	app_port := os.Getenv("PORT") //using heroku host
-	if app_port == "" {
-		app_port = "8888" //localhost
-	}
-	log.Fatal(r.Run(":" + app_port))
+	log.Fatal(r.Run(":" + "8093"))
 }
