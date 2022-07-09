@@ -16,93 +16,13 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/models": {
+        "/model/{id}": {
             "get": {
-                "description": "Get list models",
+                "description": "Get model and author by ID model",
                 "tags": [
                     "Models"
                 ],
-                "summary": "Get models",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.Model3d"
-                        }
-                    },
-                    "204": {
-                        "description": "Empty",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/server.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
-        "/models/create": {
-            "post": {
-                "description": "Create model",
-                "tags": [
-                    "Models"
-                ],
-                "summary": "Create model",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Model Title",
-                        "name": "name",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Model Description",
-                        "name": "descr",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "file",
-                        "description": "Model File",
-                        "name": "file",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/server.HTTPResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/server.HTTPError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/server.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
-        "/models/{id}": {
-            "get": {
-                "description": "Get model by ID",
-                "tags": [
-                    "Models"
-                ],
-                "summary": "Get model",
+                "summary": "Get model and author",
                 "parameters": [
                     {
                         "type": "string",
@@ -116,110 +36,24 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.Model3d"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/server.HTTPError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/server.HTTPError"
+                            "$ref": "#/definitions/entities.Model"
                         }
                     }
                 }
-            },
-            "put": {
-                "description": "Edit model",
+            }
+        },
+        "/users": {
+            "get": {
+                "description": "Get users",
                 "tags": [
-                    "Models"
+                    "Users"
                 ],
-                "summary": "Edit model",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Model Title",
-                        "name": "name",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Model Description",
-                        "name": "descr",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "file",
-                        "description": "Model File",
-                        "name": "file",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
+                "summary": "Get users",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/server.HTTPResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/server.HTTPError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/server.HTTPError"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete model",
-                "tags": [
-                    "Models"
-                ],
-                "summary": "Delete model",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Model ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/server.HTTPResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/server.HTTPError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/server.HTTPError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/server.HTTPError"
+                            "$ref": "#/definitions/entities.PublicUser"
                         }
                     }
                 }
@@ -227,51 +61,43 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "entities.Model3d": {
+        "entities.Model": {
             "type": "object",
             "properties": {
-                "create_date": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
                     "type": "string"
                 },
                 "description": {
                     "type": "string"
                 },
-                "fileId": {
+                "id": {
                     "type": "integer"
                 },
-                "file_path": {
+                "model_file": {
                     "type": "string"
                 },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "entities.PublicUser": {
+            "type": "object",
+            "properties": {
                 "id": {
                     "type": "integer"
                 },
                 "name": {
                     "type": "string"
-                }
-            }
-        },
-        "server.HTTPError": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer",
-                    "example": 400
-                },
-                "message": {
-                    "type": "string",
-                    "example": "status bad request"
-                }
-            }
-        },
-        "server.HTTPResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer",
-                    "example": 200
-                },
-                "message": {
-                    "type": "any"
                 }
             }
         }

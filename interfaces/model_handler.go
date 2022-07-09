@@ -193,6 +193,13 @@ func (m *Model) GetAllModel(c *gin.Context) {
 	c.JSON(http.StatusOK, allModels)
 }
 
+// GetModelAndAuthor godoc
+// @Summary      Get model and author
+// @Description  Get model and author by ID model
+// @Tags         Models
+// @Param        id   path      string  true  "Model ID"
+// @Success      200  {object}  entities.Model
+// @Router       /model/{id} [get]
 func (m *Model) GetModelAndAuthor(c *gin.Context) {
 	modelId, err := strconv.ParseUint(c.Param("model_id"), 10, 64)
 	if err != nil {

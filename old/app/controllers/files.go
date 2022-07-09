@@ -36,5 +36,4 @@ func Upload(c *gin.Context) {
 		return
 	}
 
-	url, err :=
 }

@@ -47,10 +47,15 @@ func (s *Users) SaveUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, newUser.PublicUser())
 }
 
+// GetUsers godoc
+// @Summary      Get users
+// @Description  Get users
+// @Tags         Users
+// @Success      200  {object}  entities.PublicUser
+// @Router       /users [get]
 func (s *Users) GetUsers(c *gin.Context) {
-	users := entities.Users{} //customize user
+	users := entities.Users{}
 	var err error
-	//us, err = application.UserApp.GetUsers()
 	users, err = s.us.GetUsers()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())

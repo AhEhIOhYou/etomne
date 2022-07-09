@@ -1,61 +1,36 @@
 definitions:
-  entities.Model3d:
+  entities.Model:
     properties:
-      create_date:
+      created_at:
+        type: string
+      deleted_at:
         type: string
       description:
         type: string
-      file_path:
-        type: string
-      fileId:
+      id:
         type: integer
+      model_file:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  entities.PublicUser:
+    properties:
       id:
         type: integer
       name:
         type: string
     type: object
-  server.HTTPError:
-    properties:
-      code:
-        example: 400
-        type: integer
-      message:
-        example: status bad request
-        type: string
-    type: object
-  server.HTTPResponse:
-    properties:
-      code:
-        example: 200
-        type: integer
-      message:
-        type: any
-    type: object
 info:
   contact: {}
 paths:
-  /models:
+  /model/{id}:
     get:
-      description: Get list models
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.Model3d'
-        "204":
-          description: Empty
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/server.HTTPError'
-      summary: Get models
-      tags:
-      - Models
-  /models/{id}:
-    delete:
-      description: Delete model
+      description: Get model and author by ID model
       parameters:
       - description: Model ID
         in: path
@@ -66,111 +41,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/server.HTTPResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/server.HTTPError'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/server.HTTPError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/server.HTTPError'
-      summary: Delete model
+            $ref: '#/definitions/entities.Model'
+      summary: Get model and author
       tags:
       - Models
+  /users:
     get:
-      description: Get model by ID
-      parameters:
-      - description: Model ID
-        in: path
-        name: id
-        required: true
-        type: string
+      description: Get users
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.Model3d'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/server.HTTPError'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/server.HTTPError'
-      summary: Get model
+            $ref: '#/definitions/entities.PublicUser'
+      summary: Get users
       tags:
-      - Models
-    put:
-      description: Edit model
-      parameters:
-      - description: Model Name
-        in: formData
-        name: name
-        required: true
-        type: string
-      - description: Model Description
-        in: formData
-        name: descr
-        type: string
-      - description: Model File
-        in: formData
-        name: file
-        required: true
-        type: file
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/server.HTTPResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/server.HTTPError'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/server.HTTPError'
-      summary: Edit model
-      tags:
-      - Models
-  /models/create:
-    post:
-      description: Create model
-      parameters:
-      - description: Model Name
-        in: formData
-        name: name
-        required: true
-        type: string
-      - description: Model Description
-        in: formData
-        name: descr
-        type: string
-      - description: Model File
-        in: formData
-        name: file
-        required: true
-        type: file
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/server.HTTPResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/server.HTTPError'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/server.HTTPError'
-      summary: Create model
-      tags:
-      - Models
+      - Users
 swagger: "2.0"

@@ -4,6 +4,7 @@ package main
 // swagger embed files
 
 import (
+	"etomne/docs"
 	"etomne/infrastructure/auth"
 	"etomne/infrastructure/persistence"
 	"etomne/interfaces"
@@ -11,6 +12,8 @@ import (
 	"etomne/interfaces/middleware"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 	"os"
 )
@@ -75,6 +78,16 @@ func main() {
 		m.DELETE("/:model_id", middleware.AuthMiddleware(), models.DeleteModel)
 		m.GET("", models.GetAllModel)
 	}
+
+	// programmatically set swagger info
+	docs.SwaggerInfo.Title = "Swagger Models API"
+	docs.SwaggerInfo.Description = "This is documentation"
+	docs.SwaggerInfo.Version = "0.3"
+	docs.SwaggerInfo.Host = "localhost:8093"
+	docs.SwaggerInfo.BasePath = ""
+	docs.SwaggerInfo.Schemes = []string{"http", "https"}
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	log.Fatal(r.Run(":" + "8093"))
 }
