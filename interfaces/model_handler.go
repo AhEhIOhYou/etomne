@@ -184,7 +184,7 @@ func (m *Model) UpdateModel(c *gin.Context) {
 	c.JSON(http.StatusOK, updatedFood)
 }
 
-func (m *Model) GetAllModels(c *gin.Context) {
+func (m *Model) GetAllModel(c *gin.Context) {
 	allModels, err := m.modelApp.GetAllModel()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())

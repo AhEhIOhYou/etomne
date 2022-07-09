@@ -14,7 +14,7 @@ func (m *modelApp) SaveModel(model *entities.Model) (*entities.Model, map[string
 }
 
 func (m *modelApp) GetAllModel() ([]entities.Model, error) {
-	return m.md.GetAllModels()
+	return m.md.GetAllModel()
 }
 
 func (m *modelApp) GetModel(modelId uint64) (*entities.Model, error) {
