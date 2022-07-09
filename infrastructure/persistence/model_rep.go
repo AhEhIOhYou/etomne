@@ -16,7 +16,7 @@ type ModelRepo struct {
 func (r *ModelRepo) SaveModel(model *entities.Model) (*entities.Model, map[string]string) {
 	dbErr := map[string]string{}
 	//The images are uploaded to digital ocean spaces. So we need to prepend the url. This might not be your use case, if you are not uploading image to Digital Ocean.
-	model.File = os.Getenv("DO_SPACES_URL") + model.File
+	model.ModelFile = os.Getenv("upload/") + model.ModelFile
 
 	err := r.db.Debug().Create(&model).Error
 	if err != nil {
@@ -44,7 +44,7 @@ func (r *ModelRepo) GetModel(id uint64) (*entities.Model, error) {
 	return &model, nil
 }
 
-func (r *ModelRepo) GetAllModels() ([]entities.Model, error) {
+func (r *ModelRepo) GetAllModel() ([]entities.Model, error) {
 	var models []entities.Model
 	err := r.db.Debug().Limit(100).Order("created_at desc").Find(&models).Error
 	if err != nil {

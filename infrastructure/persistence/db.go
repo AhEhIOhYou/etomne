@@ -15,10 +15,9 @@ type Repos struct {
 }
 
 func NewRepo(DbDriver, DbUser, DbPassword, DbPort, DbHost, DbName string) (*Repos, error) {
-	dsn := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s",
-		DbHost, DbPort, DbUser, DbName, DbPassword)
-	//db, err := gorm.Open(mysql.Open(dsn), DBURL)
 
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		DbUser, DbPassword, DbHost, DbPort, DbName)
 	//dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 

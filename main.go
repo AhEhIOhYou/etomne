@@ -73,4 +73,10 @@ func main() {
 	r.POST("/login", authenticate.Login)
 	r.POST("/logout", authenticate.Logout)
 	r.POST("/refresh", authenticate.Refresh)
+
+	app_port := os.Getenv("PORT") //using heroku host
+	if app_port == "" {
+		app_port = "8888" //localhost
+	}
+	log.Fatal(r.Run(":" + app_port))
 }
