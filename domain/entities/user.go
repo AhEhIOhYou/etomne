@@ -5,32 +5,36 @@ import (
 	"github.com/badoux/checkmail"
 	"html"
 	"strings"
+	"time"
 )
 
 type User struct {
-	ID       uint64 `json:"id"`
-	Email    string `json:"email"`
-	Password string `json:"hashedPass"`
-	Name     string `json:"name"`
+	ID        uint64     `gorm:"primary_key;auto_increment" json:"id"`
+	Name      string     `gorm:"size:100;not null;" json:"name"`
+	Email     string     `gorm:"size:100;not null;unique" json:"email"`
+	Password  string     `gorm:"size:100;not null;" json:"password"`
+	CreatedAt time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 }
 
 type PublicUser struct {
-	ID   uint64 `json:"id"`
-	Name string `json:"name"`
+	ID   uint64 `gorm:"primary_key;auto_increment" json:"id"`
+	Name string `gorm:"size:100;not null;" json:"name"`
 }
 
-func (u *User) BeforeSave() error {
-	hashPassword, err := security.Hash(u.Password)
+func (user *User) BeforeSave() error {
+	hashPassword, err := security.Hash(user.Password)
 	if err != nil {
 		return err
 	}
-	u.Password = string(hashPassword)
+	user.Password = string(hashPassword)
 	return nil
 }
 
 type Users []User
 
-func (users Users) PublicUser() []interface{} {
+func (users Users) PublicUsers() []interface{} {
 	res := make([]interface{}, len(users))
 	for index, user := range users {
 		res[index] = user.PublicUser()
@@ -48,6 +52,8 @@ func (user *User) PublicUser() interface{} {
 func (user *User) Prepared() {
 	user.Name = html.EscapeString(strings.TrimSpace(user.Name))
 	user.Email = html.EscapeString(strings.TrimSpace(user.Email))
+	user.CreatedAt = time.Now()
+	user.UpdatedAt = time.Now()
 }
 
 func (user *User) Validate(action string) map[string]string {

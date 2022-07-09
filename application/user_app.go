@@ -25,9 +25,9 @@ func (u *userApp) GetUserByEmailAndPassword(user *entities.User) (*entities.User
 	return u.us.GetUserByEmailAndPassword(user)
 }
 
-var _ UserApiInterface = &userApp{}
+var _ UserAppInterface = &userApp{}
 
-type UserApiInterface interface {
+type UserAppInterface interface {
 	SaveUser(*entities.User) (*entities.User, map[string]string)
 	GetUser(uint64) (*entities.User, error)
 	GetUsers() ([]entities.User, error)

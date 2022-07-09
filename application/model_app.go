@@ -29,9 +29,9 @@ func (m *modelApp) DeleteModel(modelId uint64) error {
 	return m.md.DeleteModel(modelId)
 }
 
-var _ ModelApiInterface = &modelApp{}
+var _ ModelAppInterface = &modelApp{}
 
-type ModelApiInterface interface {
+type ModelAppInterface interface {
 	SaveModel(*entities.Model) (*entities.Model, map[string]string)
 	GetAllModel() ([]entities.Model, error)
 	GetModel(uint64) (*entities.Model, error)

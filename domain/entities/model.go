@@ -3,14 +3,18 @@ package entities
 import (
 	"html"
 	"strings"
+	"time"
 )
 
 type Model struct {
-	Id          uint64 `json:"id"`
-	Title       string `json:"name"`
-	CreateDate  string `json:"create_date"`
-	Description string `json:"description"`
-	File        string `json:"file_model"`
+	ID          uint64     `gorm:"primary_key;auto_increment" json:"id"`
+	UserID      uint64     `gorm:"size:100;not null;" json:"user_id"`
+	Title       string     `gorm:"size:100;not null;unique" json:"title"`
+	Description string     `gorm:"text;not null;" json:"description"`
+	ModelFile   string     `gorm:"size:255;null;" json:"model_file"`
+	CreatedAt   time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt   time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+	DeletedAt   *time.Time `json:"deleted_at"`
 }
 
 func (m *Model) BeforeSave() {
@@ -20,6 +24,8 @@ func (m *Model) BeforeSave() {
 func (m *Model) Prepare() {
 	m.Title = html.EscapeString(strings.TrimSpace(m.Title))
 	m.Description = html.EscapeString(strings.TrimSpace(m.Description))
+	m.CreatedAt = time.Now()
+	m.UpdatedAt = time.Now()
 }
 
 func (m *Model) Validate(action string) map[string]string {
