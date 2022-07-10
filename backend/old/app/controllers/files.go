@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"etomne/old/app/server"
+	"etomne/backend/old/app/server"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

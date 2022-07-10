@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	models2 "etomne/old/app/models"
-	server2 "etomne/old/app/server"
+	models2 "etomne/backend/old/app/models"
+	"etomne/backend/old/app/server"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -15,13 +15,13 @@ func GetModels(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 
 	modelModels := models2.Model3dModel{
-		Db: server2.Connect(),
+		Db: server.Connect(),
 	}
 
 	modelsList, err := modelModels.GetAllModels()
 	if err != nil {
-		server2.WriteLog(server2.Error, err.Error())
-		server2.NewError(c, http.StatusInternalServerError, err.Error())
+		server.WriteLog(server.Error, err.Error())
+		server.NewError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -30,7 +30,7 @@ func GetModels(c *gin.Context) {
 			"response": modelsList,
 		})
 	} else {
-		server2.NewResponse(c, http.StatusOK, gin.H{
+		server.NewResponse(c, http.StatusOK, gin.H{
 			"count": len(modelsList),
 			"items": modelsList,
 		})
@@ -43,24 +43,24 @@ func GetModel(c *gin.Context) {
 	var req getModelRequest
 
 	if err := c.ShouldBindUri(&req); err != nil {
-		server2.NewError(c, http.StatusBadRequest, err.Error())
+		server.NewError(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	modelModels := models2.Model3dModel{
-		Db: server2.Connect(),
+		Db: server.Connect(),
 	}
 
 	m, err := modelModels.GetModelById(req.ID)
 	if err != nil {
-		server2.NewError(c, http.StatusBadRequest, err.Error())
+		server.NewError(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if m == "" {
-		server2.NewError(c, http.StatusNotFound, "Empty")
+		server.NewError(c, http.StatusNotFound, "Empty")
 	} else {
-		server2.NewResponse(c, http.StatusOK, gin.H{
+		server.NewResponse(c, http.StatusOK, gin.H{
 			"model": m,
 		})
 	}

@@ -4,12 +4,12 @@ package main
 // swagger embed files
 
 import (
-	"etomne/docs"
-	"etomne/infrastructure/auth"
-	"etomne/infrastructure/persistence"
-	"etomne/interfaces"
-	"etomne/interfaces/fileupload"
-	"etomne/interfaces/middleware"
+	"etomne/backend/docs"
+	auth2 "etomne/backend/infrastructure/auth"
+	"etomne/backend/infrastructure/persistence"
+	interfaces2 "etomne/backend/interfaces"
+	"etomne/backend/interfaces/fileupload"
+	"etomne/backend/interfaces/middleware"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
@@ -19,7 +19,7 @@ import (
 )
 
 func init() {
-	if err := godotenv.Load("configs/.env"); err != nil {
+	if err := godotenv.Load("backend/configs/.env"); err != nil {
 		log.Print("No .env file found")
 	}
 }
@@ -45,17 +45,17 @@ func main() {
 
 	//services.Migrate()
 
-	redisService, err := auth.NewRedisDb(redisHost, redisPort, redisPassword)
+	redisService, err := auth2.NewRedisDb(redisHost, redisPort, redisPassword)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	tk := auth.NewToken()
+	tk := auth2.NewToken()
 	fd := fileupload.NewFileUpload()
 
-	users := interfaces.NewUsers(services.User, redisService.Auth, tk)
-	models := interfaces.NewModel(services.Model, services.User, fd, redisService.Auth, tk)
-	authenticate := interfaces.NewAuthenticate(services.User, redisService.Auth, tk)
+	users := interfaces2.NewUsers(services.User, redisService.Auth, tk)
+	models := interfaces2.NewModel(services.Model, services.User, fd, redisService.Auth, tk)
+	authenticate := interfaces2.NewAuthenticate(services.User, redisService.Auth, tk)
 
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware())

@@ -1,10 +1,10 @@
 package interfaces
 
 import (
-	"etomne/application"
-	"etomne/domain/entities"
-	"etomne/infrastructure/auth"
-	"etomne/interfaces/fileupload"
+	application2 "etomne/backend/application"
+	"etomne/backend/domain/entities"
+	auth2 "etomne/backend/infrastructure/auth"
+	"etomne/backend/interfaces/fileupload"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -13,14 +13,14 @@ import (
 )
 
 type Model struct {
-	modelApp   application.ModelAppInterface
-	userApp    application.UserAppInterface
+	modelApp   application2.ModelAppInterface
+	userApp    application2.UserAppInterface
 	fileUpload fileupload.UploadFileInterface
-	rd         auth.AuthInterface
-	tk         auth.TokenInterface
+	rd         auth2.AuthInterface
+	tk         auth2.TokenInterface
 }
 
-func NewModel(mApp application.ModelAppInterface, uApp application.UserAppInterface, fd fileupload.UploadFileInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Model {
+func NewModel(mApp application2.ModelAppInterface, uApp application2.UserAppInterface, fd fileupload.UploadFileInterface, rd auth2.AuthInterface, tk auth2.TokenInterface) *Model {
 	return &Model{
 		modelApp:   mApp,
 		userApp:    uApp,

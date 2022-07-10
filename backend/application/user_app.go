@@ -1,8 +1,8 @@
 package application
 
 import (
-	"etomne/domain/entities"
-	"etomne/domain/repository"
+	"etomne/backend/domain/entities"
+	"etomne/backend/domain/repository"
 )
 
 type userApp struct {

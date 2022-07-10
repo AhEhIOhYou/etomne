@@ -1,6 +1,8 @@
 package repository
 
-import "etomne/domain/entities"
+import (
+	"etomne/backend/domain/entities"
+)
 
 type UserRepository interface {
 	SaveUser(*entities.User) (*entities.User, map[string]string)

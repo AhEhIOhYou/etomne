@@ -1,6 +1,8 @@
 package repository
 
-import "etomne/domain/entities"
+import (
+	"etomne/backend/domain/entities"
+)
 
 type ModelRepository interface {
 	SaveModel(*entities.Model) (*entities.Model, map[string]string)

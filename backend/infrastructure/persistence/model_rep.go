@@ -2,8 +2,8 @@ package persistence
 
 import (
 	"errors"
-	"etomne/domain/entities"
-	"etomne/domain/repository"
+	"etomne/backend/domain/entities"
+	"etomne/backend/domain/repository"
 	"gorm.io/gorm"
 	"os"
 	"strings"
