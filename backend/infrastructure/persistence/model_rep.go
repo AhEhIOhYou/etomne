@@ -5,7 +5,6 @@ import (
 	"etomne/backend/domain/entities"
 	"etomne/backend/domain/repository"
 	"gorm.io/gorm"
-	"os"
 	"strings"
 )
 
@@ -16,7 +15,6 @@ type ModelRepo struct {
 func (r *ModelRepo) SaveModel(model *entities.Model) (*entities.Model, map[string]string) {
 	dbErr := map[string]string{}
 	//The images are uploaded to digital ocean spaces. So we need to prepend the url. This might not be your use case, if you are not uploading image to Digital Ocean.
-	model.ModelFile = os.Getenv("upload/") + model.ModelFile
 
 	err := r.db.Debug().Create(&model).Error
 	if err != nil {

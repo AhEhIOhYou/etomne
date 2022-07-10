@@ -71,25 +71,27 @@ func (m *Model) SaveModel(c *gin.Context) {
 		return
 	}
 
-	file, err := c.FormFile("model_file")
-	if err != nil {
-		saveModelErr["invalid_file"] = "a valid file is required"
-		c.JSON(http.StatusUnprocessableEntity, err)
-		return
-	}
+	// В разработке
+	/*
+		file, err := c.FormFile("model_file")
+		if err != nil {
+			saveModelErr["invalid_file"] = "a valid file is required"
+			c.JSON(http.StatusUnprocessableEntity, err)
+			return
+		}
 
-	uploadedFile, err := m.fileUpload.UploadFile(file)
-	if err != nil {
-		saveModelErr["upload_err"] = err.Error()
-		c.JSON(http.StatusUnprocessableEntity, saveModelErr)
-		return
-	}
+		uploadedFile, err := m.fileUpload.UploadFile(file)
+		if err != nil {
+			saveModelErr["upload_err"] = err.Error()
+			c.JSON(http.StatusUnprocessableEntity, saveModelErr)
+			return
+		}
+	*/
 
 	var Model = entities.Model{
 		UserID:      userId,
 		Title:       title,
 		Description: description,
-		ModelFile:   uploadedFile,
 	}
 
 	saveModel, saveErr := m.modelApp.SaveModel(&Model)
