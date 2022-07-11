@@ -3,7 +3,7 @@ package interfaces
 import (
 	"etomne/backend/application"
 	"etomne/backend/domain/entities"
-	auth2 "etomne/backend/infrastructure/auth"
+	"etomne/backend/infrastructure/auth"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -14,11 +14,11 @@ import (
 
 type Authenticate struct {
 	us application.UserAppInterface
-	rd auth2.AuthInterface
-	tk auth2.TokenInterface
+	rd auth.AuthInterface
+	tk auth.TokenInterface
 }
 
-func NewAuthenticate(uApp application.UserAppInterface, rd auth2.AuthInterface, tk auth2.TokenInterface) *Authenticate {
+func NewAuthenticate(uApp application.UserAppInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Authenticate {
 	return &Authenticate{
 		us: uApp,
 		rd: rd,

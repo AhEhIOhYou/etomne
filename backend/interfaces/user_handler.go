@@ -3,7 +3,7 @@ package interfaces
 import (
 	"etomne/backend/application"
 	"etomne/backend/domain/entities"
-	auth2 "etomne/backend/infrastructure/auth"
+	"etomne/backend/infrastructure/auth"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -11,11 +11,11 @@ import (
 
 type Users struct {
 	us application.UserAppInterface
-	rd auth2.AuthInterface
-	tk auth2.TokenInterface
+	rd auth.AuthInterface
+	tk auth.TokenInterface
 }
 
-func NewUsers(us application.UserAppInterface, rd auth2.AuthInterface, tk auth2.TokenInterface) *Users {
+func NewUsers(us application.UserAppInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Users {
 	return &Users{
 		us: us,
 		rd: rd,
