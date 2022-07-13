@@ -13,7 +13,6 @@ type FileRepo struct {
 
 func (r *FileRepo) SaveFile(file *entities.File) (*entities.File, map[string]string) {
 	dbErr := map[string]string{}
-
 	err := r.db.Debug().Create(&file).Error
 	if err != nil {
 		dbErr["db_error"] = "database error"
@@ -36,19 +35,18 @@ func (r *FileRepo) GetFile(id uint64) (*entities.File, error) {
 
 func (r *FileRepo) GetFilesByModel(modelId uint64) ([]entities.File, error) {
 	var files []entities.File
-	err := r.db.Debug().Order("created_at desc").Find(&files).Where("model_id = ?", modelId).Error
-	if err != nil {
-		return nil, err
-	}
+	err := r.db.Debug().Joins("JOIN model_files on model_files.file_id=files.id").Where("model_files.model_id = ?", modelId).Find(&files).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("files not found")
+	}
+	if err != nil {
+		return nil, err
 	}
 	return files, nil
 }
 
 func (r *FileRepo) AddModelFile(mf *entities.ModelFile) (*entities.ModelFile, map[string]string) {
 	dbErr := map[string]string{}
-
 	err := r.db.Debug().Create(&mf).Error
 	if err != nil {
 		dbErr["db_error"] = "database error"

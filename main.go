@@ -19,7 +19,7 @@ import (
 )
 
 func init() {
-	if err := godotenv.Load("backend/configs/.env"); err != nil {
+	if err := godotenv.Load("/configs/.env"); err != nil {
 		log.Print("No .env file found")
 	}
 }
@@ -74,7 +74,7 @@ func main() {
 	{
 		m.POST("", middleware.AuthMiddleware(), models.SaveModel)
 		m.PUT("/:model_id", middleware.AuthMiddleware(), models.UpdateModel)
-		m.GET("/:model_id", models.GetModelAndAuthor)
+		m.GET("/:model_id", models.GetModel)
 		m.DELETE("/:model_id", middleware.AuthMiddleware(), models.DeleteModel)
 		m.GET("", models.GetAllModel)
 	}

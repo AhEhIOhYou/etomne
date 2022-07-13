@@ -158,7 +158,7 @@ func (m *Model) UpdateModel(c *gin.Context) {
 
 	userId, err := m.rd.FetchAuth(metadata.TokenUuid)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
+		c.JSON(http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
@@ -242,14 +242,14 @@ func (m *Model) GetAllModel(c *gin.Context) {
 	c.JSON(http.StatusOK, allModels)
 }
 
-// GetModelAndAuthor godoc
+// GetModel godoc
 // @Summary      Get model and author
 // @Description  Get model and author by ID model
 // @Tags         Models
 // @Param        id   path      string  true  "Model ID"
 // @Success      200  {object}  entities.Model
 // @Router       /model/{id} [get]
-func (m *Model) GetModelAndAuthor(c *gin.Context) {
+func (m *Model) GetModel(c *gin.Context) {
 	modelId, err := strconv.ParseUint(c.Param("model_id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, "invalid request")
@@ -265,11 +265,17 @@ func (m *Model) GetModelAndAuthor(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	foodAndUser := map[string]interface{}{
+	files, err := m.fileApp.GetFilesByModel(modelId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	Model := map[string]interface{}{
 		"model":  model,
 		"author": user.PublicUser(),
+		"files":  files,
 	}
-	c.JSON(http.StatusOK, foodAndUser)
+	c.JSON(http.StatusOK, Model)
 }
 
 func (m *Model) DeleteModel(c *gin.Context) {
