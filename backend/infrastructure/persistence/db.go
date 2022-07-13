@@ -1,9 +1,9 @@
 package persistence
 
 import (
-	"etomne/backend/domain/entities"
-	"etomne/backend/domain/repository"
 	"fmt"
+	"github.com/AhEhIOhYou/etomne/backend/domain/entities"
+	"github.com/AhEhIOhYou/etomne/backend/domain/repository"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

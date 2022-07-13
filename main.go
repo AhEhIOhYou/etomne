@@ -4,12 +4,12 @@ package main
 // swagger embed files
 
 import (
-	"etomne/backend/docs"
-	"etomne/backend/infrastructure/auth"
-	"etomne/backend/infrastructure/persistence"
-	"etomne/backend/interfaces"
-	"etomne/backend/interfaces/fileupload"
-	"etomne/backend/interfaces/middleware"
+	"github.com/AhEhIOhYou/etomne/backend/docs"
+	"github.com/AhEhIOhYou/etomne/backend/infrastructure/auth"
+	"github.com/AhEhIOhYou/etomne/backend/infrastructure/persistence"
+	"github.com/AhEhIOhYou/etomne/backend/interfaces"
+	"github.com/AhEhIOhYou/etomne/backend/interfaces/fileupload"
+	"github.com/AhEhIOhYou/etomne/backend/interfaces/middleware"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"

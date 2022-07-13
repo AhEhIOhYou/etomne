@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"etomne/backend/infrastructure/auth"
+	"github.com/AhEhIOhYou/etomne/backend/infrastructure/auth"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

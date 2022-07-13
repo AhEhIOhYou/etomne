@@ -2,9 +2,9 @@ package persistence
 
 import (
 	"errors"
-	"etomne/backend/domain/entities"
-	"etomne/backend/domain/repository"
-	"etomne/backend/infrastructure/security"
+	"github.com/AhEhIOhYou/etomne/backend/domain/entities"
+	"github.com/AhEhIOhYou/etomne/backend/domain/repository"
+	"github.com/AhEhIOhYou/etomne/backend/infrastructure/security"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"strings"

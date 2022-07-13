@@ -1,10 +1,10 @@
 package interfaces
 
 import (
-	"etomne/backend/application"
-	"etomne/backend/domain/entities"
-	"etomne/backend/infrastructure/auth"
 	"fmt"
+	"github.com/AhEhIOhYou/etomne/backend/application"
+	"github.com/AhEhIOhYou/etomne/backend/domain/entities"
+	"github.com/AhEhIOhYou/etomne/backend/infrastructure/auth"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"

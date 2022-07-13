@@ -1,8 +1,8 @@
 package application
 
 import (
-	"etomne/backend/domain/entities"
-	"etomne/backend/domain/repository"
+	"github.com/AhEhIOhYou/etomne/backend/domain/entities"
+	"github.com/AhEhIOhYou/etomne/backend/domain/repository"
 )
 
 type fileApp struct {

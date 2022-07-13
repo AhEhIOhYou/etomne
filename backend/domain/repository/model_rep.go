@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"etomne/backend/domain/entities"
+	"github.com/AhEhIOhYou/etomne/backend/domain/entities"
 )
 
 type ModelRepository interface {

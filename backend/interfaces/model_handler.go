@@ -1,11 +1,11 @@
 package interfaces
 
 import (
-	"etomne/backend/application"
-	"etomne/backend/domain/entities"
-	"etomne/backend/infrastructure/auth"
-	"etomne/backend/interfaces/fileupload"
 	"fmt"
+	"github.com/AhEhIOhYou/etomne/backend/application"
+	"github.com/AhEhIOhYou/etomne/backend/domain/entities"
+	"github.com/AhEhIOhYou/etomne/backend/infrastructure/auth"
+	"github.com/AhEhIOhYou/etomne/backend/interfaces/fileupload"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"

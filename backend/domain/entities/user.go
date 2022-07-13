@@ -1,7 +1,7 @@
 package entities
 
 import (
-	"etomne/backend/infrastructure/security"
+	"github.com/AhEhIOhYou/etomne/backend/infrastructure/security"
 	"github.com/badoux/checkmail"
 	"html"
 	"strings"
