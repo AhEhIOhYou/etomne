@@ -13,20 +13,22 @@ import (
 )
 
 type Model struct {
-	modelApp   application.ModelAppInterface
-	userApp    application.UserAppInterface
-	fileUpload fileupload.UploadFileInterface
-	rd         auth.AuthInterface
-	tk         auth.TokenInterface
+	modelApp application.ModelAppInterface
+	userApp  application.UserAppInterface
+	fileApp  application.FileAppInterface
+	fu       fileupload.UploadFileInterface
+	rd       auth.AuthInterface
+	tk       auth.TokenInterface
 }
 
-func NewModel(mApp application.ModelAppInterface, uApp application.UserAppInterface, fd fileupload.UploadFileInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Model {
+func NewModel(mApp application.ModelAppInterface, uApp application.UserAppInterface, fApp application.FileAppInterface, fu fileupload.UploadFileInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Model {
 	return &Model{
-		modelApp:   mApp,
-		userApp:    uApp,
-		fileUpload: fd,
-		rd:         rd,
-		tk:         tk,
+		modelApp: mApp,
+		userApp:  uApp,
+		fileApp:  fApp,
+		fu:       fu,
+		rd:       rd,
+		tk:       tk,
 	}
 }
 
@@ -49,7 +51,7 @@ func (m *Model) SaveModel(c *gin.Context) {
 		return
 	}
 
-	var saveModelErr = make(map[string]string)
+	//var saveModelErr = make(map[string]string)
 
 	title := c.PostForm("title")
 	description := c.PostForm("description")
@@ -65,10 +67,64 @@ func (m *Model) SaveModel(c *gin.Context) {
 		Description: description,
 	}
 
-	saveModelErr = emptyModel.Validate("")
+	saveModelErr := emptyModel.Validate("")
 	if len(saveModelErr) > 0 {
 		c.JSON(http.StatusUnprocessableEntity, saveModelErr)
 		return
+	}
+
+	var Model = entities.Model{
+		UserID:      userId,
+		Title:       title,
+		Description: description,
+	}
+
+	//Здесь начнется транзакция
+
+	saveModel, saveErr := m.modelApp.SaveModel(&Model)
+	if saveErr != nil {
+		c.JSON(http.StatusInternalServerError, saveErr)
+		return
+	}
+
+	files := c.Request.MultipartForm.File["attachments"]
+
+	for _, file := range files {
+
+		//Загрузка файла на сервер
+		url, err := m.fu.UploadFile(file)
+		if err != nil {
+			c.JSON(http.StatusUnprocessableEntity, err.Error())
+			return
+		}
+		if url == "" {
+			c.JSON(http.StatusUnprocessableEntity, "something went wrong")
+			return
+		}
+
+		//Добавление файла в бд files
+		File := entities.File{
+			Title: file.Filename,
+			Url:   url,
+		}
+
+		saveFile, saveModelErr := m.fileApp.SaveFile(&File)
+		if len(saveModelErr) > 0 {
+			c.JSON(http.StatusUnprocessableEntity, saveModelErr)
+			return
+		}
+
+		//Добавление файла и модельки в бд model_files
+		ModelFile := entities.ModelFile{
+			ModelId: saveModel.ID,
+			FileId:  saveFile.ID,
+		}
+
+		_, saveModelErr = m.fileApp.AddModelFile(&ModelFile)
+		if len(saveModelErr) > 0 {
+			c.JSON(http.StatusUnprocessableEntity, saveModelErr)
+			return
+		}
 	}
 
 	// В разработке
@@ -88,17 +144,8 @@ func (m *Model) SaveModel(c *gin.Context) {
 		}
 	*/
 
-	var Model = entities.Model{
-		UserID:      userId,
-		Title:       title,
-		Description: description,
-	}
+	//Здесь закончится транзакция
 
-	saveModel, saveErr := m.modelApp.SaveModel(&Model)
-	if saveErr != nil {
-		c.JSON(http.StatusInternalServerError, saveErr)
-		return
-	}
 	c.JSON(http.StatusCreated, saveModel)
 }
 

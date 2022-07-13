@@ -5,9 +5,9 @@ package main
 
 import (
 	"etomne/backend/docs"
-	auth2 "etomne/backend/infrastructure/auth"
+	"etomne/backend/infrastructure/auth"
 	"etomne/backend/infrastructure/persistence"
-	interfaces2 "etomne/backend/interfaces"
+	"etomne/backend/interfaces"
 	"etomne/backend/interfaces/fileupload"
 	"etomne/backend/interfaces/middleware"
 	"github.com/gin-gonic/gin"
@@ -45,17 +45,17 @@ func main() {
 
 	//services.Migrate()
 
-	redisService, err := auth2.NewRedisDb(redisHost, redisPort, redisPassword)
+	redisService, err := auth.NewRedisDb(redisHost, redisPort, redisPassword)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	tk := auth2.NewToken()
-	fd := fileupload.NewFileUpload()
+	tk := auth.NewToken()
+	fu := fileupload.NewFileUpload()
 
-	users := interfaces2.NewUsers(services.User, redisService.Auth, tk)
-	models := interfaces2.NewModel(services.Model, services.User, fd, redisService.Auth, tk)
-	authenticate := interfaces2.NewAuthenticate(services.User, redisService.Auth, tk)
+	users := interfaces.NewUsers(services.User, redisService.Auth, tk)
+	models := interfaces.NewModel(services.Model, services.User, services.File, fu, redisService.Auth, tk)
+	authenticate := interfaces.NewAuthenticate(services.User, redisService.Auth, tk)
 
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware())

@@ -33,11 +33,11 @@ func (r *ModelRepo) SaveModel(model *entities.Model) (*entities.Model, map[strin
 func (r *ModelRepo) GetModel(id uint64) (*entities.Model, error) {
 	var model entities.Model
 	err := r.db.Debug().Where("id = ?", id).Take(&model).Error
-	if err != nil {
-		return nil, errors.New("database error, please try again")
-	}
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("model not found")
+	}
+	if err != nil {
+		return nil, errors.New("database error, please try again")
 	}
 	return &model, nil
 }
@@ -45,11 +45,11 @@ func (r *ModelRepo) GetModel(id uint64) (*entities.Model, error) {
 func (r *ModelRepo) GetAllModel() ([]entities.Model, error) {
 	var models []entities.Model
 	err := r.db.Debug().Limit(100).Order("created_at desc").Find(&models).Error
-	if err != nil {
-		return nil, err
-	}
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("model not found")
+	}
+	if err != nil {
+		return nil, err
 	}
 	return models, nil
 }

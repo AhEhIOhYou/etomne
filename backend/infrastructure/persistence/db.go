@@ -11,6 +11,7 @@ import (
 type Repos struct {
 	User  repository.UserRepository
 	Model repository.ModelRepository
+	File  repository.FileRepository
 	db    *gorm.DB
 }
 
@@ -28,6 +29,7 @@ func NewRepo(DbUser, DbPassword, DbPort, DbHost, DbName string) (*Repos, error) 
 	return &Repos{
 		User:  NewUserRepo(db),
 		Model: NewModelRepo(db),
+		File:  NewFileRepo(db),
 		db:    db,
 	}, nil
 }
