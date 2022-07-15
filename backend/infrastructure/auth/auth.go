@@ -8,21 +8,8 @@ import (
 	"time"
 )
 
-type AuthInterface interface {
-	CreateAuth(uint64, *TokenDetails) error
-	FetchAuth(string) (uint64, error)
-	DeleteRefresh(string) error
-	DeleteTokens(*AccessDetails) error
-}
-
 type ClientData struct {
 	client *redis.Client
-}
-
-func NewAuth(client *redis.Client) *ClientData {
-	return &ClientData{
-		client: client,
-	}
 }
 
 type AccessDetails struct {
@@ -37,6 +24,21 @@ type TokenDetails struct {
 	RefreshUuid  string
 	AtExpires    int64
 	RtExpires    int64
+}
+
+var _ AuthInterface = &ClientData{}
+
+type AuthInterface interface {
+	CreateAuth(uint64, *TokenDetails) error
+	FetchAuth(string) (uint64, error)
+	DeleteRefresh(string) error
+	DeleteTokens(*AccessDetails) error
+}
+
+func NewAuth(client *redis.Client) *ClientData {
+	return &ClientData{
+		client: client,
+	}
 }
 
 func (tk *ClientData) CreateAuth(userId uint64, td *TokenDetails) error {
@@ -90,5 +92,3 @@ func (tk *ClientData) DeleteTokens(authD *AccessDetails) error {
 	}
 	return nil
 }
-
-var _ AuthInterface = &ClientData{}

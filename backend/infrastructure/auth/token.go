@@ -13,6 +13,17 @@ import (
 
 type Token struct{}
 
+var _ TokenInterface = &Token{}
+
+type TokenInterface interface {
+	CreateToken(userId uint64) (*TokenDetails, error)
+	ExtractTokenMetadata(r *http.Request) (*AccessDetails, error)
+}
+
+func NewToken() *Token {
+	return &Token{}
+}
+
 func (t Token) CreateToken(userId uint64) (*TokenDetails, error) {
 	td := &TokenDetails{
 		TokenUuid: uuid.NewV4().String(),
@@ -106,14 +117,3 @@ func ExtractToken(r *http.Request) string {
 	}
 	return ""
 }
-
-func NewToken() *Token {
-	return &Token{}
-}
-
-type TokenInterface interface {
-	CreateToken(userId uint64) (*TokenDetails, error)
-	ExtractTokenMetadata(r *http.Request) (*AccessDetails, error)
-}
-
-var _ TokenInterface = &Token{}

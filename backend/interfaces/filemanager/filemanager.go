@@ -10,6 +10,17 @@ import (
 
 type fileManager struct{}
 
+var _ ManagerFileInterface = &fileManager{}
+
+type ManagerFileInterface interface {
+	UploadFile(file *multipart.FileHeader) (string, error)
+	DeleteFile(path string) error
+}
+
+func NewFileUpload() *fileManager {
+	return &fileManager{}
+}
+
 func (fu *fileManager) UploadFile(file *multipart.FileHeader) (string, error) {
 	newFileName := security.CreateName(file.Filename)
 	fileExtension := filepath.Ext(file.Filename)
@@ -40,14 +51,3 @@ func (fu *fileManager) DeleteFile(path string) error {
 	}
 	return nil
 }
-
-func NewFileUpload() *fileManager {
-	return &fileManager{}
-}
-
-type ManagerFileInterface interface {
-	UploadFile(file *multipart.FileHeader) (string, error)
-	DeleteFile(path string) error
-}
-
-var _ ManagerFileInterface = &fileManager{}

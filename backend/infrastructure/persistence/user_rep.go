@@ -14,6 +14,14 @@ type UserRepo struct {
 	db *gorm.DB
 }
 
+var _ repository.UserRepository = &UserRepo{}
+
+func NewUserRepo(db *gorm.DB) *UserRepo {
+	return &UserRepo{
+		db: db,
+	}
+}
+
 func (r *UserRepo) SaveUser(user *entities.User) (*entities.User, map[string]string) {
 	dbErr := map[string]string{}
 	err := r.db.Debug().Create(&user).Error
@@ -72,11 +80,3 @@ func (r *UserRepo) GetUserByEmailAndPassword(u *entities.User) (*entities.User, 
 	}
 	return &user, nil
 }
-
-func NewUserRepo(db *gorm.DB) *UserRepo {
-	return &UserRepo{
-		db: db,
-	}
-}
-
-var _ repository.UserRepository = &UserRepo{}

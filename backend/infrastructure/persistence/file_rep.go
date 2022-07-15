@@ -11,13 +11,13 @@ type FileRepo struct {
 	db *gorm.DB
 }
 
+var _ repository.FileRepository = &FileRepo{}
+
 func NewFileRepo(db *gorm.DB) *FileRepo {
 	return &FileRepo{
 		db: db,
 	}
 }
-
-var _ repository.FileRepository = &FileRepo{}
 
 func (r *FileRepo) SaveFile(file *entities.File) (*entities.File, map[string]string) {
 	dbErr := map[string]string{}

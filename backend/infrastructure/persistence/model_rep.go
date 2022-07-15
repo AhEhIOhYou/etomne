@@ -12,13 +12,13 @@ type ModelRepo struct {
 	db *gorm.DB
 }
 
+var _ repository.ModelRepository = &ModelRepo{}
+
 func NewModelRepo(db *gorm.DB) *ModelRepo {
 	return &ModelRepo{
 		db: db,
 	}
 }
-
-var _ repository.ModelRepository = &ModelRepo{}
 
 func (r *ModelRepo) SaveModel(model *entities.Model) (*entities.Model, map[string]string) {
 	dbErr := map[string]string{}

@@ -9,20 +9,20 @@ type modelApp struct {
 	md repository.ModelRepository
 }
 
-func (m *modelApp) CheckAvailability(fileId uint64, userId uint64) (bool, error) {
-	return m.md.CheckAvailability(fileId, userId)
-}
+var _ ModelAppInterface = &modelApp{}
 
-func (m *modelApp) GetFilesByModel(modelId uint64) ([]entities.File, error) {
-	return m.md.GetFilesByModel(modelId)
-}
+type ModelAppInterface interface {
+	SaveModel(*entities.Model) (*entities.Model, map[string]string)
+	GetAllModel() ([]entities.Model, error)
+	GetModel(uint64) (*entities.Model, error)
+	UpdateModel(*entities.Model) (*entities.Model, map[string]string)
+	DeleteModel(uint64) error
 
-func (m *modelApp) AddModelFile(file *entities.ModelFile) (*entities.ModelFile, map[string]string) {
-	return m.md.AddModelFile(file)
-}
+	GetFilesByModel(uint64) ([]entities.File, error)
+	AddModelFile(*entities.ModelFile) (*entities.ModelFile, map[string]string)
+	DeleteModelFile(uint64) error
 
-func (m *modelApp) DeleteModelFile(fileId uint64) error {
-	return m.md.DeleteModelFile(fileId)
+	CheckAvailability(uint64, uint64) (bool, error)
 }
 
 func (m *modelApp) SaveModel(model *entities.Model) (*entities.Model, map[string]string) {
@@ -45,18 +45,18 @@ func (m *modelApp) DeleteModel(modelId uint64) error {
 	return m.md.DeleteModel(modelId)
 }
 
-var _ ModelAppInterface = &modelApp{}
+func (m *modelApp) GetFilesByModel(modelId uint64) ([]entities.File, error) {
+	return m.md.GetFilesByModel(modelId)
+}
 
-type ModelAppInterface interface {
-	SaveModel(*entities.Model) (*entities.Model, map[string]string)
-	GetAllModel() ([]entities.Model, error)
-	GetModel(uint64) (*entities.Model, error)
-	UpdateModel(*entities.Model) (*entities.Model, map[string]string)
-	DeleteModel(uint64) error
+func (m *modelApp) AddModelFile(file *entities.ModelFile) (*entities.ModelFile, map[string]string) {
+	return m.md.AddModelFile(file)
+}
 
-	GetFilesByModel(uint64) ([]entities.File, error)
-	AddModelFile(*entities.ModelFile) (*entities.ModelFile, map[string]string)
-	DeleteModelFile(uint64) error
+func (m *modelApp) DeleteModelFile(fileId uint64) error {
+	return m.md.DeleteModelFile(fileId)
+}
 
-	CheckAvailability(uint64, uint64) (bool, error)
+func (m *modelApp) CheckAvailability(fileId uint64, userId uint64) (bool, error) {
+	return m.md.CheckAvailability(fileId, userId)
 }

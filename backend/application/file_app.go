@@ -9,12 +9,13 @@ type fileApp struct {
 	fl repository.FileRepository
 }
 
-func (f *fileApp) DeleteFile(fileId uint64) error {
-	return f.fl.DeleteFile(fileId)
-}
+var _ FileAppInterface = &fileApp{}
 
-func (f *fileApp) UpdateFile(file *entities.File) (*entities.File, map[string]string) {
-	return f.fl.UpdateFile(file)
+type FileAppInterface interface {
+	SaveFile(*entities.File) (*entities.File, map[string]string)
+	GetFile(uint64) (*entities.File, error)
+	UpdateFile(file *entities.File) (*entities.File, map[string]string)
+	DeleteFile(uint64) error
 }
 
 func (f *fileApp) SaveFile(file *entities.File) (*entities.File, map[string]string) {
@@ -25,11 +26,10 @@ func (f *fileApp) GetFile(fileId uint64) (*entities.File, error) {
 	return f.fl.GetFile(fileId)
 }
 
-var _ FileAppInterface = &fileApp{}
+func (f *fileApp) UpdateFile(file *entities.File) (*entities.File, map[string]string) {
+	return f.fl.UpdateFile(file)
+}
 
-type FileAppInterface interface {
-	SaveFile(*entities.File) (*entities.File, map[string]string)
-	GetFile(uint64) (*entities.File, error)
-	UpdateFile(file *entities.File) (*entities.File, map[string]string)
-	DeleteFile(uint64) error
+func (f *fileApp) DeleteFile(fileId uint64) error {
+	return f.fl.DeleteFile(fileId)
 }

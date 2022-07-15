@@ -6,10 +6,10 @@ import (
 
 type ModelRepository interface {
 	SaveModel(*entities.Model) (*entities.Model, map[string]string)
-	GetModel(uint642 uint64) (*entities.Model, error)
+	GetModel(uint64) (*entities.Model, error)
 	GetAllModel() ([]entities.Model, error)
 	UpdateModel(*entities.Model) (*entities.Model, map[string]string)
-	DeleteModel(uint642 uint64) error
+	DeleteModel(uint64) error
 
 	GetFilesByModel(uint64) ([]entities.File, error)
 	AddModelFile(*entities.ModelFile) (*entities.ModelFile, map[string]string)
