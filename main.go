@@ -82,7 +82,7 @@ func main() {
 
 	f := r.Group("/file")
 	{
-		f.POST("/:file_id", files.SaveFile)
+		f.POST("", files.SaveFile)
 		f.DELETE("/:file_id", files.RemoveFile)
 	}
 
