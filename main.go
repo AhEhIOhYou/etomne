@@ -61,7 +61,7 @@ func main() {
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware())
 
-	u := r.Group("/users")
+	u := r.Group("api/users")
 	{
 		u.POST("", users.SaveUser)
 		u.GET("", users.GetUsers)
@@ -71,7 +71,7 @@ func main() {
 		u.POST("/refresh", authenticate.Refresh)
 	}
 
-	m := r.Group("/model")
+	m := r.Group("api/model")
 	{
 		m.POST("", middleware.AuthMiddleware(), models.SaveModel)
 		m.PUT("/:model_id", middleware.AuthMiddleware(), models.UpdateModel)
@@ -80,7 +80,7 @@ func main() {
 		m.GET("", models.GetAllModel)
 	}
 
-	f := r.Group("/file")
+	f := r.Group("api/file")
 	{
 		f.POST("", files.SaveFile)
 		f.DELETE("/:file_id", files.RemoveFile)
