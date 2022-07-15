@@ -35,6 +35,9 @@ type modelId struct {
 
 func (f *File) SaveFile(c *gin.Context) {
 
+}
+
+func (f *File) RemoveFile(c *gin.Context) {
 	metadata, err := f.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, "unauthorized")
@@ -59,14 +62,6 @@ func (f *File) SaveFile(c *gin.Context) {
 		return
 	}
 
-	var mId modelId
-	if err := c.ShouldBindJSON(&mId); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"invalid_json": "invalid_json",
-		})
-		return
-	}
-
 	isAvaliable, err := f.modelApp.CheckAvailability(fileId, userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
@@ -77,41 +72,34 @@ func (f *File) SaveFile(c *gin.Context) {
 		return
 	}
 
-	/*
-		file, err := f.fileApp.GetFile(fileId)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
-			return
-		}
+	file, err := f.fileApp.GetFile(fileId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
 
-		//Удалить файл с бд
-		err = f.fileApp.DeleteFile(file.ID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
-			return
-		}
+	//Отвязать файл от модели
+	err = f.modelApp.DeleteModelFile(file.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
 
-		//Удалить файл с хранилища
-		err = f.fm.DeleteFile(file.Url)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
-			return
-		}
+	//Удалить файл с бд
+	err = f.fileApp.DeleteFile(file.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
 
-		//Отвязать файл от модели
-		err = f.modelApp.DeleteModelFile(file.ID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
-			return
-		}
-	*/
+	//Удалить файл с хранилища
+	err = f.fm.DeleteFile(file.Url)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"file id":  fileId,
-		"model_id": mId.ModelId,
+		"file": file,
 	})
-}
-
-func (f *File) RemoveFile(c *gin.Context) {
-
 }
