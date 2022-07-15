@@ -5,7 +5,7 @@ import (
 	"github.com/AhEhIOhYou/etomne/backend/application"
 	"github.com/AhEhIOhYou/etomne/backend/domain/entities"
 	"github.com/AhEhIOhYou/etomne/backend/infrastructure/auth"
-	"github.com/AhEhIOhYou/etomne/backend/interfaces/fileupload"
+	"github.com/AhEhIOhYou/etomne/backend/interfaces/filemanager"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -16,17 +16,17 @@ type Model struct {
 	modelApp application.ModelAppInterface
 	userApp  application.UserAppInterface
 	fileApp  application.FileAppInterface
-	fu       fileupload.UploadFileInterface
+	fm       filemanager.ManagerFileInterface
 	rd       auth.AuthInterface
 	tk       auth.TokenInterface
 }
 
-func NewModel(mApp application.ModelAppInterface, uApp application.UserAppInterface, fApp application.FileAppInterface, fu fileupload.UploadFileInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Model {
+func NewModel(mApp application.ModelAppInterface, uApp application.UserAppInterface, fApp application.FileAppInterface, fm filemanager.ManagerFileInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Model {
 	return &Model{
 		modelApp: mApp,
 		userApp:  uApp,
 		fileApp:  fApp,
-		fu:       fu,
+		fm:       fm,
 		rd:       rd,
 		tk:       tk,
 	}
@@ -92,7 +92,7 @@ func (m *Model) SaveModel(c *gin.Context) {
 	for _, file := range files {
 
 		//Загрузка файла на сервер
-		url, err := m.fu.UploadFile(file)
+		url, err := m.fm.UploadFile(file)
 		if err != nil {
 			c.JSON(http.StatusUnprocessableEntity, err.Error())
 			return
@@ -120,29 +120,12 @@ func (m *Model) SaveModel(c *gin.Context) {
 			FileId:  saveFile.ID,
 		}
 
-		_, saveModelErr = m.fileApp.AddModelFile(&ModelFile)
+		_, saveModelErr = m.modelApp.AddModelFile(&ModelFile)
 		if len(saveModelErr) > 0 {
 			c.JSON(http.StatusUnprocessableEntity, saveModelErr)
 			return
 		}
 	}
-
-	// В разработке
-	/*
-		file, err := c.FormFile("model_file")
-		if err != nil {
-			saveModelErr["invalid_file"] = "a valid file is required"
-			c.JSON(http.StatusUnprocessableEntity, err)
-			return
-		}
-
-		uploadedFile, err := m.fileUpload.UploadFile(file)
-		if err != nil {
-			saveModelErr["upload_err"] = err.Error()
-			c.JSON(http.StatusUnprocessableEntity, saveModelErr)
-			return
-		}
-	*/
 
 	//Здесь закончится транзакция
 
@@ -205,23 +188,6 @@ func (m *Model) UpdateModel(c *gin.Context) {
 		return
 	}
 
-	// В разработке
-	//file, _ := c.FormFile("model_file")
-
-	/*
-		if file != nil {
-			model.ModelFile, err = m.fileUpload.UploadFile(file)
-
-			model.ModelFile = os.Getenv("DO_SPACES_URL") + model.ModelFile
-			if err != nil {
-				c.JSON(http.StatusUnprocessableEntity, gin.H{
-					"upload_err": err.Error(),
-				})
-				return
-			}
-		}
-	*/
-
 	model.Title = title
 	model.Description = description
 	model.UpdatedAt = time.Now()
@@ -243,8 +209,8 @@ func (m *Model) GetAllModel(c *gin.Context) {
 }
 
 // GetModel godoc
-// @Summary      Get model and author
-// @Description  Get model and author by ID model
+// @Summary      Get model
+// @Description  Get model by ID
 // @Tags         Models
 // @Param        id   path      string  true  "Model ID"
 // @Success      200  {object}  entities.Model
@@ -265,7 +231,7 @@ func (m *Model) GetModel(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	files, err := m.fileApp.GetFilesByModel(modelId)
+	files, err := m.modelApp.GetFilesByModel(modelId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return

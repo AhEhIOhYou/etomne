@@ -8,7 +8,7 @@ import (
 	"github.com/AhEhIOhYou/etomne/backend/infrastructure/auth"
 	"github.com/AhEhIOhYou/etomne/backend/infrastructure/persistence"
 	"github.com/AhEhIOhYou/etomne/backend/interfaces"
-	"github.com/AhEhIOhYou/etomne/backend/interfaces/fileupload"
+	"github.com/AhEhIOhYou/etomne/backend/interfaces/filemanager"
 	"github.com/AhEhIOhYou/etomne/backend/interfaces/middleware"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -19,7 +19,7 @@ import (
 )
 
 func init() {
-	if err := godotenv.Load("/configs/.env"); err != nil {
+	if err := godotenv.Load("configs/.env"); err != nil {
 		log.Print("No .env file found")
 	}
 }
@@ -51,10 +51,11 @@ func main() {
 	}
 
 	tk := auth.NewToken()
-	fu := fileupload.NewFileUpload()
+	fm := filemanager.NewFileUpload()
 
 	users := interfaces.NewUsers(services.User, redisService.Auth, tk)
-	models := interfaces.NewModel(services.Model, services.User, services.File, fu, redisService.Auth, tk)
+	models := interfaces.NewModel(services.Model, services.User, services.File, fm, redisService.Auth, tk)
+	files := interfaces.NewFile(services.Model, services.User, services.File, fm, redisService.Auth, tk)
 	authenticate := interfaces.NewAuthenticate(services.User, redisService.Auth, tk)
 
 	r := gin.Default()
@@ -77,6 +78,12 @@ func main() {
 		m.GET("/:model_id", models.GetModel)
 		m.DELETE("/:model_id", middleware.AuthMiddleware(), models.DeleteModel)
 		m.GET("", models.GetAllModel)
+	}
+
+	f := r.Group("/file")
+	{
+		f.POST("/:file_id", files.SaveFile)
+		f.DELETE("/:file_id", files.RemoveFile)
 	}
 
 	// programmatically set swagger info

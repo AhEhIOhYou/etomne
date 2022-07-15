@@ -11,6 +11,14 @@ type FileRepo struct {
 	db *gorm.DB
 }
 
+func NewFileRepo(db *gorm.DB) *FileRepo {
+	return &FileRepo{
+		db: db,
+	}
+}
+
+var _ repository.FileRepository = &FileRepo{}
+
 func (r *FileRepo) SaveFile(file *entities.File) (*entities.File, map[string]string) {
 	dbErr := map[string]string{}
 	err := r.db.Debug().Create(&file).Error
@@ -33,32 +41,21 @@ func (r *FileRepo) GetFile(id uint64) (*entities.File, error) {
 	return &file, nil
 }
 
-func (r *FileRepo) GetFilesByModel(modelId uint64) ([]entities.File, error) {
-	var files []entities.File
-	err := r.db.Debug().Joins("JOIN model_files on model_files.file_id=files.id").Where("model_files.model_id = ?", modelId).Find(&files).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, errors.New("files not found")
-	}
-	if err != nil {
-		return nil, err
-	}
-	return files, nil
-}
-
-func (r *FileRepo) AddModelFile(mf *entities.ModelFile) (*entities.ModelFile, map[string]string) {
+func (r *FileRepo) UpdateFile(file *entities.File) (*entities.File, map[string]string) {
 	dbErr := map[string]string{}
-	err := r.db.Debug().Create(&mf).Error
+	err := r.db.Debug().Save(&file).Error
 	if err != nil {
 		dbErr["db_error"] = "database error"
 		return nil, dbErr
 	}
-	return mf, nil
+	return file, nil
 }
 
-func NewFileRepo(db *gorm.DB) *FileRepo {
-	return &FileRepo{
-		db: db,
+func (r *FileRepo) DeleteFile(id uint64) error {
+	var file entities.File
+	err := r.db.Debug().Where("id = ?", id).Delete(&file).Error
+	if err != nil {
+		return errors.New("database error, please try again")
 	}
+	return nil
 }
-
-var _ repository.FileRepository = &FileRepo{}

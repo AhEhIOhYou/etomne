@@ -12,6 +12,14 @@ type ModelRepo struct {
 	db *gorm.DB
 }
 
+func NewModelRepo(db *gorm.DB) *ModelRepo {
+	return &ModelRepo{
+		db: db,
+	}
+}
+
+var _ repository.ModelRepository = &ModelRepo{}
+
 func (r *ModelRepo) SaveModel(model *entities.Model) (*entities.Model, map[string]string) {
 	dbErr := map[string]string{}
 	//The images are uploaded to digital ocean spaces. So we need to prepend the url. This might not be your use case, if you are not uploading image to Digital Ocean.
@@ -79,10 +87,48 @@ func (r *ModelRepo) DeleteModel(id uint64) error {
 	return nil
 }
 
-func NewModelRepo(db *gorm.DB) *ModelRepo {
-	return &ModelRepo{
-		db: db,
+func (r *ModelRepo) GetFilesByModel(modelId uint64) ([]entities.File, error) {
+	var files []entities.File
+	err := r.db.Debug().Joins("JOIN model_files on model_files.file_id=files.id").Where("model_files.model_id = ?", modelId).Find(&files).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errors.New("files not found")
 	}
+	if err != nil {
+		return nil, err
+	}
+	return files, nil
 }
 
-var _ repository.ModelRepository = &ModelRepo{}
+func (r *ModelRepo) AddModelFile(mf *entities.ModelFile) (*entities.ModelFile, map[string]string) {
+	dbErr := map[string]string{}
+	err := r.db.Debug().Create(&mf).Error
+	if err != nil {
+		dbErr["db_error"] = "database error"
+		return nil, dbErr
+	}
+	return mf, nil
+}
+
+func (r *ModelRepo) DeleteModelFile(fileId uint64) error {
+	var fModel entities.ModelFile
+	err := r.db.Debug().Table("model_files").Where("file_id = ?", fileId).Delete(&fModel).Error
+	if err != nil {
+		return errors.New("database error, please try again")
+	}
+	return nil
+}
+
+func (r *ModelRepo) CheckAvailability(fileId uint64, userId uint64) (bool, error) {
+	var result int
+	rows := r.db.Table("models as m").
+		Select("COUNT(f.id)").
+		Joins("join model_files as mf on mf.model_id = m.id").
+		Joins("join files as f on f.id = mf.file_id").
+		Where("m.user_id = ? AND f.id = ?", userId, fileId).Limit(1).Row()
+
+	if err := rows.Scan(&result); err != nil {
+		return false, err
+	}
+
+	return result == 1, nil
+}
