@@ -34,15 +34,17 @@ func NewModel(mApp application.ModelAppInterface, uApp application.UserAppInterf
 
 // SaveModel godoc
 // @Summary      Save model
-// @Description  Save new model
 // @Tags         Model
-// @Param        title   body      string  true  "Model Title"
-// @Param        description   body      string  true  "Model Description"
+// @Accept       mpfd
+// @Produce      json
+// @Param        title		   formData      string  true  "Model Title"
+// @Param        description   formData      string  true  "Model Description"
+// @Param        attachments   formData      file	 false "Model Files"		Format(binary)
 // @Success      201  {object}  entities.Model
-// @Failure      401  {object}  string
-// @Failure      400  {object}  string
-// @Failure      422  {object}  string
-// @Failure      500  {object}  string
+// @Failure      401  string  unauthorized
+// @Failure      400  string  user not found, unauthorized
+// @Failure      422  string  error
+// @Failure      500  string  error
 // @Router       /model [post]
 // @Security	 bearerAuth
 func (m *Model) SaveModel(c *gin.Context) {
@@ -99,61 +101,63 @@ func (m *Model) SaveModel(c *gin.Context) {
 	}
 
 	files := c.Request.MultipartForm.File["attachments"]
+	if len(files) > 0 {
+		for _, file := range files {
 
-	for _, file := range files {
+			//Загрузка файла на сервер
+			url, err := m.fm.UploadFile(file)
+			if err != nil {
+				c.JSON(http.StatusUnprocessableEntity, err.Error())
+				return
+			}
+			if url == "" {
+				c.JSON(http.StatusUnprocessableEntity, "something went wrong")
+				return
+			}
 
-		//Загрузка файла на сервер
-		url, err := m.fm.UploadFile(file)
-		if err != nil {
-			c.JSON(http.StatusUnprocessableEntity, err.Error())
-			return
-		}
-		if url == "" {
-			c.JSON(http.StatusUnprocessableEntity, "something went wrong")
-			return
-		}
+			//Добавление файла в бд files
+			File := entities.File{
+				Title: file.Filename,
+				Url:   url,
+			}
 
-		//Добавление файла в бд files
-		File := entities.File{
-			Title: file.Filename,
-			Url:   url,
-		}
+			saveFile, saveModelErr := m.fileApp.SaveFile(&File)
+			if len(saveModelErr) > 0 {
+				c.JSON(http.StatusUnprocessableEntity, saveModelErr)
+				return
+			}
 
-		saveFile, saveModelErr := m.fileApp.SaveFile(&File)
-		if len(saveModelErr) > 0 {
-			c.JSON(http.StatusUnprocessableEntity, saveModelErr)
-			return
-		}
+			//Добавление файла и модельки в бд model_files
+			ModelFile := entities.ModelFile{
+				ModelId: saveModel.ID,
+				FileId:  saveFile.ID,
+			}
 
-		//Добавление файла и модельки в бд model_files
-		ModelFile := entities.ModelFile{
-			ModelId: saveModel.ID,
-			FileId:  saveFile.ID,
-		}
-
-		_, saveModelErr = m.modelApp.AddModelFile(&ModelFile)
-		if len(saveModelErr) > 0 {
-			c.JSON(http.StatusUnprocessableEntity, saveModelErr)
-			return
+			_, saveModelErr = m.modelApp.AddModelFile(&ModelFile)
+			if len(saveModelErr) > 0 {
+				c.JSON(http.StatusUnprocessableEntity, saveModelErr)
+				return
+			}
 		}
 	}
 
 	c.JSON(http.StatusCreated, saveModel)
 }
 
-// UpdateModel	 godoc
+// UpdateModel godoc
 // @Summary      Update model
-// @Description  Update model by ID
 // @Tags         Model
-// @Param        title			body	string  true  "Model Title"
-// @Param        description	body	string  true  "Model Description"
-// @Success      200  {array}  entities.Model
-// @Failure      401  {object}  string
-// @Failure      400  {object}  string
-// @Failure      404  {object}  string
-// @Failure      422  {object}  string
-// @Failure      500  {object}  string
-// @Router       /model [put]
+// @Accept       mpfd
+// @Produce      json
+// @Param        id		   	   path      string  true  "Model ID"
+// @Param        title		   formData  string  true  "Model Title"
+// @Param        description   formData  string  true  "Model Description"
+// @Success      201  {object}  entities.Model
+// @Failure      401  string  unauthorized
+// @Failure      400  string  invalid request
+// @Failure      422  string  error
+// @Failure      500  string  error
+// @Router       /model/{id} [put]
 // @Security	 bearerAuth
 func (m *Model) UpdateModel(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
@@ -227,9 +231,13 @@ func (m *Model) UpdateModel(c *gin.Context) {
 
 // GetAllModel godoc
 // @Summary      Get all models
-// @Description  Get all models
 // @Tags         Model
+// @Produce      json
 // @Success      200  {array}  entities.Model
+// @Failure      401  string  unauthorized
+// @Failure      400  string  invalid request
+// @Failure      422  string  error
+// @Failure      500  string  error
 // @Router       /model [get]
 func (m *Model) GetAllModel(c *gin.Context) {
 	allModels, err := m.modelApp.GetAllModel()
@@ -242,10 +250,13 @@ func (m *Model) GetAllModel(c *gin.Context) {
 
 // GetModel godoc
 // @Summary      Get model
-// @Description  Get model by ID
 // @Tags         Model
 // @Param        id   path      string  true  "Model ID"
 // @Success      200  {object}  entities.Model
+// @Failure      401  string  unauthorized
+// @Failure      400  string  invalid request
+// @Failure      422  string  error
+// @Failure      500  string  error
 // @Router       /model/{id} [get]
 func (m *Model) GetModel(c *gin.Context) {
 	modelId, err := strconv.ParseUint(c.Param("model_id"), 10, 64)
@@ -278,12 +289,14 @@ func (m *Model) GetModel(c *gin.Context) {
 
 // DeleteModel godoc
 // @Summary      Delete model
-// @Description  Delete model by ID
 // @Tags         Model
 // @Param        id   path      string  true  "Model ID"
-// @Success      200  {object}  string
+// @Success      200  {string} string  model deleted
+// @Failure      401  string  unauthorized
+// @Failure      400  string  invalid request
+// @Failure      422  string  error
+// @Failure      500  string  error
 // @Router       /model/{id} [delete]
-// @Security	 bearerAuth
 func (m *Model) DeleteModel(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {

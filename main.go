@@ -31,6 +31,13 @@ securitySchemes:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+openapi: 3.0.1
+info:
+  title: "aaaa"
+  version: 1.0.0
+servers:
+- url: https://modelshowtime.serdcebolit.ru/api
 */
 func main() {
 
