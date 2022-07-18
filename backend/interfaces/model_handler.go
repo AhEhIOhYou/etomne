@@ -32,6 +32,19 @@ func NewModel(mApp application.ModelAppInterface, uApp application.UserAppInterf
 	}
 }
 
+// SaveModel godoc
+// @Summary      Save model
+// @Description  Save new model
+// @Tags         Model
+// @Param        title   body      string  true  "Model Title"
+// @Param        description   body      string  true  "Model Description"
+// @Success      201  {object}  entities.Model
+// @Failure      401  {object}  string
+// @Failure      400  {object}  string
+// @Failure      422  {object}  string
+// @Failure      500  {object}  string
+// @Router       /model [post]
+// @Security	 bearerAuth
 func (m *Model) SaveModel(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
@@ -128,6 +141,20 @@ func (m *Model) SaveModel(c *gin.Context) {
 	c.JSON(http.StatusCreated, saveModel)
 }
 
+// UpdateModel	 godoc
+// @Summary      Update model
+// @Description  Update model by ID
+// @Tags         Model
+// @Param        title			body	string  true  "Model Title"
+// @Param        description	body	string  true  "Model Description"
+// @Success      200  {array}  entities.Model
+// @Failure      401  {object}  string
+// @Failure      400  {object}  string
+// @Failure      404  {object}  string
+// @Failure      422  {object}  string
+// @Failure      500  {object}  string
+// @Router       /model [put]
+// @Security	 bearerAuth
 func (m *Model) UpdateModel(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
@@ -198,6 +225,12 @@ func (m *Model) UpdateModel(c *gin.Context) {
 	c.JSON(http.StatusOK, updatedModel)
 }
 
+// GetAllModel godoc
+// @Summary      Get all models
+// @Description  Get all models
+// @Tags         Model
+// @Success      200  {array}  entities.Model
+// @Router       /model [get]
 func (m *Model) GetAllModel(c *gin.Context) {
 	allModels, err := m.modelApp.GetAllModel()
 	if err != nil {
@@ -210,7 +243,7 @@ func (m *Model) GetAllModel(c *gin.Context) {
 // GetModel godoc
 // @Summary      Get model
 // @Description  Get model by ID
-// @Tags         Models
+// @Tags         Model
 // @Param        id   path      string  true  "Model ID"
 // @Success      200  {object}  entities.Model
 // @Router       /model/{id} [get]
@@ -243,6 +276,14 @@ func (m *Model) GetModel(c *gin.Context) {
 	c.JSON(http.StatusOK, Model)
 }
 
+// DeleteModel godoc
+// @Summary      Delete model
+// @Description  Delete model by ID
+// @Tags         Model
+// @Param        id   path      string  true  "Model ID"
+// @Success      200  {object}  string
+// @Router       /model/{id} [delete]
+// @Security	 bearerAuth
 func (m *Model) DeleteModel(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {

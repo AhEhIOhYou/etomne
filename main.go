@@ -4,12 +4,12 @@ package main
 // swagger embed files
 
 import (
-	"github.com/AhEhIOhYou/etomne/backend/docs"
 	"github.com/AhEhIOhYou/etomne/backend/infrastructure/auth"
 	"github.com/AhEhIOhYou/etomne/backend/infrastructure/persistence"
 	"github.com/AhEhIOhYou/etomne/backend/interfaces"
 	"github.com/AhEhIOhYou/etomne/backend/interfaces/filemanager"
 	"github.com/AhEhIOhYou/etomne/backend/interfaces/middleware"
+	"github.com/AhEhIOhYou/etomne/docs"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
@@ -24,6 +24,14 @@ func init() {
 	}
 }
 
+/*
+to swagger.yaml in components add
+securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+*/
 func main() {
 
 	//Main DB vars
@@ -90,7 +98,7 @@ func main() {
 	docs.SwaggerInfo.Title = "Swagger Models API"
 	docs.SwaggerInfo.Description = "This is documentation"
 	docs.SwaggerInfo.Version = "0.3"
-	docs.SwaggerInfo.Host = "localhost:8093"
+	docs.SwaggerInfo.Host = "localhost:8093/api"
 	docs.SwaggerInfo.BasePath = ""
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
