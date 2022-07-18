@@ -18,6 +18,7 @@ type Model struct {
 
 func (m *Model) BeforeSave() {
 	m.Title = html.EscapeString(strings.TrimSpace(m.Title))
+	m.Description = html.EscapeString(strings.TrimSpace(m.Description))
 }
 
 func (m *Model) Prepare() {

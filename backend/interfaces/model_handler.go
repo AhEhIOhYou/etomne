@@ -56,9 +56,7 @@ func (m *Model) SaveModel(c *gin.Context) {
 	title := c.PostForm("title")
 	description := c.PostForm("description")
 	if fmt.Sprintf("%T", title) != "string" || fmt.Sprintf("%T", description) != "string" {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"invalid_json": "Invalid json",
-		})
+		c.JSON(http.StatusUnprocessableEntity, "invalid_json")
 		return
 	}
 
@@ -79,7 +77,7 @@ func (m *Model) SaveModel(c *gin.Context) {
 		Description: description,
 	}
 
-	//Здесь начнется транзакция
+	Model.Prepare()
 
 	saveModel, saveErr := m.modelApp.SaveModel(&Model)
 	if saveErr != nil {
@@ -126,8 +124,6 @@ func (m *Model) SaveModel(c *gin.Context) {
 			return
 		}
 	}
-
-	//Здесь закончится транзакция
 
 	c.JSON(http.StatusCreated, saveModel)
 }
@@ -191,12 +187,15 @@ func (m *Model) UpdateModel(c *gin.Context) {
 	model.Title = title
 	model.Description = description
 	model.UpdatedAt = time.Now()
-	updatedFood, dbUpdateErr := m.modelApp.UpdateModel(model)
+
+	model.BeforeSave()
+
+	updatedModel, dbUpdateErr := m.modelApp.UpdateModel(model)
 	if dbUpdateErr != nil {
 		c.JSON(http.StatusInternalServerError, dbUpdateErr)
 		return
 	}
-	c.JSON(http.StatusOK, updatedFood)
+	c.JSON(http.StatusOK, updatedModel)
 }
 
 func (m *Model) GetAllModel(c *gin.Context) {
@@ -247,7 +246,7 @@ func (m *Model) GetModel(c *gin.Context) {
 func (m *Model) DeleteModel(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, "Unauthorized")
+		c.JSON(http.StatusUnauthorized, "unauthorized")
 		return
 	}
 	modelId, err := strconv.ParseUint(c.Param("model_id"), 10, 64)
