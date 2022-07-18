@@ -259,6 +259,37 @@ func (m *Model) DeleteModel(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
+
+	//Получение всех файлов модельки
+	files, err := m.modelApp.GetFilesByModel(modelId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	//Отвязывание файлов от модели
+	err = m.modelApp.DeleteAllModelFiles(modelId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	//Удаление файлов с бд и хранилища
+	for _, file := range files {
+		var deleteFileErr error
+		deleteFileErr = m.fileApp.DeleteFile(file.ID)
+		if deleteFileErr != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+		deleteFileErr = m.fm.DeleteFile(file.Url)
+		if deleteFileErr != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+	}
+
+	//Удаление модели
 	err = m.modelApp.DeleteModel(modelId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())

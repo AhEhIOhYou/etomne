@@ -21,6 +21,7 @@ type ModelAppInterface interface {
 	GetFilesByModel(uint64) ([]entities.File, error)
 	AddModelFile(*entities.ModelFile) (*entities.ModelFile, map[string]string)
 	DeleteModelFile(uint64) error
+	DeleteAllModelFiles(uint64) error
 
 	CheckAvailability(uint64, uint64) (bool, error)
 }
@@ -55,6 +56,10 @@ func (m *modelApp) AddModelFile(file *entities.ModelFile) (*entities.ModelFile, 
 
 func (m *modelApp) DeleteModelFile(fileId uint64) error {
 	return m.md.DeleteModelFile(fileId)
+}
+
+func (m *modelApp) DeleteAllModelFiles(modelId uint64) error {
+	return m.md.DeleteAllModelFiles(modelId)
 }
 
 func (m *modelApp) CheckAvailability(fileId uint64, userId uint64) (bool, error) {

@@ -118,6 +118,15 @@ func (r *ModelRepo) DeleteModelFile(fileId uint64) error {
 	return nil
 }
 
+func (r *ModelRepo) DeleteAllModelFiles(modelId uint64) error {
+	var fModel entities.ModelFile
+	err := r.db.Debug().Table("model_files").Where("model_id = ?", modelId).Delete(&fModel).Error
+	if err != nil {
+		return errors.New("database error, please try again")
+	}
+	return nil
+}
+
 func (r *ModelRepo) CheckAvailability(fileId uint64, userId uint64) (bool, error) {
 	var result int
 	rows := r.db.Table("models as m").

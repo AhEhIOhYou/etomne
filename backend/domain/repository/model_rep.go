@@ -14,6 +14,7 @@ type ModelRepository interface {
 	GetFilesByModel(uint64) ([]entities.File, error)
 	AddModelFile(*entities.ModelFile) (*entities.ModelFile, map[string]string)
 	DeleteModelFile(uint64) error
+	DeleteAllModelFiles(uint64) error
 
 	CheckAvailability(uint64, uint64) (bool, error)
 }
