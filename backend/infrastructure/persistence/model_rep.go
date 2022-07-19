@@ -22,16 +22,12 @@ func NewModelRepo(db *gorm.DB) *ModelRepo {
 
 func (r *ModelRepo) SaveModel(model *entities.Model) (*entities.Model, map[string]string) {
 	dbErr := map[string]string{}
-	//The images are uploaded to digital ocean spaces. So we need to prepend the url. This might not be your use case, if you are not uploading image to Digital Ocean.
-
 	err := r.db.Debug().Create(&model).Error
 	if err != nil {
-		//since our title is unique
 		if strings.Contains(err.Error(), "duplicate") || strings.Contains(err.Error(), "Duplicate") {
 			dbErr["unique_title"] = "model title already taken"
 			return nil, dbErr
 		}
-		//any other db error
 		dbErr["db_error"] = "database error"
 		return nil, dbErr
 	}
@@ -66,12 +62,10 @@ func (r *ModelRepo) UpdateModel(model *entities.Model) (*entities.Model, map[str
 	dbErr := map[string]string{}
 	err := r.db.Debug().Save(&model).Error
 	if err != nil {
-		//since our title is unique
 		if strings.Contains(err.Error(), "duplicate") || strings.Contains(err.Error(), "Duplicate") {
 			dbErr["unique_title"] = "title already taken"
 			return nil, dbErr
 		}
-		//any other db error
 		dbErr["db_error"] = "database error"
 		return nil, dbErr
 	}
