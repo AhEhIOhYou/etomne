@@ -23,7 +23,8 @@ type ModelAppInterface interface {
 	DeleteModelFile(uint64) error
 	DeleteAllModelFiles(uint64) error
 
-	CheckAvailability(uint64, uint64) (bool, error)
+	CheckAvailabilityFile(uint64, uint64) (bool, error)
+	CheckAvailabilityModel(uint64, uint64) (bool, error)
 }
 
 func (m *modelApp) SaveModel(model *entities.Model) (*entities.Model, map[string]string) {
@@ -62,6 +63,10 @@ func (m *modelApp) DeleteAllModelFiles(modelId uint64) error {
 	return m.md.DeleteAllModelFiles(modelId)
 }
 
-func (m *modelApp) CheckAvailability(fileId uint64, userId uint64) (bool, error) {
-	return m.md.CheckAvailability(fileId, userId)
+func (m *modelApp) CheckAvailabilityFile(fileId uint64, userId uint64) (bool, error) {
+	return m.md.CheckAvailabilityFile(fileId, userId)
+}
+
+func (m *modelApp) CheckAvailabilityModel(modelId uint64, userId uint64) (bool, error) {
+	return m.md.CheckAvailabilityFile(modelId, userId)
 }

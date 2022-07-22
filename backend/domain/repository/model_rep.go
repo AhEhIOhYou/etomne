@@ -16,5 +16,6 @@ type ModelRepository interface {
 	DeleteModelFile(uint64) error
 	DeleteAllModelFiles(uint64) error
 
-	CheckAvailability(uint64, uint64) (bool, error)
+	CheckAvailabilityFile(uint64, uint64) (bool, error)
+	CheckAvailabilityModel(uint64, uint64) (bool, error)
 }

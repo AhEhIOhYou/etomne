@@ -122,7 +122,7 @@ func (f *File) RemoveFile(c *gin.Context) {
 		return
 	}
 
-	isAvaliable, err := f.modelApp.CheckAvailability(fileId, userId)
+	isAvaliable, err := f.modelApp.CheckAvailabilityFile(fileId, userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
