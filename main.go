@@ -72,6 +72,7 @@ func main() {
 	models := interfaces.NewModel(services.Model, services.User, services.File, fm, redisService.Auth, tk)
 	files := interfaces.NewFile(services.Model, services.User, services.File, fm, redisService.Auth, tk)
 	authenticate := interfaces.NewAuthenticate(services.User, redisService.Auth, tk)
+	comments := interfaces.NewComment(services.Model, services.User, services.Comment, redisService.Auth, tk)
 
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware())
@@ -99,6 +100,12 @@ func main() {
 	{
 		f.POST("", files.SaveFile)
 		f.DELETE("/:file_id", files.RemoveFile)
+	}
+
+	c := r.Group("api/comment")
+	{
+		c.GET("", comments.GetComments)
+		c.POST("", comments.SaveComment)
 	}
 
 	// programmatically set swagger info

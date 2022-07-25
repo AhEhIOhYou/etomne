@@ -7,13 +7,12 @@ import (
 )
 
 type Comment struct {
-	ID        uint64     `gorm:"primary_key;auto_increment" json:"id"`
-	AuthorId  uint64     `gorm:"size:100;not null;" json:"author_id"`
-	ModelId   uint64     `gorm:"size:100;not null;" json:"model_id"`
-	Message   string     `gorm:"text;notnull" json:"message"`
-	User      PublicUser `json:"user"`
-	CreatedAt time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
-	UpdatedAt time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+	ID        uint64    `gorm:"primary_key;auto_increment" json:"id"`
+	AuthorId  uint64    `gorm:"size:100;not null;" json:"author_id"`
+	ModelId   uint64    `gorm:"size:100;not null;" json:"model_id"`
+	Message   string    `gorm:"text;notnull" json:"message"`
+	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
 
 func (c *Comment) BeforeSave() {
@@ -21,7 +20,6 @@ func (c *Comment) BeforeSave() {
 }
 
 func (c *Comment) Prepare() {
-	c.User = PublicUser{}
 	c.Message = html.EscapeString(strings.TrimSpace(c.Message))
 	c.CreatedAt = time.Now()
 	c.UpdatedAt = time.Now()

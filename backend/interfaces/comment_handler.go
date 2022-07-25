@@ -55,7 +55,7 @@ func (com *Comment) SaveComment(c *gin.Context) {
 		return
 	}
 
-	user, err := com.userApp.GetUser(userId)
+	_, err = com.userApp.GetUser(userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, "user not found, unauthorized")
 		return
@@ -82,10 +82,6 @@ func (com *Comment) SaveComment(c *gin.Context) {
 		AuthorId: userId,
 		ModelId:  modelId,
 		Message:  message,
-		User: entities.PublicUser{
-			ID:   user.ID,
-			Name: user.Name,
-		},
 	}
 
 	Comment.Prepare()
@@ -97,4 +93,26 @@ func (com *Comment) SaveComment(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, saveComment)
+}
+
+// GetComments doc
+// @Summary		Get all comments by Model ID
+// @Tags		Comment
+// @Accept 		json
+// @Produce		json
+// @Param		model_id  path  string  true  "Model ID"
+// @Success		201  {object}  entities.Comment
+// @Failure     401  string  unauthorized
+// @Failure     400  string  user not found, unauthorized
+// @Failure     422  string  error
+// @Failure     500  string  error
+// @Router		/comment [get]
+func (com *Comment) GetComments(c *gin.Context) {
+	modelId, err := strconv.ParseUint(c.Param("model_id"), 10, 64)
+	comments, err := com.comApp.GetCommentsByModel(modelId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, comments)
 }

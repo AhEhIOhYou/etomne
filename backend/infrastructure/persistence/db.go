@@ -9,10 +9,11 @@ import (
 )
 
 type Repos struct {
-	User  repository.UserRepository
-	Model repository.ModelRepository
-	File  repository.FileRepository
-	db    *gorm.DB
+	User    repository.UserRepository
+	Model   repository.ModelRepository
+	File    repository.FileRepository
+	Comment repository.CommentRepository
+	db      *gorm.DB
 }
 
 func NewRepo(DbUser, DbPassword, DbPort, DbHost, DbName string) (*Repos, error) {
@@ -27,10 +28,11 @@ func NewRepo(DbUser, DbPassword, DbPort, DbHost, DbName string) (*Repos, error) 
 	db.Logger.LogMode(0)
 
 	return &Repos{
-		User:  NewUserRepo(db),
-		Model: NewModelRepo(db),
-		File:  NewFileRepo(db),
-		db:    db,
+		User:    NewUserRepo(db),
+		Model:   NewModelRepo(db),
+		File:    NewFileRepo(db),
+		Comment: NewCommentRepo(db),
+		db:      db,
 	}, nil
 }
 
