@@ -116,3 +116,26 @@ func (com *Comment) GetComments(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, comments)
 }
+
+// GetReplies doc
+// @Summary		Get all replies by parent comment id with limit
+// @Tags		Comment
+// @Produce		json
+// @Param		reply_id  path  string  true  "Reply ID"
+// @Param		count	  path  string  true  "Count"
+// @Success		201  {object}  entities.Comment
+// @Failure     401  string  unauthorized
+// @Failure     400  string  user not found, unauthorized
+// @Failure     422  string  error
+// @Failure     500  string  error
+// @Router		/comment/{reply_id} [get]
+func (com *Comment) GetReplies(c *gin.Context) {
+	replyId, err := strconv.ParseUint(c.Param("reply_id"), 10, 64)
+	count, err := strconv.ParseUint(c.Param("count"), 10, 64)
+	comments, err := com.comApp.GetReplies(replyId, count)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, comments)
+}

@@ -9,4 +9,6 @@ type CommentRepository interface {
 	UpdateComment(*entities.Comment) (*entities.Comment, map[string]string)
 	DeleteComment(uint64) error
 	DeleteCommentsByModel(uint64) error
+
+	GetReplies(uint64, uint64) ([]entities.Comment, error)
 }

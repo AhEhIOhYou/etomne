@@ -18,6 +18,8 @@ type CommentAppInterface interface {
 	UpdateComment(*entities.Comment) (*entities.Comment, map[string]string)
 	DeleteComment(uint64) error
 	DeleteCommentsByModel(uint64) error
+
+	GetReplies(uint64, uint64) ([]entities.Comment, error)
 }
 
 func (c *commentApp) SaveComment(comment *entities.Comment) (*entities.Comment, map[string]string) {
@@ -42,4 +44,8 @@ func (c *commentApp) DeleteComment(commentId uint64) error {
 
 func (c *commentApp) DeleteCommentsByModel(modelId uint64) error {
 	return c.cm.DeleteCommentsByModel(modelId)
+}
+
+func (c *commentApp) GetReplies(parentId, count uint64) ([]entities.Comment, error) {
+	return c.cm.GetReplies(parentId, count)
 }

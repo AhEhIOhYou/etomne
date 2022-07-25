@@ -11,6 +11,7 @@ type Comment struct {
 	AuthorId  uint64    `gorm:"size:100;not null;" json:"author_id"`
 	ModelId   uint64    `gorm:"size:100;not null;" json:"model_id"`
 	Message   string    `gorm:"text;notnull" json:"message"`
+	ReplyId   uint64    `gorm:"size:100" json:"reply_id"`
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
