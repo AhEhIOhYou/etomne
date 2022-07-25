@@ -96,11 +96,12 @@ func (com *Comment) SaveComment(c *gin.Context) {
 }
 
 // GetComments doc
-// @Summary		Get all comments by Model ID
+// @Summary		Get comments by Model ID
 // @Tags		Comment
 // @Accept 		json
 // @Produce		json
 // @Param		model_id  query  string  true   "Model ID"
+// @Param		reply_id  query  string  false  "Reply ID"
 // @Param		count  	  query  string  false  "Count"
 // @Success		201  {object}  []entities.Comment
 // @Failure     401  string  unauthorized
