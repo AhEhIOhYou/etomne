@@ -14,7 +14,7 @@ var _ CommentAppInterface = &commentApp{}
 type CommentAppInterface interface {
 	SaveComment(*entities.Comment) (*entities.Comment, map[string]string)
 	GetComment(uint64) (*entities.Comment, error)
-	GetCommentsByModel(uint64) ([]entities.Comment, error)
+	GetCommentsByModel(uint64, uint64) ([]entities.Comment, error)
 	UpdateComment(*entities.Comment) (*entities.Comment, map[string]string)
 	DeleteComment(uint64) error
 	DeleteCommentsByModel(uint64) error
@@ -30,8 +30,8 @@ func (c *commentApp) GetComment(commentId uint64) (*entities.Comment, error) {
 	return c.cm.GetComment(commentId)
 }
 
-func (c *commentApp) GetCommentsByModel(modelId uint64) ([]entities.Comment, error) {
-	return c.cm.GetCommentsByModel(modelId)
+func (c *commentApp) GetCommentsByModel(modelId, count uint64) ([]entities.Comment, error) {
+	return c.cm.GetCommentsByModel(modelId, count)
 }
 
 func (c *commentApp) UpdateComment(comment *entities.Comment) (*entities.Comment, map[string]string) {

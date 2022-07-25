@@ -106,7 +106,6 @@ func main() {
 	{
 		c.GET("", comments.GetComments)
 		c.POST("", comments.SaveComment)
-		m.GET("/:reply_id", comments.GetReplies)
 	}
 
 	// programmatically set swagger info

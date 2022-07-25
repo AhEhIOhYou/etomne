@@ -41,10 +41,10 @@ func (r *CommentRepo) GetComment(id uint64) (*entities.Comment, error) {
 	return &comment, nil
 }
 
-func (r *CommentRepo) GetCommentsByModel(id uint64) ([]entities.Comment, error) {
+func (r *CommentRepo) GetCommentsByModel(id, count uint64) ([]entities.Comment, error) {
 	var comments []entities.Comment
-	err := r.db.Debug().Limit(100).Order("created_at desc").
-		Find(&comments).Where("model_id = ? AND reply_id is null", id).Error
+	err := r.db.Debug().Table("comments").Order("created_at asc").
+		Where("model_id = ? AND reply_id is null", id).Limit(int(count)).Find(&comments).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("comment not found")
 	}
@@ -84,8 +84,8 @@ func (r *CommentRepo) DeleteCommentsByModel(id uint64) error {
 
 func (r *CommentRepo) GetReplies(parentId, count uint64) ([]entities.Comment, error) {
 	var comments []entities.Comment
-	err := r.db.Debug().Limit(100).Order("created_at desc").
-		Find(&comments).Where("reply_id = ? AND limit ?", parentId, count).Error
+	err := r.db.Debug().Table("comments").Order("created_at asc").
+		Where("reply_id = ?", parentId).Limit(int(count)).Find(&comments).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("comment not found")
 	}

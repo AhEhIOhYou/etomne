@@ -100,42 +100,40 @@ func (com *Comment) SaveComment(c *gin.Context) {
 // @Tags		Comment
 // @Accept 		json
 // @Produce		json
-// @Param		model_id  path  string  true  "Model ID"
-// @Success		201  {object}  entities.Comment
+// @Param		model_id  query  string  true   "Model ID"
+// @Param		count  	  query  string  false  "Count"
+// @Success		201  {object}  []entities.Comment
 // @Failure     401  string  unauthorized
 // @Failure     400  string  user not found, unauthorized
 // @Failure     422  string  error
 // @Failure     500  string  error
 // @Router		/comment [get]
 func (com *Comment) GetComments(c *gin.Context) {
-	modelId, err := strconv.ParseUint(c.Param("model_id"), 10, 64)
-	comments, err := com.comApp.GetCommentsByModel(modelId)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-	c.JSON(http.StatusOK, comments)
-}
 
-// GetReplies doc
-// @Summary		Get all replies by parent comment id with limit
-// @Tags		Comment
-// @Produce		json
-// @Param		reply_id  path  string  true  "Reply ID"
-// @Param		count	  path  string  true  "Count"
-// @Success		201  {object}  entities.Comment
-// @Failure     401  string  unauthorized
-// @Failure     400  string  user not found, unauthorized
-// @Failure     422  string  error
-// @Failure     500  string  error
-// @Router		/comment/{reply_id} [get]
-func (com *Comment) GetReplies(c *gin.Context) {
-	replyId, err := strconv.ParseUint(c.Param("reply_id"), 10, 64)
-	count, err := strconv.ParseUint(c.Param("count"), 10, 64)
-	comments, err := com.comApp.GetReplies(replyId, count)
+	modelId, err := strconv.ParseUint(c.Query("model_id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, "invalid query")
+		return
+	}
+
+	replyId, _ := strconv.ParseUint(c.Query("reply_id"), 10, 64)
+
+	count, _ := strconv.ParseUint(c.Query("count"), 10, 64)
+	if count == 0 {
+		count = 2
+	}
+
+	var comments []entities.Comment
+
+	if replyId != 0 {
+		comments, err = com.comApp.GetReplies(replyId, count)
+	} else {
+		comments, err = com.comApp.GetCommentsByModel(modelId, count)
+	}
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
+
 	c.JSON(http.StatusOK, comments)
 }
