@@ -69,7 +69,7 @@ func main() {
 	fm := filemanager.NewFileUpload()
 
 	users := interfaces.NewUsers(services.User, redisService.Auth, tk)
-	models := interfaces.NewModel(services.Model, services.User, services.File, fm, redisService.Auth, tk)
+	models := interfaces.NewModel(services.Model, services.User, services.File, services.Comment, fm, redisService.Auth, tk)
 	files := interfaces.NewFile(services.Model, services.User, services.File, fm, redisService.Auth, tk)
 	authenticate := interfaces.NewAuthenticate(services.User, redisService.Auth, tk)
 	comments := interfaces.NewComment(services.Model, services.User, services.Comment, redisService.Auth, tk)

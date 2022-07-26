@@ -16,16 +16,18 @@ type Model struct {
 	modelApp application.ModelAppInterface
 	userApp  application.UserAppInterface
 	fileApp  application.FileAppInterface
+	comApp   application.CommentAppInterface
 	fm       filemanager.ManagerFileInterface
 	rd       auth.AuthInterface
 	tk       auth.TokenInterface
 }
 
-func NewModel(mApp application.ModelAppInterface, uApp application.UserAppInterface, fApp application.FileAppInterface, fm filemanager.ManagerFileInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Model {
+func NewModel(mApp application.ModelAppInterface, uApp application.UserAppInterface, fApp application.FileAppInterface, comApp application.CommentAppInterface, fm filemanager.ManagerFileInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Model {
 	return &Model{
 		modelApp: mApp,
 		userApp:  uApp,
 		fileApp:  fApp,
+		comApp:   comApp,
 		fm:       fm,
 		rd:       rd,
 		tk:       tk,
@@ -297,6 +299,7 @@ func (m *Model) GetModel(c *gin.Context) {
 // @Failure      422  string  error
 // @Failure      500  string  error
 // @Router       /model/{id} [delete]
+// @Security	 bearerAuth
 func (m *Model) DeleteModel(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
@@ -309,6 +312,23 @@ func (m *Model) DeleteModel(c *gin.Context) {
 		return
 	}
 	_, err = m.userApp.GetUser(metadata.UserId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	isAvaliable, err := m.modelApp.CheckAvailabilityModel(modelId, metadata.UserId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	if !isAvaliable {
+		c.JSON(http.StatusInternalServerError, "model is unavailable")
+		return
+	}
+
+	//Очистка комментариев
+	err = m.comApp.DeleteCommentsByModel(modelId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
