@@ -109,6 +109,7 @@ func (au *Authenticate) Login(c *gin.Context) {
 // @Failure     401  {string} string  "unauthorized"
 // @Failure     500  {string} string  "error"
 // @Router		/users/logout [post]
+// @Security	 bearerAuth
 func (au *Authenticate) Logout(c *gin.Context) {
 	metadata, err := au.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
