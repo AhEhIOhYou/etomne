@@ -23,14 +23,29 @@ func NewUsers(us application.UserAppInterface, rd auth.AuthInterface, tk auth.To
 	}
 }
 
+type NewUser struct {
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+// SaveUser godoc
+// @Summary     Save user
+// @Tags        Users
+// @Produce		json
+// @Param		data  body     NewUser true   "User"
+// @Success     201   {object} entities.PublicUser
+// @Failure     422   {string} string  "invalid_json"
+// @Failure     500   {string} string  "error"
+// @Router      /users [post]
 func (s *Users) SaveUser(c *gin.Context) {
 	var user entities.User
 	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"invalid_json": "invalid_json",
-		})
+		c.JSON(http.StatusUnprocessableEntity, "invalid_json")
 		return
 	}
+
+	user.Prepared()
 
 	validateErr := user.Validate("")
 	if len(validateErr) > 0 {
