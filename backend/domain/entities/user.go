@@ -52,6 +52,8 @@ func (user *User) PublicUser() interface{} {
 func (user *User) Prepared() {
 	user.Name = html.EscapeString(strings.TrimSpace(user.Name))
 	user.Email = html.EscapeString(strings.TrimSpace(user.Email))
+	hashedBytePass, _ := security.Hash(user.Password)
+	user.Password = string(hashedBytePass)
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
 }
