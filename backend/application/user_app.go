@@ -14,7 +14,7 @@ var _ UserAppInterface = &userApp{}
 type UserAppInterface interface {
 	SaveUser(*entities.User) (*entities.User, map[string]string)
 	GetUser(uint64) (*entities.User, error)
-	GetUsers() ([]entities.User, error)
+	GetUsers(uint64) ([]entities.User, error)
 	GetUserByEmailAndPassword(*entities.User) (*entities.User, map[string]string)
 }
 
@@ -26,8 +26,8 @@ func (u *userApp) GetUser(userId uint64) (*entities.User, error) {
 	return u.us.GetUser(userId)
 }
 
-func (u *userApp) GetUsers() ([]entities.User, error) {
-	return u.us.GetUsers()
+func (u *userApp) GetUsers(count uint64) ([]entities.User, error) {
+	return u.us.GetUsers(count)
 }
 
 func (u *userApp) GetUserByEmailAndPassword(user *entities.User) (*entities.User, map[string]string) {

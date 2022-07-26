@@ -48,9 +48,9 @@ func (r *UserRepo) GetUser(id uint64) (*entities.User, error) {
 	return &user, nil
 }
 
-func (r *UserRepo) GetUsers() ([]entities.User, error) {
+func (r *UserRepo) GetUsers(count uint64) ([]entities.User, error) {
 	var users []entities.User
-	err := r.db.Debug().Find(&users).Error
+	err := r.db.Debug().Table("users").Limit(int(count)).Find(&users).Error
 	if err != nil {
 		return nil, err
 	}

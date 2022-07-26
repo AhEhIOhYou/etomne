@@ -81,7 +81,6 @@ func main() {
 	{
 		u.POST("", users.SaveUser)
 		u.GET("", users.GetUsers)
-		u.GET("/:user_id", users.GetUser)
 		u.POST("/login", authenticate.Login)
 		u.POST("/logout", middleware.AuthMiddleware(), authenticate.Logout)
 		u.POST("/refresh", authenticate.Refresh)
