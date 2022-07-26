@@ -26,12 +26,22 @@ func NewAuthenticate(uApp application.UserAppInterface, rd auth.AuthInterface, t
 	}
 }
 
+// Login doc
+// @Summary		Login user
+// @Tags		Authorization
+// @Accept 		json
+// @Produce		json
+// @Param 		data 	body 	  entities.AuthUser true "Auth user json"
+// @Success 	200 	{object}  entities.UserData
+// @Failure     422  {string} string  "invalid json provided"
+// @Failure     500  {string} string  "error"
+// @Router		/users/login [post]
 func (au *Authenticate) Login(c *gin.Context) {
 	var user *entities.User
 	var tokenErr = map[string]string{}
 
 	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, "Invalid json provided")
+		c.JSON(http.StatusUnprocessableEntity, "invalid json provided")
 		return
 	}
 
@@ -60,11 +70,12 @@ func (au *Authenticate) Login(c *gin.Context) {
 		return
 	}
 
-	userData := make(map[string]interface{})
-	userData["access_token"] = ts.AccessToken
-	userData["refresh_token"] = ts.RefreshToken
-	userData["id"] = u.ID
-	userData["name"] = u.Name
+	var userData = entities.UserData{
+		ID:           u.ID,
+		Name:         u.Name,
+		AccessToken:  ts.AccessToken,
+		RefreshToken: ts.RefreshToken,
+	}
 
 	c.JSON(http.StatusOK, userData)
 }

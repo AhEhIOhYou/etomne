@@ -23,6 +23,18 @@ type PublicUser struct {
 	Name string `gorm:"size:100;not null;" json:"name"`
 }
 
+type AuthUser struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type UserData struct {
+	ID           uint64 `json:"id"`
+	Name         string `json:"name"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
+
 func (user *User) BeforeSave() error {
 	hashPassword, err := security.Hash(user.Password)
 	if err != nil {
