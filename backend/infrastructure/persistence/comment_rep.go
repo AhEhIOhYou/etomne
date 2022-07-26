@@ -44,7 +44,7 @@ func (r *CommentRepo) GetComment(id uint64) (*entities.Comment, error) {
 func (r *CommentRepo) GetCommentsByModel(id, count uint64) ([]entities.Comment, error) {
 	var comments []entities.Comment
 	err := r.db.Debug().Table("comments").Order("created_at asc").
-		Where("model_id = ? AND reply_id is null", id).Limit(int(count)).Find(&comments).Error
+		Where("model_id = ? AND reply_id = 0", id).Limit(int(count)).Find(&comments).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("comment not found")
 	}

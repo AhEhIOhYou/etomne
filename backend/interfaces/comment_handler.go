@@ -35,6 +35,7 @@ func NewComment(mApp application.ModelAppInterface, uApp application.UserAppInte
 // @Produce		json
 // @Param		model_id  formData  string  true  "Model ID"
 // @Param		message   formData  string  true  "Message"
+// @Param		reply_id  formData  string  false "Reply to comment ID"
 // @Success		201  {object}  entities.Comment
 // @Failure     401  string  unauthorized
 // @Failure     400  string  user not found, unauthorized
@@ -61,7 +62,7 @@ func (com *Comment) SaveComment(c *gin.Context) {
 		return
 	}
 
-	modelId, err := strconv.ParseUint(c.Param("model_id"), 10, 64)
+	modelId, err := strconv.ParseUint(c.PostForm("model_id"), 10, 64)
 	message := c.PostForm("message")
 	if fmt.Sprintf("%T", message) != "string" {
 		c.JSON(http.StatusUnprocessableEntity, "invalid_json")
@@ -78,10 +79,21 @@ func (com *Comment) SaveComment(c *gin.Context) {
 		return
 	}
 
+	var replyId uint64
+	replyIdForm := c.PostForm("reply_id")
+	if replyIdForm != "" {
+		replyId, err = strconv.ParseUint(replyIdForm, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, "invalid query")
+			return
+		}
+	}
+
 	var Comment = entities.Comment{
 		AuthorId: userId,
 		ModelId:  modelId,
 		Message:  message,
+		ReplyId:  replyId,
 	}
 
 	Comment.Prepare()
