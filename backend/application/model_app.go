@@ -23,7 +23,6 @@ type ModelAppInterface interface {
 	DeleteModelFile(uint64) error
 	DeleteAllModelFiles(uint64) error
 
-	CheckAvailabilityFile(uint64, uint64) (bool, error)
 	CheckAvailabilityModel(uint64, uint64) (bool, error)
 }
 
@@ -63,10 +62,6 @@ func (m *modelApp) DeleteAllModelFiles(modelId uint64) error {
 	return m.md.DeleteAllModelFiles(modelId)
 }
 
-func (m *modelApp) CheckAvailabilityFile(fileId uint64, userId uint64) (bool, error) {
-	return m.md.CheckAvailabilityFile(fileId, userId)
-}
-
 func (m *modelApp) CheckAvailabilityModel(modelId uint64, userId uint64) (bool, error) {
-	return m.md.CheckAvailabilityFile(modelId, userId)
+	return m.md.CheckAvailabilityModel(modelId, userId)
 }

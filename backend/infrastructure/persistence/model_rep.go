@@ -121,21 +121,6 @@ func (r *ModelRepo) DeleteAllModelFiles(modelId uint64) error {
 	return nil
 }
 
-func (r *ModelRepo) CheckAvailabilityFile(fileId uint64, userId uint64) (bool, error) {
-	var result int
-	rows := r.db.Table("models as m").
-		Select("COUNT(f.id)").
-		Joins("join model_files as mf on mf.model_id = m.id").
-		Joins("join files as f on f.id = mf.file_id").
-		Where("m.user_id = ? AND f.id = ?", userId, fileId).Limit(1).Row()
-
-	if err := rows.Scan(&result); err != nil {
-		return false, err
-	}
-
-	return result == 1, nil
-}
-
 func (r *ModelRepo) CheckAvailabilityModel(modelId uint64, userId uint64) (bool, error) {
 	var result int
 	rows := r.db.Table("models as m").

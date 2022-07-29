@@ -16,6 +16,7 @@ type FileAppInterface interface {
 	GetFile(uint64) (*entities.File, error)
 	UpdateFile(file *entities.File) (*entities.File, map[string]string)
 	DeleteFile(uint64) error
+	CheckAvailabilityFile(uint64, uint64) (bool, error)
 }
 
 func (f *fileApp) SaveFile(file *entities.File) (*entities.File, map[string]string) {
@@ -32,4 +33,8 @@ func (f *fileApp) UpdateFile(file *entities.File) (*entities.File, map[string]st
 
 func (f *fileApp) DeleteFile(fileId uint64) error {
 	return f.fl.DeleteFile(fileId)
+}
+
+func (f *fileApp) CheckAvailabilityFile(fileId uint64, userId uint64) (bool, error) {
+	return f.fl.CheckAvailabilityFile(fileId, userId)
 }
