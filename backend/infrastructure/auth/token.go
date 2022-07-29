@@ -61,7 +61,6 @@ func (t Token) CreateToken(userId uint64) (*TokenDetails, error) {
 }
 
 func (t Token) ExtractTokenMetadata(r *http.Request) (*AccessDetails, error) {
-	fmt.Println("WE ENTERED METADATA")
 	token, err := VerifyToken(r)
 	if err != nil {
 		return nil, err

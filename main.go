@@ -5,6 +5,7 @@ package main
 
 import (
 	"github.com/AhEhIOhYou/etomne/backend/infrastructure/auth"
+	"github.com/AhEhIOhYou/etomne/backend/infrastructure/logger"
 	"github.com/AhEhIOhYou/etomne/backend/infrastructure/persistence"
 	"github.com/AhEhIOhYou/etomne/backend/interfaces"
 	"github.com/AhEhIOhYou/etomne/backend/interfaces/filemanager"
@@ -106,6 +107,7 @@ func main() {
 		c.GET("", comments.GetComments)
 		c.POST("", comments.SaveComment)
 	}
+	logger.WriteLog(logger.Info, "THE SERVER HAS BEEN SUCCESSFULLY STARTED")
 
 	// programmatically set swagger info
 	docs.SwaggerInfo.Title = "Swagger Models API"
