@@ -9,9 +9,9 @@ import (
 type File struct {
 	ID        uint64    `gorm:"primary_key;auto_increment" json:"id"`
 	Title     string    `gorm:"size:100;not null;" json:"title"`
+	OwnerId   uint64    `gorm:"size:100;not null" json:"owner_id"`
 	Url       string    `gorm:"size:255;not null;" json:"url"`
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
-	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
 
 type ModelFile struct {
@@ -19,14 +19,9 @@ type ModelFile struct {
 	ModelId uint64 `gorm:"not null" json:"model_id"`
 }
 
-func (f *File) BeforeSave() {
-	f.Title = html.EscapeString(strings.TrimSpace(f.Title))
-}
-
 func (f *File) Prepare() {
 	f.Title = html.EscapeString(strings.TrimSpace(f.Title))
 	f.CreatedAt = time.Now()
-	f.UpdatedAt = time.Now()
 }
 
 type Files []File
