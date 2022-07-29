@@ -30,6 +30,20 @@ func NewFile(mApp application.ModelAppInterface, uApp application.UserAppInterfa
 	}
 }
 
+// SaveFile doc
+// @Summary		Save uploaded file
+// @Tags		File
+// @Accept		mpfd
+// @Produce		json
+// @Param		model_id  formData  string  false  "Model ID"
+// @Param		file      formData  file    true  "File"
+// @Success		201  {object}  entities.File
+// @Failure     401  string  unauthorized
+// @Failure     400  string  error
+// @Failure     422  string  error
+// @Failure     500  string  error
+// @Router		/file [post]
+// @Security	bearerAuth
 func (f *File) SaveFile(c *gin.Context) {
 	metadata, err := f.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
@@ -49,11 +63,6 @@ func (f *File) SaveFile(c *gin.Context) {
 		return
 	}
 
-	modelId, err := strconv.ParseUint(c.PostForm("model_id"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, "invalid request")
-		return
-	}
 	file, err := c.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, "invalid request")
@@ -72,9 +81,12 @@ func (f *File) SaveFile(c *gin.Context) {
 
 	//Добавление файла в бд files
 	File := entities.File{
-		Title: file.Filename,
-		Url:   url,
+		OwnerId: userId,
+		Title:   file.Filename,
+		Url:     url,
 	}
+
+	File.Prepare()
 
 	saveFile, saveModelErr := f.fileApp.SaveFile(&File)
 	if len(saveModelErr) > 0 {
@@ -82,21 +94,47 @@ func (f *File) SaveFile(c *gin.Context) {
 		return
 	}
 
-	//Добавление файла и модельки в бд model_files
-	ModelFile := entities.ModelFile{
-		ModelId: modelId,
-		FileId:  saveFile.ID,
+	var modelId uint64
+	modelIdForm := c.PostForm("model_id")
+	if modelIdForm != "" {
+		modelId, err = strconv.ParseUint(modelIdForm, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, "invalid query")
+			return
+		}
 	}
 
-	_, saveModelErr = f.modelApp.AddModelFile(&ModelFile)
-	if len(saveModelErr) > 0 {
-		c.JSON(http.StatusUnprocessableEntity, saveModelErr)
-		return
+	if modelId != 0 {
+		//Добавление файла и модельки в бд model_files
+		ModelFile := entities.ModelFile{
+			ModelId: modelId,
+			FileId:  saveFile.ID,
+		}
+
+		_, saveModelErr = f.modelApp.AddModelFile(&ModelFile)
+		if len(saveModelErr) > 0 {
+			c.JSON(http.StatusUnprocessableEntity, saveModelErr)
+			return
+		}
 	}
 
 	c.JSON(http.StatusCreated, saveFile)
 }
 
+// RemoveFile doc
+// @Summary		Remove uploaded file
+// @Tags		File
+// @Accept		mpfd
+// @Produce		json
+// @Param		file_id   path    string  true  "File ID"
+// @Param		model_id  query   string  false "Model ID"
+// @Success		201  {object}  entities.File
+// @Failure     401  string  unauthorized
+// @Failure     400  string  error
+// @Failure     422  string  error
+// @Failure     500  string  error
+// @Router		/file/{id} [post]
+// @Security	bearerAuth
 func (f *File) RemoveFile(c *gin.Context) {
 	metadata, err := f.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
@@ -122,7 +160,17 @@ func (f *File) RemoveFile(c *gin.Context) {
 		return
 	}
 
-	isAvaliable, err := f.modelApp.CheckAvailabilityFile(fileId, userId)
+	var modelId uint64
+	modelIdForm := c.Query("model_id")
+	if modelIdForm != "" {
+		modelId, err = strconv.ParseUint(modelIdForm, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, "invalid query")
+			return
+		}
+	}
+
+	isAvaliable, err := f.fileApp.CheckAvailabilityFile(fileId, userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -138,11 +186,13 @@ func (f *File) RemoveFile(c *gin.Context) {
 		return
 	}
 
-	//Отвязать файл от модели
-	err = f.modelApp.DeleteModelFile(file.ID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
+	if modelId != 0 {
+		//Отвязать файл от модели
+		err = f.modelApp.DeleteModelFile(file.ID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
 	}
 
 	//Удалить файл с бд
