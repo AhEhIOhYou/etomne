@@ -72,11 +72,51 @@ func (r *UserRepo) GetUserByEmailAndPassword(u *entities.User) (*entities.User, 
 		dbErr["db_error"] = "database error"
 		return nil, dbErr
 	}
-	//Verify the password
 	err = security.VerifyPassword(user.Password, u.Password)
 	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
 		dbErr["incorrect_password"] = "incorrect password"
 		return nil, dbErr
 	}
 	return &user, nil
+}
+
+func (r *UserRepo) GetPhotosByUser(id uint64) ([]entities.File, error) {
+	var photos []entities.File
+	err := r.db.Debug().Joins("JOIN user_files on user_files.file_id=files.id").
+		Where("user_files.user_id = ?", id).Find(&photos).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errors.New("photos not found")
+	}
+	if err != nil {
+		return nil, err
+	}
+	return photos, nil
+}
+
+func (r *UserRepo) AddUserPhoto(photo *entities.UserPhoto) (*entities.UserPhoto, map[string]string) {
+	dbErr := map[string]string{}
+	err := r.db.Debug().Create(&photo).Error
+	if err != nil {
+		dbErr["db_error"] = "database error"
+		return nil, dbErr
+	}
+	return photo, nil
+}
+
+func (r *UserRepo) DeleteUserPhoto(fileId uint64) error {
+	var pUser entities.UserPhoto
+	err := r.db.Debug().Table("model_files").Where("file_id = ?", fileId).Delete(&pUser).Error
+	if err != nil {
+		return errors.New("database error, please try again")
+	}
+	return nil
+}
+
+func (r *UserRepo) DeleteAllUserPhotos(userId uint64) error {
+	var pUser entities.UserPhoto
+	err := r.db.Debug().Table("user_files").Where("user_id = ?", userId).Delete(&pUser).Error
+	if err != nil {
+		return errors.New("database error, please try again")
+	}
+	return nil
 }

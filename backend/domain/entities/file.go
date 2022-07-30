@@ -19,6 +19,12 @@ type ModelFile struct {
 	ModelId uint64 `gorm:"not null" json:"model_id"`
 }
 
+type UserPhoto struct {
+	FileId uint64 `gorm:"not null" json:"file_id"`
+	UserId uint64 `gorm:"not null" json:"user_id"`
+	Size   uint64 `gorm:"not null" json:"size"`
+}
+
 func (f *File) Prepare() {
 	f.Title = html.EscapeString(strings.TrimSpace(f.Title))
 	f.CreatedAt = time.Now()
