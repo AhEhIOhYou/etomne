@@ -35,7 +35,9 @@ func NewFile(mApp application.ModelAppInterface, uApp application.UserAppInterfa
 // @Tags		File
 // @Accept		mpfd
 // @Produce		json
-// @Param		model_id  formData  string  false  "Model ID"
+// @Param		model_id        formData  string  false  "Model ID"
+// @Param		photo_user_id   formData  string  false  "Photo to user ID"
+// @Param		photo_size      formData  string  false  "Photo size"
 // @Param		file      formData  file    true  "File"
 // @Success		201  {object}  entities.File
 // @Failure     401  string  unauthorized
@@ -100,6 +102,7 @@ func (f *File) SaveFile(c *gin.Context) {
 		return
 	}
 
+	// Привязать файл к модельке
 	var modelId uint64
 	modelIdForm := c.PostForm("model_id")
 	if modelIdForm != "" {
@@ -108,19 +111,60 @@ func (f *File) SaveFile(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, "invalid query")
 			return
 		}
+
+		if modelId != 0 {
+			//Добавление файла и модельки в бд model_files
+			ModelFile := entities.ModelFile{
+				ModelId: modelId,
+				FileId:  saveFile.ID,
+			}
+
+			_, saveModelErr = f.modelApp.AddModelFile(&ModelFile)
+			if len(saveModelErr) > 0 {
+				c.JSON(http.StatusUnprocessableEntity, saveModelErr)
+				return
+			}
+		}
 	}
 
-	if modelId != 0 {
-		//Добавление файла и модельки в бд model_files
-		ModelFile := entities.ModelFile{
-			ModelId: modelId,
-			FileId:  saveFile.ID,
+	// Получить размер фотографии
+	var photoSize uint64
+	photoSizeForm := c.PostForm("photo_size")
+	if photoSizeForm != "" {
+		photoSize, err = strconv.ParseUint(photoSizeForm, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, "invalid query")
+			return
 		}
 
-		_, saveModelErr = f.modelApp.AddModelFile(&ModelFile)
-		if len(saveModelErr) > 0 {
-			c.JSON(http.StatusUnprocessableEntity, saveModelErr)
+		if photoSize == 0 {
+			photoSize = 200
+		}
+	}
+
+	// Привязать файл к пользователю - как аватарку
+	var photoUserId uint64
+	photoUserIdForm := c.PostForm("photo_user_id")
+	if photoUserIdForm != "" {
+
+		photoUserId, err = strconv.ParseUint(photoUserIdForm, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, "invalid query")
 			return
+		}
+
+		if photoUserId != 0 {
+			UserPhoto := entities.UserPhoto{
+				UserId: photoUserId,
+				FileId: saveFile.ID,
+				Size:   photoSize,
+			}
+
+			_, saveModelErr = f.userApp.AddUserPhoto(&UserPhoto)
+			if len(saveModelErr) > 0 {
+				c.JSON(http.StatusUnprocessableEntity, saveModelErr)
+				return
+			}
 		}
 	}
 
