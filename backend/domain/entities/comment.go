@@ -16,8 +16,9 @@ type Comment struct {
 	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
 
-func (c *Comment) BeforeSave() {
+func (c *Comment) BeforeUpdate() {
 	c.Message = html.EscapeString(strings.TrimSpace(c.Message))
+	c.UpdatedAt = time.Now()
 }
 
 func (c *Comment) Prepare() {

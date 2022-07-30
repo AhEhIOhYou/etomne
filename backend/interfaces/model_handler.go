@@ -77,17 +77,6 @@ func (m *Model) SaveModel(c *gin.Context) {
 		return
 	}
 
-	emptyModel := entities.Model{
-		Title:       title,
-		Description: description,
-	}
-
-	saveModelErr := emptyModel.Validate("")
-	if len(saveModelErr) > 0 {
-		c.JSON(http.StatusUnprocessableEntity, saveModelErr)
-		return
-	}
-
 	var Model = entities.Model{
 		UserID:      userId,
 		Title:       title,
@@ -95,6 +84,12 @@ func (m *Model) SaveModel(c *gin.Context) {
 	}
 
 	Model.Prepare()
+
+	saveModelErr := Model.Validate("")
+	if len(saveModelErr) > 0 {
+		c.JSON(http.StatusUnprocessableEntity, saveModelErr)
+		return
+	}
 
 	saveModel, saveErr := m.modelApp.SaveModel(&Model)
 	if saveErr != nil {
@@ -206,28 +201,24 @@ func (m *Model) UpdateModel(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, "Invalid json")
 	}
 
-	emptyModel := entities.Model{
-		Title:       title,
-		Description: description,
-	}
-
-	updateModelErr = emptyModel.Validate("update")
-	if len(updateModelErr) > 0 {
-		c.JSON(http.StatusUnprocessableEntity, updateModelErr)
-		return
-	}
-
 	model.Title = title
 	model.Description = description
 	model.UpdatedAt = time.Now()
 
-	model.BeforeSave()
+	model.BeforeUpdate()
+
+	updateModelErr = model.Validate("update")
+	if len(updateModelErr) > 0 {
+		c.JSON(http.StatusUnprocessableEntity, updateModelErr)
+		return
+	}
 
 	updatedModel, dbUpdateErr := m.modelApp.UpdateModel(model)
 	if dbUpdateErr != nil {
 		c.JSON(http.StatusInternalServerError, dbUpdateErr)
 		return
 	}
+
 	c.JSON(http.StatusOK, updatedModel)
 }
 

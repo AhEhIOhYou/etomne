@@ -9,27 +9,17 @@ import (
 )
 
 type User struct {
-	ID        uint64     `gorm:"primary_key;auto_increment" json:"id"`
-	Name      string     `gorm:"size:100;not null;" json:"name"`
-	Email     string     `gorm:"size:100;not null;unique" json:"email"`
-	Password  string     `gorm:"size:100;not null;" json:"password"`
-	CreatedAt time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
-	UpdatedAt time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	ID        uint64    `gorm:"primary_key;auto_increment" json:"id"`
+	Name      string    `gorm:"size:100;not null;" json:"name"`
+	Email     string    `gorm:"size:100;not null;unique" json:"email"`
+	Password  string    `gorm:"size:100;not null;" json:"password"`
+	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
 
 type PublicUser struct {
 	ID   uint64 `gorm:"primary_key;auto_increment" json:"id"`
 	Name string `gorm:"size:100;not null;" json:"name"`
-}
-
-func (user *User) BeforeSave() error {
-	hashPassword, err := security.Hash(user.Password)
-	if err != nil {
-		return err
-	}
-	user.Password = string(hashPassword)
-	return nil
 }
 
 type Users []User
@@ -47,6 +37,14 @@ func (user *User) PublicUser() interface{} {
 		ID:   user.ID,
 		Name: user.Name,
 	}
+}
+
+func (user *User) BeforeUpdate() {
+	user.Name = html.EscapeString(strings.TrimSpace(user.Name))
+	user.Email = html.EscapeString(strings.TrimSpace(user.Email))
+	hashPassword, _ := security.Hash(user.Password)
+	user.Password = string(hashPassword)
+	user.UpdatedAt = time.Now()
 }
 
 func (user *User) Prepared() {

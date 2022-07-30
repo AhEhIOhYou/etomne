@@ -88,6 +88,12 @@ func (f *File) SaveFile(c *gin.Context) {
 
 	File.Prepare()
 
+	saveFileErr := File.Validate("")
+	if len(saveFileErr) > 0 {
+		c.JSON(http.StatusUnprocessableEntity, saveFileErr)
+		return
+	}
+
 	saveFile, saveModelErr := f.fileApp.SaveFile(&File)
 	if len(saveModelErr) > 0 {
 		c.JSON(http.StatusUnprocessableEntity, saveModelErr)
