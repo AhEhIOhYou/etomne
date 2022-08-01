@@ -69,7 +69,7 @@ func main() {
 	tk := auth.NewToken()
 	fm := filemanager.NewFileUpload()
 
-	users := interfaces.NewUsers(services.User, redisService.Auth, tk)
+	users := interfaces.NewUsers(services.User, fm, redisService.Auth, tk)
 	models := interfaces.NewModel(services.Model, services.User, services.File, services.Comment, fm, redisService.Auth, tk)
 	files := interfaces.NewFile(services.Model, services.User, services.File, fm, redisService.Auth, tk)
 	authenticate := interfaces.NewAuthenticate(services.User, redisService.Auth, tk)
@@ -85,6 +85,7 @@ func main() {
 		u.POST("/login", authenticate.Login)
 		u.POST("/logout", middleware.AuthMiddleware(), authenticate.Logout)
 		u.POST("/refresh", authenticate.Refresh)
+		u.POST("/addfile", middleware.AuthMiddleware(), users.SaveUserPhoto)
 	}
 
 	m := r.Group("api/model")
@@ -94,6 +95,7 @@ func main() {
 		m.GET("/:model_id", models.GetModel)
 		m.DELETE("/:model_id", middleware.AuthMiddleware(), models.DeleteModel)
 		m.GET("", models.GetAllModel)
+		m.POST("/addfile", middleware.AuthMiddleware(), models.SaveModelFile)
 	}
 
 	f := r.Group("api/file")
