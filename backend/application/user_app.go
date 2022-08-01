@@ -18,7 +18,7 @@ type UserAppInterface interface {
 	GetUserByEmailAndPassword(*entities.User) (*entities.User, map[string]string)
 
 	GetPhotosByUser(uint64) ([]entities.File, error)
-	AddUserPhoto(*entities.UserPhoto) (*entities.UserPhoto, map[string]string)
+	SaveUserPhoto(*entities.File, uint64, uint64) (*entities.UserPhoto, map[string]string)
 	DeleteUserPhoto(uint64) error
 	DeleteAllUserPhotos(uint64) error
 }
@@ -42,8 +42,8 @@ func (u *userApp) GetPhotosByUser(userId uint64) ([]entities.File, error) {
 	return u.us.GetPhotosByUser(userId)
 }
 
-func (u *userApp) AddUserPhoto(photo *entities.UserPhoto) (*entities.UserPhoto, map[string]string) {
-	return u.us.AddUserPhoto(photo)
+func (u *userApp) SaveUserPhoto(file *entities.File, userId, size uint64) (*entities.UserPhoto, map[string]string) {
+	return u.us.SaveUserPhoto(file, userId, size)
 }
 
 func (u *userApp) DeleteUserPhoto(fileId uint64) error {

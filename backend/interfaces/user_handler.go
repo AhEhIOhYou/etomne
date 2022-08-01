@@ -4,22 +4,25 @@ import (
 	"github.com/AhEhIOhYou/etomne/backend/application"
 	"github.com/AhEhIOhYou/etomne/backend/domain/entities"
 	"github.com/AhEhIOhYou/etomne/backend/infrastructure/auth"
+	"github.com/AhEhIOhYou/etomne/backend/interfaces/filemanager"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 )
 
 type Users struct {
-	us application.UserAppInterface
-	rd auth.AuthInterface
-	tk auth.TokenInterface
+	userApp application.UserAppInterface
+	fm      filemanager.ManagerFileInterface
+	rd      auth.AuthInterface
+	tk      auth.TokenInterface
 }
 
-func NewUsers(us application.UserAppInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Users {
+func NewUsers(userApp application.UserAppInterface, fm filemanager.ManagerFileInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Users {
 	return &Users{
-		us: us,
-		rd: rd,
-		tk: tk,
+		userApp: userApp,
+		fm:      fm,
+		rd:      rd,
+		tk:      tk,
 	}
 }
 
@@ -33,7 +36,10 @@ type NewUser struct {
 // @Summary     Save user
 // @Tags        Users
 // @Produce		json
-// @Param		data  body     NewUser true   "User"
+// @Param       name		  formData      string  true  "Model Title"
+// @Param       email         formData      string  true  "Model Description"
+// @Param       password      formData      string  true  "Model Description"
+// @Param       attachments   formData      file	 false "Model Files"		Format(binary)
 // @Success     201   {object} entities.PublicUser
 // @Failure     422   {string} string  "invalid_json"
 // @Failure     500   {string} string  "error"
@@ -53,7 +59,7 @@ func (s *Users) SaveUser(c *gin.Context) {
 		return
 	}
 
-	newUser, err := s.us.SaveUser(&user)
+	newUser, err := s.userApp.SaveUser(&user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
@@ -102,18 +108,101 @@ func (s *Users) GetUsers(c *gin.Context) {
 	}
 
 	if userId != 0 {
-		user, err := s.us.GetUser(userId)
+		user, err := s.userApp.GetUser(userId)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
 		users = append(users, *user)
 	} else {
-		users, err = s.us.GetUsers(count)
+		users, err = s.userApp.GetUsers(count)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
 	}
 	c.JSON(http.StatusOK, users.PublicUsers())
+}
+
+// SaveUserPhoto doc
+// @Summary		Save user photo
+// @Tags		Users
+// @Accept		mpfd
+// @Produce		json
+// @Param		size  formData  string  false "Size"
+// @Param		file  formData  file    true  "File"
+// @Success		201  {object}  entities.File
+// @Failure     401  string  unauthorized
+// @Failure     400  string  error
+// @Failure     422  string  error
+// @Failure     500  string  error
+// @Router		/users/addfile/ [post]
+// @Security	bearerAuth
+func (s *Users) SaveUserPhoto(c *gin.Context) {
+	metadata, err := s.tk.ExtractTokenMetadata(c.Request)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	userId, err := s.rd.FetchAuth(metadata.TokenUuid)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	_, err = s.userApp.GetUser(userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "user not found, unauthorized")
+		return
+	}
+
+	photoSize, err := strconv.ParseUint(c.PostForm("photo_size"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "invalid query")
+		return
+	}
+	if photoSize == 0 {
+		photoSize = 200
+	}
+
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "invalid request")
+		return
+	}
+
+	url, err := s.fm.UploadFile(file)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+	if url == "" {
+		c.JSON(http.StatusUnprocessableEntity, "something went wrong")
+		return
+	}
+
+	File := entities.File{
+		OwnerId: userId,
+		Title:   file.Filename,
+		Url:     url,
+	}
+
+	File.Prepare()
+	saveFileErr := File.Validate("")
+	if len(saveFileErr) > 0 {
+		c.JSON(http.StatusUnprocessableEntity, saveFileErr)
+		return
+	}
+
+	userPhoto, saveFileErr := s.userApp.SaveUserPhoto(&File, userId, 100)
+	if len(saveFileErr) > 0 {
+		c.JSON(http.StatusUnprocessableEntity, saveFileErr)
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"file":       File,
+		"user_photo": userPhoto,
+	})
 }

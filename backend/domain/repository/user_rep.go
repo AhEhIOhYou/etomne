@@ -11,7 +11,7 @@ type UserRepository interface {
 	GetUserByEmailAndPassword(*entities.User) (*entities.User, map[string]string)
 
 	GetPhotosByUser(uint64) ([]entities.File, error)
-	AddUserPhoto(photo *entities.UserPhoto) (*entities.UserPhoto, map[string]string)
+	SaveUserPhoto(*entities.File, uint64, uint64) (*entities.UserPhoto, map[string]string)
 	DeleteUserPhoto(uint64) error
 	DeleteAllUserPhotos(uint64) error
 }

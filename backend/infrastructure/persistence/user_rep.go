@@ -93,14 +93,28 @@ func (r *UserRepo) GetPhotosByUser(id uint64) ([]entities.File, error) {
 	return photos, nil
 }
 
-func (r *UserRepo) AddUserPhoto(photo *entities.UserPhoto) (*entities.UserPhoto, map[string]string) {
+func (r *UserRepo) SaveUserPhoto(file *entities.File, userId, size uint64) (*entities.UserPhoto, map[string]string) {
+
 	dbErr := map[string]string{}
-	err := r.db.Debug().Create(&photo).Error
+	err := r.db.Debug().Create(&file).Error
 	if err != nil {
 		dbErr["db_error"] = "database error"
 		return nil, dbErr
 	}
-	return photo, nil
+
+	userPhoto := entities.UserPhoto{
+		UserId: userId,
+		FileId: file.ID,
+		Size:   size,
+	}
+
+	err = r.db.Debug().Create(&userPhoto).Error
+	if err != nil {
+		dbErr["db_error"] = "database error"
+		return nil, dbErr
+	}
+
+	return &userPhoto, nil
 }
 
 func (r *UserRepo) DeleteUserPhoto(fileId uint64) error {
