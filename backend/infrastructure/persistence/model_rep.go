@@ -93,14 +93,27 @@ func (r *ModelRepo) GetFilesByModel(modelId uint64) ([]entities.File, error) {
 	return files, nil
 }
 
-func (r *ModelRepo) AddModelFile(mf *entities.ModelFile) (*entities.ModelFile, map[string]string) {
+func (r *ModelRepo) SaveModelFile(file *entities.File, modelId uint64) (*entities.ModelFile, map[string]string) {
+
 	dbErr := map[string]string{}
-	err := r.db.Debug().Create(&mf).Error
+	err := r.db.Debug().Create(&file).Error
 	if err != nil {
 		dbErr["db_error"] = "database error"
 		return nil, dbErr
 	}
-	return mf, nil
+
+	modelFile := entities.ModelFile{
+		ModelId: modelId,
+		FileId:  file.ID,
+	}
+
+	err = r.db.Debug().Create(&modelFile).Error
+	if err != nil {
+		dbErr["db_error"] = "database error"
+		return nil, dbErr
+	}
+
+	return &modelFile, nil
 }
 
 func (r *ModelRepo) DeleteModelFile(fileId uint64) error {
