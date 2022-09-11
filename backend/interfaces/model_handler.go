@@ -8,6 +8,7 @@ import (
 	"github.com/AhEhIOhYou/etomne/backend/interfaces/filemanager"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"time"
 )
@@ -252,6 +253,20 @@ func (m *Model) GetAllModel(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
+
+		orderedFiles := map[string][]entities.File{
+			"glb": {},
+			"img": {},
+		}
+
+		for _, file := range files {
+			if file.Extension  == ".glb" {
+				orderedFiles["glb"] = append(orderedFiles["glb"], file)
+			} else {
+				orderedFiles["img"] = append(orderedFiles["img"], file)
+			}
+		}
+
 		user, err := m.userApp.GetUser(model.UserID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err.Error())
@@ -260,7 +275,7 @@ func (m *Model) GetAllModel(c *gin.Context) {
 		readyModel := map[string]interface{}{
 			"model":  model,
 			"author": user.PublicUser(),
-			"files":  files,
+			"files":  orderedFiles,
 		}
 		allModels = append(allModels, readyModel)
 	}
@@ -299,10 +314,22 @@ func (m *Model) GetModel(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
+	orderedFiles := map[string][]entities.File{
+		"glb": {},
+		"img": {},
+	}
+
+	for _, file := range files {
+		if file.Extension  == ".glb" {
+			orderedFiles["glb"] = append(orderedFiles["glb"], file)
+		} else {
+			orderedFiles["img"] = append(orderedFiles["img"], file)
+		}
+	}
 	Model := map[string]interface{}{
 		"model":  model,
 		"author": user.PublicUser(),
-		"files":  files,
+		"files":  orderedFiles,
 	}
 	c.JSON(http.StatusOK, Model)
 }
@@ -445,10 +472,13 @@ func (m *Model) SaveModelFile(c *gin.Context) {
 		return
 	}
 
+	ext := filepath.Ext(file.Filename)
+
 	File := entities.File{
-		OwnerId: userId,
-		Title:   file.Filename,
-		Url:     url,
+		OwnerId:   userId,
+		Title:     file.Filename,
+		Url:       url,
+		Extension: ext,
 	}
 
 	File.Prepare()

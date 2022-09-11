@@ -7,6 +7,7 @@ import (
 	"github.com/AhEhIOhYou/etomne/backend/interfaces/filemanager"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"path/filepath"
 	"strconv"
 )
 
@@ -78,11 +79,14 @@ func (f *File) SaveFile(c *gin.Context) {
 		return
 	}
 
+	ext := filepath.Ext(file.Filename)
+
 	//Добавление файла в бд files
 	File := entities.File{
-		OwnerId: userId,
-		Title:   file.Filename,
-		Url:     url,
+		OwnerId:   userId,
+		Title:     file.Filename,
+		Url:       url,
+		Extension: ext,
 	}
 
 	File.Prepare()

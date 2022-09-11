@@ -7,6 +7,7 @@ import (
 	"github.com/AhEhIOhYou/etomne/backend/interfaces/filemanager"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"path/filepath"
 	"strconv"
 )
 
@@ -180,10 +181,13 @@ func (s *Users) SaveUserPhoto(c *gin.Context) {
 		return
 	}
 
+	ext := filepath.Ext(file.Filename)
+
 	File := entities.File{
-		OwnerId: userId,
-		Title:   file.Filename,
-		Url:     url,
+		OwnerId:   userId,
+		Title:     file.Filename,
+		Url:       url,
+		Extension: ext,
 	}
 
 	File.Prepare()

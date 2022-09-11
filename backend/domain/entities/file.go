@@ -11,6 +11,7 @@ type File struct {
 	Title     string    `gorm:"size:100;not null;" json:"title"`
 	OwnerId   uint64    `gorm:"size:100;not null" json:"owner_id"`
 	Url       string    `gorm:"size:255;not null;" json:"url"`
+	Extension string    `gorm:"size:50;not null;" json:"extension"`
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 }
 
