@@ -238,11 +238,33 @@ func (m *Model) GetAllModel(c *gin.Context) {
 		return
 	}
 
-	allModels, err := m.modelApp.GetAllModel(page, limit)
+	preModels, err := m.modelApp.GetAllModel(page, limit)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
+
+	var allModels []map[string]interface{}
+
+	for _, model := range preModels {
+		files, err := m.modelApp.GetFilesByModel(model.ID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+		user, err := m.userApp.GetUser(model.UserID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+		readyModel := map[string]interface{}{
+			"model":  model,
+			"author": user.PublicUser(),
+			"files":  files,
+		}
+		allModels = append(allModels, readyModel)
+	}
+
 	c.JSON(http.StatusOK, allModels)
 }
 
