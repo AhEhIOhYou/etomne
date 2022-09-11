@@ -46,9 +46,10 @@ func (r *ModelRepo) GetModel(id uint64) (*entities.Model, error) {
 	return &model, nil
 }
 
-func (r *ModelRepo) GetAllModel() ([]entities.Model, error) {
+func (r *ModelRepo) GetAllModel(page, limit int) ([]entities.Model, error) {
 	var models []entities.Model
-	err := r.db.Debug().Limit(100).Order("created_at desc").Find(&models).Error
+	offset := (page - 1) * limit
+	err := r.db.Debug().Limit(limit).Offset(offset).Order("created_at desc").Find(&models).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("model not found")
 	}

@@ -7,7 +7,7 @@ import (
 type ModelRepository interface {
 	SaveModel(*entities.Model) (*entities.Model, map[string]string)
 	GetModel(uint64) (*entities.Model, error)
-	GetAllModel() ([]entities.Model, error)
+	GetAllModel(int, int) ([]entities.Model, error)
 	UpdateModel(*entities.Model) (*entities.Model, map[string]string)
 	DeleteModel(uint64) error
 

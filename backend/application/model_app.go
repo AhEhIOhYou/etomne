@@ -13,7 +13,7 @@ var _ ModelAppInterface = &modelApp{}
 
 type ModelAppInterface interface {
 	SaveModel(*entities.Model) (*entities.Model, map[string]string)
-	GetAllModel() ([]entities.Model, error)
+	GetAllModel(int, int) ([]entities.Model, error)
 	GetModel(uint64) (*entities.Model, error)
 	UpdateModel(*entities.Model) (*entities.Model, map[string]string)
 	DeleteModel(uint64) error
@@ -30,8 +30,8 @@ func (m *modelApp) SaveModel(model *entities.Model) (*entities.Model, map[string
 	return m.md.SaveModel(model)
 }
 
-func (m *modelApp) GetAllModel() ([]entities.Model, error) {
-	return m.md.GetAllModel()
+func (m *modelApp) GetAllModel(page, limit int) ([]entities.Model, error) {
+	return m.md.GetAllModel(page, limit)
 }
 
 func (m *modelApp) GetModel(modelId uint64) (*entities.Model, error) {

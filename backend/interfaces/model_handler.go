@@ -226,7 +226,19 @@ func (m *Model) UpdateModel(c *gin.Context) {
 // @Failure      500  string  error
 // @Router       /model [get]
 func (m *Model) GetAllModel(c *gin.Context) {
-	allModels, err := m.modelApp.GetAllModel()
+
+	limit, err := strconv.Atoi(c.Query("_limit"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "invalid request")
+		return
+	}
+	page, err := strconv.Atoi(c.Query("_page"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "invalid request")
+		return
+	}
+
+	allModels, err := m.modelApp.GetAllModel(page, limit)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
