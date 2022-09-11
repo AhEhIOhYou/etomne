@@ -35,11 +35,9 @@ type NewUser struct {
 // SaveUser godoc
 // @Summary     Save user
 // @Tags        Users
-// @Produce		json
-// @Param       name		  formData      string  true  "Model Title"
-// @Param       email         formData      string  true  "Model Description"
-// @Param       password      formData      string  true  "Model Description"
-// @Param       attachments   formData      file	 false "Model Files"		Format(binary)
+// @Param       name		  json      string  true  "Username"
+// @Param       email         json      string  true  "User email"
+// @Param       password      json      string  true  "User password"
 // @Success     201   {object} entities.PublicUser
 // @Failure     422   {string} string  "invalid_json"
 // @Failure     500   {string} string  "error"
