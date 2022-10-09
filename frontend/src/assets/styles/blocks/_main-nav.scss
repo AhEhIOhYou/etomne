@@ -1,0 +1,21 @@
+.main-nav {
+  width: 100%;
+
+  &__list {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    justify-content: space-between;
+    list-style: none;
+  }
+
+  &__link {
+    &.is-active {
+      opacity: 0.6;
+    }
+  }
+
+  &__toggle {
+    display: none;
+  }
+}

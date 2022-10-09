@@ -1,12 +1,12 @@
 <template>
-  <div>
-    <models-list
-      :models="models"
-      v-if="!isModelsLoading"
-    />
-    <div v-else>Идет загрузка...</div>
-    <div v-intersection="loadMoreModels" class="observer"></div>
-  </div>
+  <section class="models">
+      <models-list
+        :models="models"
+        v-if="!isModelsLoading"
+      />
+      <div v-else>Идет загрузка...</div>
+      <div v-intersection="loadMoreModels" class="observer"></div>
+  </section>
 </template>
 
 <script>
@@ -29,6 +29,10 @@ export default {
   },
   mounted() {
     this.fetchModels();
+    let modelViewerScript = document.createElement('script')
+    modelViewerScript.setAttribute('src', 'https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js')
+    modelViewerScript.setAttribute('type', 'module')
+    document.head.appendChild(modelViewerScript)
   },
   computed: {
     ...mapState({
@@ -42,5 +46,6 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+
 </style>
