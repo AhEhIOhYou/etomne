@@ -1,0 +1,15 @@
+.header {
+  padding: 8px 20px;
+  background-color: $color-default-white;
+  width: 100%;
+  z-index: 1;
+  margin-bottom: 30px;
+
+  .container {
+    display: flex;
+  }
+
+  &__logo {
+    color: $color-default-white;
+  }
+}

@@ -1,9 +1,32 @@
 <template>
   <div>
-    <h1>Это страница поста с ID = {{ $route.params.id }}</h1>
-    <!-- <span> {{ modelFiles[0] }}</span> -->
-    <!-- <img src="https://modelshowtime.serdcebolit.ru/" {{ model.files[0].url }}> -->
-    <div v-if="!isModelLoading" class="model__content">
+    <div v-if="!isModelLoading" class="model">
+      <div class="model__content">
+        <h2 class="model__title">{{ model.model.title }}</h2>
+        <model-viewer class="model__model" :src="'https://modelshowtime.serdcebolit.ru/' + model.files.glb[0].url" camera-controls="" ar-status="not-presenting"></model-viewer>
+        <span class="model__author">Created by {{ model.author.name }}</span>
+        <span class="model__data">{{ model.model.created_at }}</span>
+      </div>
+      <div class="model__panel">
+        <div class="model__info">
+          <h3 class="model__sub-title">Описание</h3>
+          <div class="model__info-container">
+            <p class="model__description">{{ model.model.description }}</p>
+            <ul class="model__actions">
+              <li class="model__action">
+                <button class="model__action-btn btn">Редактировать</button>
+              </li>
+              <li class="model__action">
+                <button class="model__action-btn btn">Удалить</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else>Идет загрузка...</div> 
+
+    <!-- <div v-if="!isModelLoading" class="model__content">
       <h2 class="model__title">{{ model.model.title }}</h2>
       <img 
       v-if="model.files.length > 0"
@@ -15,12 +38,11 @@
       <span class="model__data">{{ model.model.created_at}}</span>
       <span class="model__description">{{ model.model.description }}</span>
     </div>
-    <div v-else>Идет загрузка...</div>
-  </div>
+    <div v-else>Идет загрузка...</div>  -->
+    </div>
 </template>
 
 <script>
-import {mapState, mapGetters, mapActions, mapMutations} from 'vuex';
 import axios from "axios";
 export default {
   components: {
@@ -32,19 +54,7 @@ export default {
     }
   },
   methods: {
-    // ...mapActions({
-    //   fetchModel: 'model/fetchModel',
-    // }),
     async fetchModel(id) {
-          //   try {
-          //       commit('setLoading', true);
-          //       const response = await axios.get(`https://modelshowtime.serdcebolit.ru/api/model/${id}`);
-          //       commit('setModel', response.data);
-          //   } catch (e) {
-          //       console.log(e)
-          //   } finally {
-          //     commit('setLoading', false);
-          // }
           axios
           .get(`https://modelshowtime.serdcebolit.ru/api/model/${id}`)
           .then(response => {
@@ -58,18 +68,15 @@ export default {
   },
   mounted() {
     this.fetchModel(this.$route.params.id);
-    
+    let modelViewerScript = document.createElement('script')
+    modelViewerScript.setAttribute('src', 'https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js')
+    modelViewerScript.setAttribute('type', 'module')
+    document.head.appendChild(modelViewerScript)
   },
   computed: {
-    // ...mapState({
-    //   model: state => state.model.model,
-    //   isModelLoading: state => state.model.isModelLoading,
-    // }),
   },
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 </style>
-
-<!-- <model-viewer class="model__model" src={{ model.FilePath }} camera-controls></model-viewer> -->
