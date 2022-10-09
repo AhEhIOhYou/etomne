@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"github.com/AhEhIOhYou/etomne/backend/infrastructure/auth"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -34,4 +35,12 @@ func CORSMiddleware() gin.HandlerFunc {
 		}
 		c.Next()
 	}
+}
+
+func FrontStaticMiddleware() gin.HandlerFunc {
+	return static.Serve("/", static.LocalFile("./frontend/dist", false))
+}
+
+func UploadStaticMiddleware() gin.HandlerFunc {
+	return static.Serve("/upload", static.LocalFile("./upload", false))
 }

@@ -74,9 +74,14 @@ func main() {
 	files := interfaces.NewFile(services.Model, services.User, services.File, fm, redisService.Auth, tk)
 	authenticate := interfaces.NewAuthenticate(services.User, redisService.Auth, tk)
 	comments := interfaces.NewComment(services.Model, services.User, services.Comment, redisService.Auth, tk)
+	index := interfaces.Index
 
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware())
+	r.Use(middleware.FrontStaticMiddleware())
+	r.Use(middleware.UploadStaticMiddleware())
+
+	r.Any("/", index)
 
 	u := r.Group("api/users")
 	{
@@ -120,7 +125,7 @@ func main() {
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	r.Static("/upload", "./upload")
+	r.LoadHTMLFiles("frontend/dist/index.html")
 
 	log.Fatal(r.Run(":" + "8093"))
 }
