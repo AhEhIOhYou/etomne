@@ -111,10 +111,13 @@ func (m *Model) SaveModel(c *gin.Context) {
 				return
 			}
 
+			ext := filepath.Ext(file.Filename)
+
 			File := entities.File{
-				OwnerId: userId,
-				Title:   file.Filename,
-				Url:     url,
+				OwnerId:   userId,
+				Title:     file.Filename,
+				Url:       url,
+				Extension: ext,
 			}
 
 			File.Prepare()
@@ -260,7 +263,7 @@ func (m *Model) GetAllModel(c *gin.Context) {
 		}
 
 		for _, file := range files {
-			if file.Extension  == ".glb" {
+			if file.Extension == ".glb" {
 				orderedFiles["glb"] = append(orderedFiles["glb"], file)
 			} else {
 				orderedFiles["img"] = append(orderedFiles["img"], file)
@@ -320,7 +323,7 @@ func (m *Model) GetModel(c *gin.Context) {
 	}
 
 	for _, file := range files {
-		if file.Extension  == ".glb" {
+		if file.Extension == ".glb" {
 			orderedFiles["glb"] = append(orderedFiles["glb"], file)
 		} else {
 			orderedFiles["img"] = append(orderedFiles["img"], file)
