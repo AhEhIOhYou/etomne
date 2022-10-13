@@ -4,9 +4,11 @@
       <ul class="main-nav__list">
         <li class="main-nav__item">
           <a class="main-nav__link btn btn--white" href="/upload">Загрузка моделей</a>
+          <!-- <router-link class="main-nav__link btn btn--white" to="/upload">Загрузка моделей</router-link> -->
         </li>
         <li class="main-nav__item">
-          <a class="main-nav__link btn" href="/login">Авторизация</a>
+          <!-- <a class="main-nav__link btn" href="/login">Авторизация</a> -->
+          <router-link class="main-nav__link btn" to="/authorization">Авторизация</router-link>
         </li>
       </ul>
     </div>
