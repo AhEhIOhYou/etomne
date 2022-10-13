@@ -1,20 +1,4 @@
 <template>
-  <!-- <div class="model">
-    <div class="model__content">
-      <h2 class="model__title">{{ model.model.title }}</h2>
-      <img 
-      v-if="model.files.length > 0"
-      v-for="file in model.files"
-      :src="'https://modelshowtime.serdcebolit.ru/' + file.url"
-      >
-      <img v-else src="https://placehold.co/600x400">
-      <button @click="$router.push(`/${model.model.id}`)"></button>
-      <span class="model__author">{{ model.author.name }}</span>
-      <span class="model__data">{{ model.model.created_at}}</span>
-      <span class="model__description">{{ model.model.description }}</span>
-    </div>
-  </div> -->
-
   <div class="model">
     <div class="model__content">
       <h2 class="model__title">{{ model.model.title }}</h2>
@@ -58,16 +42,7 @@
           </swiper-slide>
         </swiper>
       </div>
-      <!-- <div v-if="model.files.glb.length > 0">
-        <model-viewer class="model__model" :src="'https://modelshowtime.serdcebolit.ru/' + model.files.glb[0].url" camera-controls="" ar-status="not-presenting"></model-viewer>
-      </div>
-      <span v-else>Модельки нет</span>
-      <img 
-      v-for="img in model.files.img"
-      :src="'https://modelshowtime.serdcebolit.ru/' + img.url"
-      > -->
       <span class="model__author">Created by {{ model.author.name }}</span>
-      <!-- https://modelshowtime.serdcebolit.ru/upload/f391b5a497b187f970c3f9bf9ad999a9.glb" -->
       <span class="model__data">{{ model.model.created_at }}</span>
       <button class="btn" @click="$router.push(`/${model.model.id}`)">Перейти к подробному описанию модели</button>
     </div>
