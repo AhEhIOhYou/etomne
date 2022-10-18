@@ -1,0 +1,697 @@
+definitions:
+  entities.Comment:
+    properties:
+      author_id:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      model_id:
+        type: integer
+      reply_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  entities.File:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      owner_id:
+        type: integer
+      title:
+        type: string
+      url:
+        type: string
+    type: object
+  entities.Model:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  entities.PublicUser:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  interfaces.AuthUser:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  interfaces.RToken:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  interfaces.UserData:
+    properties:
+      access_token:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /comment:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Model ID
+        in: query
+        name: model_id
+        required: true
+        type: string
+      - description: Reply ID
+        in: query
+        name: reply_id
+        type: string
+      - description: Count
+        in: query
+        name: count
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            items:
+              $ref: '#/definitions/entities.Comment'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get comments by Model ID
+      tags:
+      - Comment
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Model ID
+        in: formData
+        name: model_id
+        required: true
+        type: string
+      - description: Message
+        in: formData
+        name: message
+        required: true
+        type: string
+      - description: Reply to comment ID
+        in: formData
+        name: reply_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.Comment'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - bearerAuth: []
+      summary: Save new comment
+      tags:
+      - Comment
+  /file:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: File
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.File'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - bearerAuth: []
+      summary: Save uploaded file
+      tags:
+      - File
+  /file/{id}:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: File ID
+        in: path
+        name: file_id
+        required: true
+        type: string
+      - description: Model ID
+        in: query
+        name: model_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.File'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - bearerAuth: []
+      summary: Remove uploaded file
+      tags:
+      - File
+  /model:
+    get:
+      parameters:
+      - description: Limit model
+        in: query
+        name: _limit
+        required: true
+        type: string
+      - description: Page number
+        in: query
+        name: _page
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Model'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get all models
+      tags:
+      - Model
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Model Title
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: Model Description
+        in: formData
+        name: description
+        required: true
+        type: string
+      - description: Model Files
+        format: binary
+        in: formData
+        name: attachments
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.Model'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - bearerAuth: []
+      summary: Save model
+      tags:
+      - Model
+  /model/{id}:
+    delete:
+      parameters:
+      - description: Model ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - bearerAuth: []
+      summary: Delete model
+      tags:
+      - Model
+    get:
+      parameters:
+      - description: Model ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Model'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get model
+      tags:
+      - Model
+    put:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Model ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Model Title
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: Model Description
+        in: formData
+        name: description
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.Model'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - bearerAuth: []
+      summary: Update model
+      tags:
+      - Model
+  /model/addfile/:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Model ID
+        in: formData
+        name: model_id
+        type: string
+      - description: File
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.File'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - bearerAuth: []
+      summary: Save model file
+      tags:
+      - File
+  /users:
+    get:
+      parameters:
+      - description: User ID
+        in: query
+        name: user_id
+        type: string
+      - description: Count
+        in: query
+        name: count
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.PublicUser'
+            type: array
+        "400":
+          description: invalid query
+          schema:
+            type: string
+        "500":
+          description: error
+          schema:
+            type: string
+      summary: Get users
+      tags:
+      - Users
+    post:
+      parameters:
+      - description: Model Title
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Model Description
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: Model Description
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: Model Files
+        format: binary
+        in: formData
+        name: attachments
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.PublicUser'
+        "422":
+          description: invalid_json
+          schema:
+            type: string
+        "500":
+          description: error
+          schema:
+            type: string
+      summary: Save user
+      tags:
+      - Users
+  /users/addfile/:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Size
+        in: formData
+        name: size
+        type: string
+      - description: File
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.File'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - bearerAuth: []
+      summary: Save user photo
+      tags:
+      - Users
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Auth user data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/interfaces.AuthUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/interfaces.UserData'
+        "422":
+          description: invalid json provided
+          schema:
+            type: string
+        "500":
+          description: error
+          schema:
+            type: string
+      summary: Login user
+      tags:
+      - Authorization
+  /users/logout:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully logged out
+          schema:
+            type: string
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "500":
+          description: error
+          schema:
+            type: string
+      security:
+      - bearerAuth: []
+      summary: Logout user
+      tags:
+      - Authorization
+  /users/refresh:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Refresh token
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/interfaces.RToken'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/interfaces.UserData'
+        "401":
+          description: unauthorized
+          schema:
+            type: string
+        "403":
+          description: error
+          schema:
+            type: string
+        "422":
+          description: error
+          schema:
+            type: string
+        "500":
+          description: error
+          schema:
+            type: string
+      summary: Refresh user token
+      tags:
+      - Authorization
+swagger: "2.0"
