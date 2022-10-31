@@ -36,15 +36,9 @@ func (m *Model) Validate(action string) map[string]string {
 		if m.Title == "" || m.Title == "null" {
 			errorMessages["title_required"] = "title is required"
 		}
-		if m.Description == "" || m.Description == "null" {
-			errorMessages["desc_required"] = "description is required"
-		}
 	default:
 		if m.Title == "" || m.Title == "null" {
 			errorMessages["title_required"] = "title is required"
-		}
-		if m.Description == "" || m.Description == "null" {
-			errorMessages["desc_required"] = "description is required"
 		}
 	}
 	return errorMessages

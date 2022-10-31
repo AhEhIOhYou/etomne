@@ -33,11 +33,11 @@ func (c *Comment) Validate(action string) map[string]string {
 	switch strings.ToLower(action) {
 	case "update":
 		if c.Message == "" || c.Message == "null" {
-			errorMessages["title_required"] = "message is required"
+			errorMessages["error"] = "message is required"
 		}
 	default:
 		if c.Message == "" || c.Message == "null" {
-			errorMessages["title_required"] = "message is required"
+			errorMessages["error"] = "message is required"
 		}
 	}
 	return errorMessages

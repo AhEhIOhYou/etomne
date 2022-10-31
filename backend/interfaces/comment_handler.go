@@ -69,16 +69,6 @@ func (com *Comment) SaveComment(c *gin.Context) {
 		return
 	}
 
-	emptyComment := entities.Comment{
-		Message: message,
-	}
-
-	saveCommentError := emptyComment.Validate("")
-	if len(saveCommentError) > 0 {
-		c.JSON(http.StatusUnprocessableEntity, saveCommentError)
-		return
-	}
-
 	var replyId uint64
 	replyIdForm := c.PostForm("reply_id")
 	if replyIdForm != "" {
@@ -97,6 +87,11 @@ func (com *Comment) SaveComment(c *gin.Context) {
 	}
 
 	Comment.Prepare()
+	saveCommentError := Comment.Validate("")
+	if len(saveCommentError) > 0 {
+		c.JSON(http.StatusUnprocessableEntity, saveCommentError)
+		return
+	}
 
 	saveComment, saveErr := com.comApp.SaveComment(&Comment)
 	if saveErr != nil {
@@ -149,4 +144,8 @@ func (com *Comment) GetComments(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, comments)
+}
+
+func (com *Comment) DeleteComments(c *gin.Context) {
+
 }
