@@ -116,8 +116,8 @@ const docTemplate = `{
               "schema": {
                 "type": "object",
                 "required": [
-                  "message",
-                  "model_id"
+                  "model_id",
+                  "message"
                 ],
                 "properties": {
                   "model_id": {
@@ -128,10 +128,10 @@ const docTemplate = `{
                     "type": "string",
                     "description": "Message"
                   },
-                  "reply_id": {
+					"reply_id": {
                     "type": "string",
-                    "description": "Reply to comment ID"
-                  }
+                    "description": "Reply ID"
+                  },
                 }
               }
             }
@@ -192,9 +192,175 @@ const docTemplate = `{
         },
         "security": [
           {
-            "bearerAuth": [
-
-            ]
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/file": {
+      "post": {
+        "tags": [
+          "File"
+        ],
+        "summary": "Save uploaded file",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "File",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/entities.File"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/file/{id}": {
+      "post": {
+        "tags": [
+          "File"
+        ],
+        "summary": "Remove uploaded file",
+        "parameters": [
+          {
+            "name": "file_id",
+            "in": "path",
+            "description": "File ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "model_id",
+            "in": "query",
+            "description": "Model ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/entities.File"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
           }
         ]
       }
@@ -205,6 +371,26 @@ const docTemplate = `{
           "Model"
         ],
         "summary": "Get all models",
+        "parameters": [
+          {
+            "name": "_limit",
+            "in": "query",
+            "description": "Limit model",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "_page",
+            "in": "query",
+            "description": "Page number",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -270,9 +456,10 @@ const docTemplate = `{
           "content": {
             "multipart/form-data": {
               "schema": {
+                "type": "object",
                 "required": [
-                  "description",
-                  "title"
+                  "title",
+                  "attachments"
                 ],
                 "properties": {
                   "title": {
@@ -284,9 +471,12 @@ const docTemplate = `{
                     "description": "Model Description"
                   },
                   "attachments": {
-                    "type": "string",
-                    "description": "Model Files",
-                    "format": "binary"
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "Model Files"
                   }
                 }
               }
@@ -348,9 +538,7 @@ const docTemplate = `{
         },
         "security": [
           {
-            "bearerAuth": [
-
-            ]
+            "bearerAuth": []
           }
         ]
       }
@@ -518,9 +706,7 @@ const docTemplate = `{
         },
         "security": [
           {
-            "bearerAuth": [
-
-            ]
+            "bearerAuth": []
           }
         ]
       },
@@ -591,7 +777,102 @@ const docTemplate = `{
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/model/addfile/": {
+      "post": {
+        "tags": [
+          "File"
+        ],
+        "summary": "Save model file",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "model_id",
+                  "file"
+                ],
+                "properties": {
+                  "model_id": {
+                    "type": "string",
+                    "description": "Model ID"
+                  },
+                  "file": {
+                    "type": "string",
+                    "description": "File",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/entities.File"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/users": {
@@ -660,11 +941,28 @@ const docTemplate = `{
         ],
         "summary": "Save user",
         "requestBody": {
-          "description": "User",
           "content": {
-            "*/*": {
+            "json": {
               "schema": {
-                "$ref": "#/components/schemas/interfaces.NewUser"
+                "required": [
+                  "email",
+                  "name",
+                  "password"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Model Title"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Model Description"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "Model Description"
+                  }
+                }
               }
             }
           },
@@ -701,8 +999,95 @@ const docTemplate = `{
               }
             }
           }
+        }
+      }
+    },
+    "/users/addfile/": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Save user photo",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "size": {
+                    "type": "string",
+                    "description": "Size"
+                  },
+                  "file": {
+                    "type": "string",
+                    "description": "File",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
         },
-        "x-codegen-request-body-name": "data"
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/entities.File"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/users/login": {
@@ -797,9 +1182,7 @@ const docTemplate = `{
         },
         "security": [
           {
-            "bearerAuth": [
-
-            ]
+            "bearerAuth": []
           }
         ]
       }
@@ -912,13 +1295,30 @@ const docTemplate = `{
           }
         }
       },
-      "entities.Model": {
+      "entities.File": {
         "type": "object",
         "properties": {
           "created_at": {
             "type": "string"
           },
-          "deleted_at": {
+          "id": {
+            "type": "integer"
+          },
+          "owner_id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "entities.Model": {
+        "type": "object",
+        "properties": {
+          "created_at": {
             "type": "string"
           },
           "description": {
@@ -953,20 +1353,6 @@ const docTemplate = `{
         "type": "object",
         "properties": {
           "email": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          }
-        }
-      },
-      "interfaces.NewUser": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string"
-          },
-          "name": {
             "type": "string"
           },
           "password": {
