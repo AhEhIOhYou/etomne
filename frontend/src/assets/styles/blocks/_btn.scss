@@ -25,8 +25,7 @@
   }
 
   @include hover {
-    &:hover,
-    &:focus {
+    &:hover {
       background-color: $color-default-white;
       border: 1px solid $color-navy-blue;
       color: $color-navy-blue;
@@ -39,8 +38,7 @@
     color: $color-navy-blue;
 
     @include hover {
-      &:hover,
-      &:focus {
+      &:hover {
         background-color: $color-navy-blue;
         border: 1px solid $color-navy-blue;
         color: $color-default-white;

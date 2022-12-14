@@ -8,7 +8,7 @@
         </li>
         <li class="main-nav__item">
           <!-- <a class="main-nav__link btn" href="/login">Авторизация</a> -->
-          <router-link class="main-nav__link btn" to="/authorization">Авторизация</router-link>
+          <router-link class="main-nav__link btn" to="/registration">Авторизация</router-link>
         </li>
       </ul>
     </div>
