@@ -14,11 +14,11 @@
             class="model__default-swiper"
           >
             <swiper-slide v-for="model in model.files.glb">
-              <model-viewer class="model__model" :src="'https://modelshowtime.serdcebolit.ru/' + model.url" powerPreference="low-power" camera-controls=""></model-viewer>
+              <model-viewer class="model__model" :src="'/' + model.url" powerPreference="low-power" camera-controls=""></model-viewer>
             </swiper-slide>
             <swiper-slide v-for="img in model.files.img">
               <img 
-                :src="'https://modelshowtime.serdcebolit.ru/' + img.url"
+                :src="'/' + img.url"
               >
             </swiper-slide>
           </swiper>
@@ -34,11 +34,11 @@
             :navigation="true"
           >
             <swiper-slide v-for="model in model.files.glb">
-              <model-viewer class="model__model" :src="'https://modelshowtime.serdcebolit.ru/' + model.url"></model-viewer>
+              <model-viewer class="model__model" :src="'/' + model.url"></model-viewer>
             </swiper-slide>
             <swiper-slide v-for="img in model.files.img">
               <img 
-                :src="'https://modelshowtime.serdcebolit.ru/' + img.url"
+                :src="'/' + img.url"
               >
             </swiper-slide>
           </swiper>
@@ -104,7 +104,7 @@ export default {
   methods: {
     async fetchModel(id) {
           axios
-          .get(`https://modelshowtime.serdcebolit.ru/api/model/${id}`)
+          .get(`/api/model/${id}`)
           .then(response => {
             this.model = response.data
           })

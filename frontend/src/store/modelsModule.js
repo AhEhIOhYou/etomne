@@ -26,7 +26,7 @@ export const modelsModule = {
         async fetchModels({state, commit}) {
             try {
                 commit('setLoading', true);
-                const response = await axios.get('https://modelshowtime.serdcebolit.ru/api/model', {
+                const response = await axios.get('/api/model', {
                     params: {
                         _page: state.page,
                         _limit: state.limit
@@ -43,7 +43,7 @@ export const modelsModule = {
         async loadMoreModels({state, commit}) {
             try {
                 commit('setPage', state.page + 1)
-                const response = await axios.get('https://modelshowtime.serdcebolit.ru/api/model', {
+                const response = await axios.get('/api/model', {
                     params: {
                         _page: state.page,
                         _limit: state.limit
