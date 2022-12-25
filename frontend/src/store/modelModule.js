@@ -17,7 +17,7 @@ export const modelModule = {
         async fetchModel({state, commit}, id) {
             try {
                 commit('setLoading', true);
-                const response = await axios.get(`https://modelshowtime.serdcebolit.ru/api/model/${id}`);
+                const response = await axios.get(`/api/model/${id}`);
                 commit('setModel', response.data);
             } catch (e) {
                 console.log(e)

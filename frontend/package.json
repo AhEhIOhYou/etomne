@@ -20,7 +20,8 @@
     "axios": "^0.27.2",
     "sass": "^1.32.7",
     "sass-loader": "^12.0.0",
-    "swiper": "^8.4.3"
+    "swiper": "^8.4.3",
+    "vue-cookies": "^1.8.2"
   },
   "browserslist": [
     "> 1%",
