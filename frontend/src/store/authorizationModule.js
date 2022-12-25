@@ -26,7 +26,7 @@ export const authorizationModule = {
         state.name = name;
       },
     },
-    getters: {
+    getters: { 
     },
     actions: {
       handleSubmitAuthorization({state, commit}) {
@@ -40,6 +40,8 @@ export const authorizationModule = {
           $cookies.set('refresh_token', response.data.refresh_token, '7d', '/');
           commit('setId', `${response.data.id}`);
           commit('setName', `${response.data.name}`);
+          localStorage.setItem('name', response.data.name);
+          localStorage.setItem('id', response.data.id);
         })
         .catch(error => {
           errorElem.classList.add('alert--enable');

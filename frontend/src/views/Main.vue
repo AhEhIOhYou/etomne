@@ -29,10 +29,10 @@ export default {
   },
   mounted() {
     this.fetchModels();
-    let modelViewerScript = document.createElement('script')
-    modelViewerScript.setAttribute('src', 'https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js')
-    modelViewerScript.setAttribute('type', 'module')
-    document.head.appendChild(modelViewerScript)
+    let modelViewerScript = document.createElement('script');
+    modelViewerScript.setAttribute('src', 'https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js');
+    modelViewerScript.setAttribute('type', 'module');
+    document.head.appendChild(modelViewerScript);
   },
   computed: {
     ...mapState({
