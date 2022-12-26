@@ -1,5 +1,7 @@
-import Input from "@/components/UI/Input";
+import CustomInput from "@/components/UI/CustomInput";
+import CustomTextarea from "@/components/UI/CustomTextarea";
 
 export default [
-    Input
+    CustomInput,
+    CustomTextarea
 ];
