@@ -3,6 +3,7 @@ import Main from '../views/Main'
 import ModelPageId from '@/views/ModelPageId'
 import Authorization from '@/views/Authorization'
 import Registration from '@/views/Registration'
+import UploadModel from '@/views/UploadModel'
 
 const routes = [
   {
@@ -23,6 +24,11 @@ const routes = [
     path: '/registration',
     name: 'registration',
     component: Registration,
+  },
+  {
+    path: '/uploadmodel',
+    name: 'uploadmodel',
+    component: UploadModel,
   }
 ]
 

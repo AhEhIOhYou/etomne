@@ -1,4 +1,4 @@
-.authorize {
+.form {
   max-width: 610px;
   margin-left: auto;
   margin-right: auto;
@@ -51,46 +51,36 @@
     }
   }
 
-  &__input {
-    border: 0.0625rem solid #d4dbea;
-    transition: opacity 0.3s ease;
-    margin-top: auto;
-    min-height: 3.0625rem;
-    background: #f8f8f8;
-    border-radius: 0.625rem;
-    padding: 0 1.875rem;
-    width: 100%;
-    color: #101241;
-    font-size: 1rem;
-    font-weight: 500;
-    position: relative;
-
-    @media (hover: hover),
-    screen {
-      &:hover {
-        opacity: 0.7;
-      }
-
-      &:focus {
-        opacity: 1;
+  &__upload-button {
+    @media (hover: hover), screen {
+      &:hover svg {
+        fill: #0079d3;
       }
     }
 
-    @media (max-width: 767px) {
-      margin-top: 0;
+    & svg {
+      fill: #fff;
+      margin-right: 10px;
+      transition: fill 0.3s ease;
     }
   }
 
-  &__label {
+  &__label,
+  &__upload-text {
     color: #1a1a1a;
+    margin-top: 0;
     margin-bottom: 5px;
     display: block;
     width: fit-content;
     line-height: 24px;
   }
 
+  &__upload-text {
+    margin-bottom: 20px;
+  }
+
   &__forget,
-  &__authorize-link {
+  &__form-link {
     color: #1a1a1a;
     transition: opacity 0.3s ease;
     position: relative;
@@ -226,7 +216,7 @@
     box-shadow: none;
     margin: 0;
 
-    &.authorize__button--alone {
+    &.form__button--alone {
       margin-bottom: 1rem;
     }
   }

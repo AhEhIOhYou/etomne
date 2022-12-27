@@ -3,11 +3,9 @@
     <div class="main-nav__wrapper">
       <ul class="main-nav__list">
         <li class="main-nav__item">
-          <a class="main-nav__link btn btn--white" href="/upload">Загрузка моделей</a>
-          <!-- <router-link class="main-nav__link btn btn--white" to="/upload">Загрузка моделей</router-link> -->
+          <router-link class="main-nav__link btn btn--white" to="/uploadmodel">Загрузка моделей</router-link>
         </li>
         <li class="main-nav__item">
-          <!-- <a class="main-nav__link btn" href="/login">Авторизация</a> -->
           <router-link class="main-nav__link btn" to="/authorization">Авторизация</router-link>
           <button @click="logout" class="main-nav__link btn" type="button">Выйти</button>
         </li>
@@ -17,8 +15,8 @@
 </template>
 <script>
 import axios from "axios";
-import VueCookies from 'vue-cookies';
-import auth from '@/assets/functions/auth.js';
+// import VueCookies from 'vue-cookies';
+// import auth from '@/assets/functions/auth.js';
 
 export default {  
   name: 'navbar',
