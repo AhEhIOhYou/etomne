@@ -5,7 +5,7 @@ export const modelsModule = {
         models: [],
         isModelsLoading: false,
         page: 1,
-        limit: 2,
+        limit: 1,
         totalPages: 0,
     }),
     mutations: {

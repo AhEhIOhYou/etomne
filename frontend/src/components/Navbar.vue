@@ -2,12 +2,13 @@
   <nav class="main-nav">
     <div class="main-nav__wrapper">
       <ul class="main-nav__list">
+        <router-link class="main-nav__logo" to="/"><img src="@/assets/logo.png" width="640" height="640" alt="Лого"/></router-link>
         <li class="main-nav__item">
-          <router-link class="main-nav__link btn btn--white" to="/uploadmodel">Загрузка моделей</router-link>
+          <router-link v-show="isAuth" class="main-nav__link btn btn--white" to="/uploadmodel">Загрузка моделей</router-link>
         </li>
         <li class="main-nav__item">
-          <router-link class="main-nav__link btn" to="/authorization">Авторизация</router-link>
-          <button @click="logout" class="main-nav__link btn" type="button">Выйти</button>
+          <router-link v-if="!isAuth" class="main-nav__link btn" to="/authorization">Авторизация</router-link>
+          <button v-else @click="logout" class="main-nav__link btn" type="button">Выйти</button>
         </li>
       </ul>
     </div>
@@ -20,6 +21,9 @@ import axios from "axios";
 
 export default {  
   name: 'navbar',
+  props: {
+    isAuth: Boolean,
+  },
   methods: {
     logout() {
       const accessToken = $cookies.get("access_token");
@@ -36,6 +40,7 @@ export default {
             $cookies.remove("refresh_token");
             localStorage.removeItem('name');
             localStorage.removeItem('id');
+            window.location.href = '/authorization';
           })
           .catch(error => {
             console.log(error)
