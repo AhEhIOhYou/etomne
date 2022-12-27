@@ -1,6 +1,6 @@
 <template>
   <header class="header">
-    <navbar></navbar>
+    <navbar :isAuth=isAuth></navbar>
   </header>
   <div class="container">
     <router-view/>
@@ -12,6 +12,11 @@ import axios from "axios";
 import VueCookies from 'vue-cookies';
 
 export default {  
+  data () {
+    return {
+      isAuth: false
+    }
+  },
   watch: {
     $route: 'fetchData',
   },
@@ -30,10 +35,15 @@ export default {
           commit('setName', `${response.data.name}`);
           localStorage.setItem('name', response.data.name);
           localStorage.setItem('id', response.data.id);
+          this.isAuth = true;
         })
         .catch(error => {
           console.log(error);
         });
+      } else {
+        if (localStorage.name) {
+          this.isAuth = true;
+        }
       }
     }
   }

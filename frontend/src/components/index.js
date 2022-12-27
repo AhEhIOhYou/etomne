@@ -5,5 +5,5 @@ import Navbar from "@/components/Navbar";
 export default {
   ModelsItem,
   ModelsList,
-  Navbar,
+  Navbar
 };
