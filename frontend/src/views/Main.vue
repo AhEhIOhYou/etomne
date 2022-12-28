@@ -2,6 +2,7 @@
   <section class="models">
       <models-list
         :models="models"
+        @remove="removeModel"
         v-if="!isModelsLoading"
       />
       <div v-else>Идет загрузка...</div>
@@ -10,7 +11,9 @@
 </template>
 
 <script>
-import {mapState, mapGetters, mapActions, mapMutations} from 'vuex'
+import {mapState, mapGetters, mapActions, mapMutations} from 'vuex';
+import axios from "axios";
+
 export default {
   components: {
   },
@@ -26,6 +29,27 @@ export default {
       loadMoreModels: 'models/loadMoreModels',
       fetchModels: 'models/fetchModels'
     }),
+    removeModel(model){
+      const accessToken = $cookies.get("access_token");
+      const modelId = model.model.id;
+      axios.delete(`/api/model/${modelId}`,
+      {
+        data: { 
+          id: modelId
+        }, 
+        headers: { 
+          "Authorization": `Bearer ${accessToken}`
+        } 
+      })
+      .then(response => {
+        const model = document.querySelector(`[data-model-id="${modelId}"`);
+        model.remove();
+        console.log(response);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    }
   },
   mounted() {
     this.fetchModels();
