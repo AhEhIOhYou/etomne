@@ -1,5 +1,5 @@
 <template>
-  <div class="model">
+  <div class="model" :data-model-id="`${model.model.id}`">
     <div class="model__content">
       <h2 class="model__title">{{ model.model.title }}</h2>
       <span>{{model.model.id}}</span>
@@ -43,8 +43,7 @@
         </swiper>
       </div>
       <span class="model__author">Created by {{ model.author.name }}</span>
-      <span class="model__data">{{ model.model.created_at }}</span>
-      <button class="btn" @click="$router.push(`/${model.model.id}`)">Перейти к подробному описанию модели</button>
+      <span class="model__data">{{ toDateString(model.model.created_at) }}</span>
     </div>
     <div class="model__panel">
       <div class="model__info">
@@ -52,11 +51,14 @@
         <div class="model__info-container">
           <p class="model__description">{{ model.model.description }}</p>
           <ul class="model__actions">
-            <li class="model__action">
+            <!-- <li class="model__action">
               <button class="model__action-btn btn">Редактировать</button>
+            </li> -->
+            <li class="model__action">
+              <button class="btn" @click="$router.push(`/${model.model.id}`)">Перейти к подробному описанию модели</button>
             </li>
             <li class="model__action">
-              <button class="model__action-btn btn">Удалить</button>
+              <button v-show="isAuth" @click="$emit('remove', model)" class="model__action-btn btn">Удалить</button>
             </li>
           </ul>
         </div>
@@ -73,10 +75,16 @@ import "swiper/css/free-mode"
 import "swiper/css/thumbs"
 import "swiper/css/navigation"
 import {FreeMode, Thumbs, Navigation} from 'swiper';
+
 export default {
   components: {
     Swiper,
     SwiperSlide,
+  },
+  methods: {
+    toDateString(date) {
+      return new Date(date).toLocaleDateString('ru-RU', { year: 'numeric', month: 'numeric', day: 'numeric' })
+    },
   },
   setup() {
     const thumbsSwiper = ref(null);

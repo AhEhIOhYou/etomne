@@ -54,7 +54,7 @@ export const modelsModule = {
             } catch (e) {
                 console.log(e)
             }
-        }
+        },
     },
     namespaced: true
 }
