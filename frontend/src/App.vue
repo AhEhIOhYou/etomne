@@ -29,7 +29,7 @@ export default {
             refresh_token: refreshToken
           })
         .then(response => {
-          $cookies.set('access_token', response.data.access_token, '15m', '/');
+          $cookies.set('access_token', response.data.access_token, '15min', '/');
           $cookies.set('refresh_token', response.data.refresh_token, '7d', '/');
           commit('setId', `${response.data.id}`);
           commit('setName', `${response.data.name}`);
