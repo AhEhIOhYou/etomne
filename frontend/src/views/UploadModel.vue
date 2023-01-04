@@ -1,5 +1,10 @@
 <template>
   <div class="form">
+    <div class="form__overlay">
+      <div class="form__spinner" role="status">
+        <span class="form__loading">Loading...</span>
+      </div>
+    </div>
     <form class="form__form" method="post" @submit.prevent>
       <p class="form__title">Пожалуйста, введите данные для загрузки модели:</p>
       <!-- <p class="form__error alert alert--error">{{ $store.state.authorization.error }}</p> -->
@@ -29,7 +34,7 @@
           </label>
         </div>
       </div>
-      <button type="submit" @click="handleSubmitButton" class="form__button btn">Загрузить модель</button>
+      <button type="submit" @click="submitFiles" class="form__button btn">Загрузить модель</button>
     </form>
     <div class="modal">
       <p class="modal__text">Модель успешно загружена</p>
@@ -50,7 +55,7 @@ export default {
   },
   data(){
     return {
-      attachments: ''
+      attachments: '',
     }
   },
   methods: {
@@ -66,6 +71,7 @@ export default {
     },
     submitFiles(){
       const accessToken = $cookies.get("access_token");
+      const formOverlay = document.querySelector('.form__overlay');
       let formData = new FormData();
       formData.append('title', this.name);
       formData.append('description', this.description);
@@ -73,7 +79,8 @@ export default {
           let attachment = this.attachments[i];
           formData.append('attachments', attachment);
         }
-
+      
+      formOverlay.classList.add('form__overlay--active');
       axios.post( '/api/model',
         formData,
         {
@@ -83,6 +90,9 @@ export default {
           }
         }
       ).then(response => {
+          formOverlay.classList.remove('form__overlay--active');
+          const form = document.querySelector('.form__form');
+          form.reset();
           const modal = document.querySelector('.modal');
           modal.classList.add('modal--active');
           setTimeout(() => {
