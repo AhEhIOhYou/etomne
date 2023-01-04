@@ -1,6 +1,6 @@
 <template>
   <div class="form">
-    <form method="post" @submit.prevent>
+    <form class="form__form" method="post" @submit.prevent>
       <p class="form__title">Пожалуйста, введите данные для загрузки модели:</p>
       <!-- <p class="form__error alert alert--error">{{ $store.state.authorization.error }}</p> -->
       <div class="form__container form__container--one">
@@ -29,8 +29,11 @@
           </label>
         </div>
       </div>
-      <button type="submit" @click="submitFiles" class="form__button btn">Загрузить модель</button>
+      <button type="submit" @click="handleSubmitButton" class="form__button btn">Загрузить модель</button>
     </form>
+    <div class="modal">
+      <p class="modal__text">Модель успешно загружена</p>
+    </div>
   </div>
 </template>
 
@@ -80,11 +83,24 @@ export default {
           }
         }
       ).then(response => {
+          const modal = document.querySelector('.modal');
+          modal.classList.add('modal--active');
+          setTimeout(() => {
+            modal.classList.remove('modal--active');
+          }, 5000);
           console.log(response);
         })
         .catch(error => {
           console.log(error);
         });
+    },
+    resetForm(){
+      const form = document.querySelector('.form__form');
+      form.reset();
+    },
+    handleSubmitButton() {
+      this.submitFiles();
+      this.resetForm();
     },
   },
   computed: {
@@ -99,4 +115,5 @@ export default {
 <style scoped lang="scss">
 @import "@/assets/styles/blocks/_form.scss";
 @import "@/assets/styles/blocks/_alert.scss";
+@import "@/assets/styles/blocks/_modal.scss";
 </style>

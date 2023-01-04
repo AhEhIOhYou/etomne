@@ -1,6 +1,6 @@
 <template>
   <header class="header">
-    <navbar :isAuth=isAuth></navbar>
+    <navbar></navbar>
   </header>
   <div class="container">
     <router-view/>
@@ -14,7 +14,6 @@ import VueCookies from 'vue-cookies';
 export default {  
   data () {
     return {
-      isAuth: false
     }
   },
   watch: {
@@ -22,9 +21,10 @@ export default {
   },
   methods: {
     fetchData() {
-      const accessToken = $cookies.isKey('access_token');
-      const refreshToken = $cookies.isKey('refresh_token');
-      if (!accessToken && refreshToken) {
+      const isAccessTokenExist = $cookies.isKey('access_token');
+      const isRefreshTokenExit = $cookies.isKey('refresh_token');
+      if (!isAccessTokenExist && isRefreshTokenExit) {
+        const refreshToken = $cookies.get('refresh_token');
         axios.post('/api/users/refresh', {
             refresh_token: refreshToken
           })
@@ -35,18 +35,23 @@ export default {
           commit('setName', `${response.data.name}`);
           localStorage.setItem('name', response.data.name);
           localStorage.setItem('id', response.data.id);
-          this.isAuth = true;
+          localStorage.setItem('isAuth', false);
         })
         .catch(error => {
           console.log(error);
         });
       } else {
         if (localStorage.name) {
-          this.isAuth = true;
+          localStorage.setItem('isAuth', true);
+        } else {
+          localStorage.setItem('isAuth', false);
         }
       }
     }
-  }
+  },
+  created() {
+    this.fetchData();
+  },
 }
 </script>
 

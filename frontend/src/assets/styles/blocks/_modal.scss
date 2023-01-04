@@ -1,0 +1,44 @@
+.modal {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  pointer-events: auto;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #f7f7f9;
+  border-radius: 20px;
+  outline: 0;
+  padding: 20px;
+  bottom: 20px;
+  right: -400px;
+  text-align: center;
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+
+  &__text {
+    color: #155724;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  &--active {
+    animation: modalIsActive 5s ease forwards 1;
+  }
+}
+
+@keyframes modalIsActive {
+  0% {
+    right: -400px;
+  }
+
+  20% {
+    right: 20px;
+  }
+  80% {
+    right: 20px;
+  }
+  100% {
+    right: -400px;
+  }
+}

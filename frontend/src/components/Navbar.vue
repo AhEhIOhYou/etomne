@@ -22,7 +22,6 @@ import axios from "axios";
 export default {  
   name: 'navbar',
   props: {
-    isAuth: Boolean,
   },
   methods: {
     logout() {
@@ -40,6 +39,7 @@ export default {
             $cookies.remove("refresh_token");
             localStorage.removeItem('name');
             localStorage.removeItem('id');
+            localStorage.setItem('isAuth', false);
             window.location.href = '/authorization';
           })
           .catch(error => {
@@ -58,6 +58,7 @@ export default {
             commit('setName', `${response.data.name}`);
             localStorage.setItem('name', response.data.name);
             localStorage.setItem('id', response.data.id);
+            localStorage.setItem('isAuth', true);
             return { newAccessToken: response.data.access_token, newRefreshToken: response.data.refresh_token }
           })
           .catch(error => {
@@ -68,8 +69,13 @@ export default {
       } else {
         logoutFunc(accessToken);
       }
+    },
+  },
+  computed: {
+      isAuth() {
+        return localStorage.isAuth === 'true';
+      }
     }
-  }
 }
 </script>
 <style scoped lang="scss">

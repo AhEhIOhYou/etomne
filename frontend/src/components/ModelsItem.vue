@@ -2,7 +2,6 @@
   <div class="model" :data-model-id="`${model.model.id}`">
     <div class="model__content">
       <h2 class="model__title">{{ model.model.title }}</h2>
-      <span>{{model.model.id}}</span>
       <div class="model__swipers">
         <swiper
           :slides-per-view="1"
@@ -42,8 +41,8 @@
           </swiper-slide>
         </swiper>
       </div>
-      <span class="model__author">Created by {{ model.author.name }}</span>
-      <span class="model__data">{{ toDateString(model.model.created_at) }}</span>
+      <span class="model__author">Создано пользователем {{ model.author.name }}</span>
+      <span class="model__data">Загружено {{ toDateString(model.model.created_at) }}</span>
     </div>
     <div class="model__panel">
       <div class="model__info">
@@ -54,9 +53,9 @@
             <!-- <li class="model__action">
               <button class="model__action-btn btn">Редактировать</button>
             </li> -->
-            <li class="model__action">
+            <!-- <li class="model__action">
               <button class="btn" @click="$router.push(`/${model.model.id}`)">Перейти к подробному описанию модели</button>
-            </li>
+            </li> -->
             <li class="model__action">
               <button v-show="isAuth" @click="$emit('remove', model)" class="model__action-btn btn">Удалить</button>
             </li>
@@ -104,6 +103,11 @@ export default {
     model: {
       type: Object,
       required: true,
+    }
+  },
+  computed: {
+    isAuth() {
+      return localStorage.isAuth === 'true';
     }
   },
   name: 'models-item',
