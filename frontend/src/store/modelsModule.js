@@ -6,7 +6,6 @@ export const modelsModule = {
         isModelsLoading: false,
         page: 1,
         limit: 1,
-        totalPages: 0,
     }),
     mutations: {
         setModels(state, models) {
@@ -17,9 +16,6 @@ export const modelsModule = {
         },
         setPage(state, page) {
             state.page = page
-        },
-        setTotalPages(state, totalPages) {
-            state.totalPages = totalPages
         },
     },
     actions: {
@@ -32,7 +28,6 @@ export const modelsModule = {
                         _limit: state.limit
                     }
                 });
-                commit('setTotalPages', Math.ceil(response.headers['x-total-count'] / state.limit))
                 commit('setModels', response.data)
             } catch (e) {
                 console.log(e)
@@ -49,12 +44,14 @@ export const modelsModule = {
                         _limit: state.limit
                     }
                 });
-                commit('setTotalPages', Math.ceil(response.headers['x-total-count'] / state.limit))
                 commit('setModels', [...state.models, ...response.data]);
             } catch (e) {
                 console.log(e)
             }
         },
+        setPagesToOne({state, commit}) {
+            commit('setPage', 1);
+        }
     },
     namespaced: true
 }

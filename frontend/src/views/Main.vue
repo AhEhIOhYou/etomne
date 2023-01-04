@@ -27,7 +27,8 @@ export default {
     }),
     ...mapActions({
       loadMoreModels: 'models/loadMoreModels',
-      fetchModels: 'models/fetchModels'
+      fetchModels: 'models/fetchModels',
+      setPagesToOne: 'models/setPagesToOne',
     }),
     removeModel(model){
       const accessToken = $cookies.get("access_token");
@@ -52,6 +53,7 @@ export default {
     }
   },
   mounted() {
+    this.setPagesToOne();
     this.fetchModels();
     let modelViewerScript = document.createElement('script');
     modelViewerScript.setAttribute('src', 'https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js');

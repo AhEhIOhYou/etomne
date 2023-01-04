@@ -46,6 +46,11 @@
     font-size: 12px;
     font-weight: 400;
     line-height: 16px;
+    text-align: right;
+  }
+
+  &__author {
+    margin-bottom: 5px;
   }
 
   &__info {
@@ -173,5 +178,9 @@
       height: 100%;
       object-fit: cover;
     }
+  }
+
+  &__swipers {
+    margin-bottom: 20px;
   }
 }

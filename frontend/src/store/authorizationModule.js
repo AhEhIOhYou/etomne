@@ -42,6 +42,7 @@ export const authorizationModule = {
           commit('setName', `${response.data.name}`);
           localStorage.setItem('name', response.data.name);
           localStorage.setItem('id', response.data.id);
+          localStorage.setItem('isAuth', true);
           window.location.href = '/';
         })
         .catch(error => {
