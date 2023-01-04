@@ -258,15 +258,18 @@ func (m *Model) GetAllModel(c *gin.Context) {
 		}
 
 		orderedFiles := map[string][]entities.File{
-			"glb": {},
-			"img": {},
+			"glb":   {},
+			"img":   {},
+			"video": {},
 		}
 
 		for _, file := range files {
 			if file.Extension == ".glb" {
 				orderedFiles["glb"] = append(orderedFiles["glb"], file)
-			} else {
+			} else if file.Extension == ".jpeg" || file.Extension == ".png" || file.Extension == ".jpg" || file.Extension == ".gif" {
 				orderedFiles["img"] = append(orderedFiles["img"], file)
+			} else {
+				orderedFiles["video"] = append(orderedFiles["video"], file)
 			}
 		}
 
@@ -318,15 +321,18 @@ func (m *Model) GetModel(c *gin.Context) {
 		return
 	}
 	orderedFiles := map[string][]entities.File{
-		"glb": {},
-		"img": {},
+		"glb":    {},
+		"img":    {},
+		"video:": {},
 	}
 
 	for _, file := range files {
 		if file.Extension == ".glb" {
 			orderedFiles["glb"] = append(orderedFiles["glb"], file)
-		} else {
+		} else if file.Extension == ".jpeg" || file.Extension == ".png" || file.Extension == ".jpg" || file.Extension == ".gif" {
 			orderedFiles["img"] = append(orderedFiles["img"], file)
+		} else {
+			orderedFiles["video"] = append(orderedFiles["video"], file)
 		}
 	}
 	Model := map[string]interface{}{
