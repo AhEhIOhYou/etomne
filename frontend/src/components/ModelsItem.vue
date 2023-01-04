@@ -15,9 +15,10 @@
             <model-viewer class="model__model" :src="'https://modelshowtime.serdcebolit.ru/' + model.url" powerPreference="low-power" camera-controls=""></model-viewer>
           </swiper-slide>
           <swiper-slide v-for="img in model.files.img">
-            <img 
-              :src="'https://modelshowtime.serdcebolit.ru/' + img.url"
-            >
+            <img :src="'https://modelshowtime.serdcebolit.ru/' + img.url">
+          </swiper-slide>
+          <swiper-slide v-for="video in model.files.video">
+            <video controls :src="'https://modelshowtime.serdcebolit.ru/' + video.url"></video>
           </swiper-slide>
         </swiper>
         <swiper v-if="model.files.glb.length > 1 || model.files.img.length > 0" class="model__thumbs-swiper"
@@ -35,9 +36,10 @@
             <model-viewer class="model__model" :src="'https://modelshowtime.serdcebolit.ru/' + model.url"></model-viewer>
           </swiper-slide>
           <swiper-slide v-for="img in model.files.img">
-            <img 
-              :src="'https://modelshowtime.serdcebolit.ru/' + img.url"
-            >
+            <img :src="'https://modelshowtime.serdcebolit.ru/' + img.url">
+          </swiper-slide>
+          <swiper-slide v-for="video in model.files.video">
+            <video class="model__video" :src="'https://modelshowtime.serdcebolit.ru/' + video.url"></video>
           </swiper-slide>
         </swiper>
       </div>
@@ -49,7 +51,7 @@
         <h3 class="model__sub-title">Описание</h3>
         <div class="model__info-container">
           <p class="model__description">{{ model.model.description }}</p>
-          <ul class="model__actions">
+          <ul class="model__actions"> 
             <!-- <li class="model__action">
               <button class="model__action-btn btn">Редактировать</button>
             </li> -->
@@ -109,6 +111,13 @@ export default {
     isAuth() {
       return localStorage.isAuth === 'true';
     }
+  },
+  mounted() {
+    const currentModel = document.querySelector(`[data-model-id="${this.model.model.id}"`);
+    const videos = currentModel.querySelectorAll('.model__video');
+    videos.forEach((video) => {
+      video.currentTime = video.currentTime + 1;
+    });
   },
   name: 'models-item',
 }

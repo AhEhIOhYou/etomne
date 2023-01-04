@@ -23,7 +23,7 @@
       <div class="form__container form__container--one">
         <div class="form__upload-file">
           <p class="form__upload-text">Загрузить файлы:</p>
-          <input class="visually-hidden form__upload-input" ref="attachments" v-on:change="handleFilesUpload" type="file" name="MODEL_FILES" id="MODEL_FILES" accept=".glb, .png, .jpeg, .jpg" multiple required>
+          <input class="visually-hidden form__upload-input" ref="attachments" v-on:change="handleFilesUpload" type="file" name="MODEL_FILES" id="MODEL_FILES" accept="image/*, video/*" multiple required>
           <label class="form__upload-label" for="MODEL_FILES">
             <span class="btn form__upload-button">
               <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none">
@@ -101,16 +101,9 @@ export default {
           console.log(response);
         })
         .catch(error => {
+          formOverlay.classList.remove('form__overlay--active');
           console.log(error);
         });
-    },
-    resetForm(){
-      const form = document.querySelector('.form__form');
-      form.reset();
-    },
-    handleSubmitButton() {
-      this.submitFiles();
-      this.resetForm();
     },
   },
   computed: {

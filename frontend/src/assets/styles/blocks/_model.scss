@@ -156,6 +156,11 @@
       height: 100%;
       object-fit: cover;
     }
+
+    * video {
+      height: 100%;
+      object-fit: fill;
+    }
   }
 
   &__thumbs-swiper {
@@ -168,6 +173,7 @@
     & .swiper-slide {
       height: 156px;
       cursor: pointer;
+      border-radius: 10px;
     }
 
     & model-viewer {
@@ -175,6 +181,13 @@
     }
 
     & img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    }
+
+    & video {
+      pointer-events: none;
       height: 100%;
       object-fit: cover;
     }

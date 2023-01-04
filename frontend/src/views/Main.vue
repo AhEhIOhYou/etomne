@@ -45,6 +45,10 @@ export default {
       .then(response => {
         const model = document.querySelector(`[data-model-id="${modelId}"`);
         model.remove();
+        const models = document.querySelectorAll('.model');
+        if(models.length <= 1) {
+          this.loadMoreModels();
+        }
         console.log(response);
       })
       .catch(error => {
@@ -73,5 +77,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.observer {
+  height: 30px;
+}
 </style>
