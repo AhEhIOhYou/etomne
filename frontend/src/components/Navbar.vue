@@ -2,7 +2,7 @@
   <nav class="main-nav">
     <div class="main-nav__wrapper">
       <ul class="main-nav__list">
-        <router-link class="main-nav__logo" to="/"><img src="@/assets/logo.png" width="640" height="640" alt="Лого"/></router-link>
+        <router-link class="main-nav__logo" to="/"><img src="@/assets/logo.png" width="50" height="50" alt="Лого"/></router-link>
         <li class="main-nav__item">
           <router-link v-show="isAuth" class="main-nav__link btn btn--white" to="/uploadmodel">Загрузка моделей</router-link>
         </li>
@@ -48,23 +48,18 @@ export default {
       };
 
       if (accessToken === null && refreshToken) {
-        Promise.all([axios.post('/api/users/refresh', {
+        axios.post('/api/users/refresh', {
           refresh_token: refreshToken
         })
           .then(response => {
             $cookies.set('access_token', response.data.access_token, '15min', '/');
             $cookies.set('refresh_token', response.data.refresh_token, '7d', '/');
-            commit('setId', `${response.data.id}`);
-            commit('setName', `${response.data.name}`);
-            localStorage.setItem('name', response.data.name);
-            localStorage.setItem('id', response.data.id);
             localStorage.setItem('isAuth', true);
-            return { newAccessToken: response.data.access_token, newRefreshToken: response.data.refresh_token }
+            logoutFunc(response.data.access_token);
+            console.log(response);
           })
           .catch(error => {
             console.log(error);
-          })]).then(function (values) {
-            logoutFunc(values[0].newAccessToken);
           });
       } else {
         logoutFunc(accessToken);

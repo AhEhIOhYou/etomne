@@ -23,7 +23,7 @@
       <div class="form__container form__container--one">
         <div class="form__upload-file">
           <p class="form__upload-text">Загрузить файлы:</p>
-          <input class="visually-hidden form__upload-input" ref="attachments" v-on:change="handleFilesUpload" type="file" name="MODEL_FILES" id="MODEL_FILES" accept="image/*, video/*" multiple required>
+          <input class="visually-hidden form__upload-input" ref="attachments" v-on:change="handleFilesUpload" type="file" name="MODEL_FILES" id="MODEL_FILES" accept="image/*, video/*, .glb, .gltf" multiple required>
           <label class="form__upload-label" for="MODEL_FILES">
             <span class="btn form__upload-button">
               <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none">
@@ -34,7 +34,7 @@
           </label>
         </div>
       </div>
-      <button type="submit" @click="submitFiles" class="form__button btn">Загрузить модель</button>
+      <button type="submit" @click="submitFilesHandler" class="form__button btn">Загрузить модель</button>
     </form>
     <div class="modal">
       <p class="modal__text">Модель успешно загружена</p>
@@ -69,8 +69,9 @@ export default {
     handleFilesUpload(){
       this.attachments = this.$refs.attachments.files;
     },
-    submitFiles(){
+    submitFilesHandler(){
       const accessToken = $cookies.get("access_token");
+      const refreshToken = $cookies.get("refresh_token");
       const formOverlay = document.querySelector('.form__overlay');
       let formData = new FormData();
       formData.append('title', this.name);
@@ -79,14 +80,14 @@ export default {
           let attachment = this.attachments[i];
           formData.append('attachments', attachment);
         }
-      
-      formOverlay.classList.add('form__overlay--active');
+
+      const submitFilesFunc = (access) => {
       axios.post( '/api/model',
         formData,
         {
           headers: {
             'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${access}`
           }
         }
       ).then(response => {
@@ -104,6 +105,27 @@ export default {
           formOverlay.classList.remove('form__overlay--active');
           console.log(error);
         });
+      };
+
+      if (accessToken === null && refreshToken) {
+        axios.post('/api/users/refresh', {
+          refresh_token: refreshToken
+        })
+          .then(response => {
+            $cookies.set('access_token', response.data.access_token, '15min', '/');
+            $cookies.set('refresh_token', response.data.refresh_token, '7d', '/');
+            localStorage.setItem('isAuth', true);
+            formOverlay.classList.add('form__overlay--active');
+            submitFilesFunc(response.data.access_token);
+            console.log(response);
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      } else {
+        formOverlay.classList.add('form__overlay--active');
+        submitFilesFunc(accessToken);
+      }
     },
   },
   computed: {
