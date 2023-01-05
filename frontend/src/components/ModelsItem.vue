@@ -12,7 +12,7 @@
           class="model__default-swiper"
         >
           <swiper-slide v-for="model in model.files.glb">
-            <model-viewer class="model__model" :src="'https://modelshowtime.serdcebolit.ru/' + model.url" powerPreference="low-power" camera-controls=""></model-viewer>
+            <model-viewer auto-rotate class="model__model" :src="'https://modelshowtime.serdcebolit.ru/' + model.url" camera-controls=""></model-viewer>
           </swiper-slide>
           <swiper-slide v-for="img in model.files.img">
             <img :src="'https://modelshowtime.serdcebolit.ru/' + img.url">
@@ -33,7 +33,7 @@
           :navigation="true"
         >
           <swiper-slide v-for="model in model.files.glb">
-            <model-viewer class="model__model" :src="'https://modelshowtime.serdcebolit.ru/' + model.url"></model-viewer>
+            <model-viewer auto-rotate class="model__model" :src="'https://modelshowtime.serdcebolit.ru/' + model.url"></model-viewer>
           </swiper-slide>
           <swiper-slide v-for="img in model.files.img">
             <img :src="'https://modelshowtime.serdcebolit.ru/' + img.url">
