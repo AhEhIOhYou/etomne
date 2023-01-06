@@ -21,7 +21,7 @@ export const authorizationModule = {
       },
       setId(state, id) {
         state.id = id;
-      },
+      }, 
       setName(state, name) {
         state.name = name;
       },
