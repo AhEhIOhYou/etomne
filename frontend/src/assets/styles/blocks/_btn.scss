@@ -1,0 +1,48 @@
+.btn {
+  display: flex;
+  margin: 0;
+  padding: 9px 16px;
+
+  color: $color-default-white;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 16px;
+  min-height: 32px;
+  min-width: 32px;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9999px;
+  background-color: $color-navy-blue;
+  border: 1px solid $color-navy-blue;
+  cursor: pointer;
+
+  transition: opacity $trans-default, background-color $trans-default, border $trans-default, color $trans-default;
+
+  &:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  @include hover {
+    &:hover {
+      background-color: $color-default-white;
+      border: 1px solid $color-navy-blue;
+      color: $color-navy-blue;
+    }
+  }
+
+  &--white {
+    background-color: $color-default-white;
+    border: 1px solid $color-navy-blue;
+    color: $color-navy-blue;
+
+    @include hover {
+      &:hover {
+        background-color: $color-navy-blue;
+        border: 1px solid $color-navy-blue;
+        color: $color-default-white;
+      }
+    }
+  }
+}

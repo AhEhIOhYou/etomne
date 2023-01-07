@@ -59,3 +59,16 @@ func (r *FileRepo) DeleteFile(id uint64) error {
 	}
 	return nil
 }
+
+func (r *FileRepo) CheckAvailabilityFile(fileId uint64, userId uint64) (bool, error) {
+	var result int
+	rows := r.db.Table("files").
+		Select("COUNT(id)").
+		Where("owner_id = ?", userId, fileId).Limit(1).Row()
+
+	if err := rows.Scan(&result); err != nil {
+		return false, err
+	}
+
+	return result == 1, nil
+}

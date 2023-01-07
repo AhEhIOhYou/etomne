@@ -46,9 +46,10 @@ func (r *ModelRepo) GetModel(id uint64) (*entities.Model, error) {
 	return &model, nil
 }
 
-func (r *ModelRepo) GetAllModel() ([]entities.Model, error) {
+func (r *ModelRepo) GetAllModel(page, limit int) ([]entities.Model, error) {
 	var models []entities.Model
-	err := r.db.Debug().Limit(100).Order("created_at desc").Find(&models).Error
+	offset := (page - 1) * limit
+	err := r.db.Debug().Limit(limit).Offset(offset).Order("created_at desc").Find(&models).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("model not found")
 	}
@@ -93,14 +94,27 @@ func (r *ModelRepo) GetFilesByModel(modelId uint64) ([]entities.File, error) {
 	return files, nil
 }
 
-func (r *ModelRepo) AddModelFile(mf *entities.ModelFile) (*entities.ModelFile, map[string]string) {
+func (r *ModelRepo) SaveModelFile(file *entities.File, modelId uint64) (*entities.ModelFile, map[string]string) {
+
 	dbErr := map[string]string{}
-	err := r.db.Debug().Create(&mf).Error
+	err := r.db.Debug().Create(&file).Error
 	if err != nil {
 		dbErr["db_error"] = "database error"
 		return nil, dbErr
 	}
-	return mf, nil
+
+	modelFile := entities.ModelFile{
+		ModelId: modelId,
+		FileId:  file.ID,
+	}
+
+	err = r.db.Debug().Create(&modelFile).Error
+	if err != nil {
+		dbErr["db_error"] = "database error"
+		return nil, dbErr
+	}
+
+	return &modelFile, nil
 }
 
 func (r *ModelRepo) DeleteModelFile(fileId uint64) error {
@@ -119,21 +133,6 @@ func (r *ModelRepo) DeleteAllModelFiles(modelId uint64) error {
 		return errors.New("database error, please try again")
 	}
 	return nil
-}
-
-func (r *ModelRepo) CheckAvailabilityFile(fileId uint64, userId uint64) (bool, error) {
-	var result int
-	rows := r.db.Table("models as m").
-		Select("COUNT(f.id)").
-		Joins("join model_files as mf on mf.model_id = m.id").
-		Joins("join files as f on f.id = mf.file_id").
-		Where("m.user_id = ? AND f.id = ?", userId, fileId).Limit(1).Row()
-
-	if err := rows.Scan(&result); err != nil {
-		return false, err
-	}
-
-	return result == 1, nil
 }
 
 func (r *ModelRepo) CheckAvailabilityModel(modelId uint64, userId uint64) (bool, error) {

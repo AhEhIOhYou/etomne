@@ -1,3 +1,5 @@
+.idea
 /upload
 /logs/
 /configs/.env
+node_modules

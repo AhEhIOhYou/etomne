@@ -7,18 +7,18 @@ import (
 )
 
 type Model struct {
-	ID          uint64     `gorm:"primary_key;auto_increment" json:"id"`
-	UserID      uint64     `gorm:"size:100;not null;" json:"user_id"`
-	Title       string     `gorm:"size:100;not null;" json:"title"`
-	Description string     `gorm:"text;not null;" json:"description"`
-	CreatedAt   time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
-	UpdatedAt   time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
-	DeletedAt   *time.Time `json:"deleted_at"`
+	ID          uint64    `gorm:"primary_key;auto_increment" json:"id"`
+	UserID      uint64    `gorm:"size:100;not null;" json:"user_id"`
+	Title       string    `gorm:"size:100;not null;" json:"title"`
+	Description string    `gorm:"text;not null;" json:"description"`
+	CreatedAt   time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt   time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
 
-func (m *Model) BeforeSave() {
+func (m *Model) BeforeUpdate() {
 	m.Title = html.EscapeString(strings.TrimSpace(m.Title))
 	m.Description = html.EscapeString(strings.TrimSpace(m.Description))
+	m.UpdatedAt = time.Now()
 }
 
 func (m *Model) Prepare() {
@@ -36,15 +36,9 @@ func (m *Model) Validate(action string) map[string]string {
 		if m.Title == "" || m.Title == "null" {
 			errorMessages["title_required"] = "title is required"
 		}
-		if m.Description == "" || m.Description == "null" {
-			errorMessages["desc_required"] = "description is required"
-		}
 	default:
 		if m.Title == "" || m.Title == "null" {
 			errorMessages["title_required"] = "title is required"
-		}
-		if m.Description == "" || m.Description == "null" {
-			errorMessages["desc_required"] = "description is required"
 		}
 	}
 	return errorMessages

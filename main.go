@@ -5,6 +5,7 @@ package main
 
 import (
 	"github.com/AhEhIOhYou/etomne/backend/infrastructure/auth"
+	"github.com/AhEhIOhYou/etomne/backend/infrastructure/logger"
 	"github.com/AhEhIOhYou/etomne/backend/infrastructure/persistence"
 	"github.com/AhEhIOhYou/etomne/backend/interfaces"
 	"github.com/AhEhIOhYou/etomne/backend/interfaces/filemanager"
@@ -68,23 +69,27 @@ func main() {
 	tk := auth.NewToken()
 	fm := filemanager.NewFileUpload()
 
-	users := interfaces.NewUsers(services.User, redisService.Auth, tk)
+	users := interfaces.NewUsers(services.User, fm, redisService.Auth, tk)
 	models := interfaces.NewModel(services.Model, services.User, services.File, fm, redisService.Auth, tk)
 	files := interfaces.NewFile(services.Model, services.User, services.File, fm, redisService.Auth, tk)
 	authenticate := interfaces.NewAuthenticate(services.User, redisService.Auth, tk)
-	comments := interfaces.NewComment(services.Model, services.User, services.Comment, redisService.Auth, tk)
+	index := interfaces.Index
 
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware())
+	r.Use(middleware.FrontStaticMiddleware())
+	r.Use(middleware.UploadStaticMiddleware())
+
+	r.Any("/", index)
 
 	u := r.Group("api/users")
 	{
 		u.POST("", users.SaveUser)
 		u.GET("", users.GetUsers)
-		u.GET("/:user_id", users.GetUser)
 		u.POST("/login", authenticate.Login)
-		u.POST("/logout", authenticate.Logout)
+		u.POST("/logout", middleware.AuthMiddleware(), authenticate.Logout)
 		u.POST("/refresh", authenticate.Refresh)
+		u.POST("/addfile", middleware.AuthMiddleware(), users.SaveUserPhoto)
 	}
 
 	m := r.Group("api/model")
@@ -94,6 +99,7 @@ func main() {
 		m.GET("/:model_id", models.GetModel)
 		m.DELETE("/:model_id", middleware.AuthMiddleware(), models.DeleteModel)
 		m.GET("", models.GetAllModel)
+		m.POST("/addfile", middleware.AuthMiddleware(), models.SaveModelFile)
 	}
 
 	f := r.Group("api/file")
@@ -102,11 +108,7 @@ func main() {
 		f.DELETE("/:file_id", files.RemoveFile)
 	}
 
-	c := r.Group("api/comment")
-	{
-		c.GET("", comments.GetComments)
-		c.POST("", comments.SaveComment)
-	}
+	logger.WriteLog(logger.Info, "THE SERVER HAS BEEN SUCCESSFULLY STARTED")
 
 	// programmatically set swagger info
 	docs.SwaggerInfo.Title = "Swagger Models API"
@@ -117,6 +119,7 @@ func main() {
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.LoadHTMLFiles("frontend/dist/index.html")
 
 	log.Fatal(r.Run(":" + "8093"))
 }

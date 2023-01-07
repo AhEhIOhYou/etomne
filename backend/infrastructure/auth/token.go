@@ -27,7 +27,7 @@ func NewToken() *Token {
 func (t Token) CreateToken(userId uint64) (*TokenDetails, error) {
 	td := &TokenDetails{
 		TokenUuid: uuid.NewV4().String(),
-		AtExpires: time.Now().Add(time.Minute * 15).Unix(),
+		AtExpires: time.Now().Add(time.Minute * 60).Unix(),
 		RtExpires: time.Now().Add(time.Hour * 24 * 7).Unix(),
 	}
 	td.RefreshUuid = td.TokenUuid + "++" + strconv.Itoa(int(userId))
@@ -61,7 +61,6 @@ func (t Token) CreateToken(userId uint64) (*TokenDetails, error) {
 }
 
 func (t Token) ExtractTokenMetadata(r *http.Request) (*AccessDetails, error) {
-	fmt.Println("WE ENTERED METADATA")
 	token, err := VerifyToken(r)
 	if err != nil {
 		return nil, err

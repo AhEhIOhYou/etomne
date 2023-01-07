@@ -8,6 +8,7 @@ import (
 	"github.com/AhEhIOhYou/etomne/backend/interfaces/filemanager"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"time"
 )
@@ -66,23 +67,10 @@ func (m *Model) SaveModel(c *gin.Context) {
 		return
 	}
 
-	//var saveModelErr = make(map[string]string)
-
 	title := c.PostForm("title")
 	description := c.PostForm("description")
 	if fmt.Sprintf("%T", title) != "string" || fmt.Sprintf("%T", description) != "string" {
 		c.JSON(http.StatusUnprocessableEntity, "invalid_json")
-		return
-	}
-
-	emptyModel := entities.Model{
-		Title:       title,
-		Description: description,
-	}
-
-	saveModelErr := emptyModel.Validate("")
-	if len(saveModelErr) > 0 {
-		c.JSON(http.StatusUnprocessableEntity, saveModelErr)
 		return
 	}
 
@@ -93,6 +81,12 @@ func (m *Model) SaveModel(c *gin.Context) {
 	}
 
 	Model.Prepare()
+
+	saveModelErr := Model.Validate("")
+	if len(saveModelErr) > 0 {
+		c.JSON(http.StatusUnprocessableEntity, saveModelErr)
+		return
+	}
 
 	saveModel, saveErr := m.modelApp.SaveModel(&Model)
 	if saveErr != nil {
@@ -115,27 +109,25 @@ func (m *Model) SaveModel(c *gin.Context) {
 				return
 			}
 
-			//Добавление файла в бд files
+			ext := filepath.Ext(file.Filename)
+
 			File := entities.File{
-				Title: file.Filename,
-				Url:   url,
+				OwnerId:   userId,
+				Title:     file.Filename,
+				Url:       url,
+				Extension: ext,
 			}
 
-			saveFile, saveModelErr := m.fileApp.SaveFile(&File)
-			if len(saveModelErr) > 0 {
-				c.JSON(http.StatusUnprocessableEntity, saveModelErr)
+			File.Prepare()
+			saveFileErr := File.Validate("")
+			if len(saveFileErr) > 0 {
+				c.JSON(http.StatusUnprocessableEntity, saveFileErr)
 				return
 			}
 
-			//Добавление файла и модельки в бд model_files
-			ModelFile := entities.ModelFile{
-				ModelId: saveModel.ID,
-				FileId:  saveFile.ID,
-			}
-
-			_, saveModelErr = m.modelApp.AddModelFile(&ModelFile)
-			if len(saveModelErr) > 0 {
-				c.JSON(http.StatusUnprocessableEntity, saveModelErr)
+			_, saveFileErr = m.modelApp.SaveModelFile(&File, Model.ID)
+			if len(saveFileErr) > 0 {
+				c.JSON(http.StatusUnprocessableEntity, saveFileErr)
 				return
 			}
 		}
@@ -204,28 +196,24 @@ func (m *Model) UpdateModel(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, "Invalid json")
 	}
 
-	emptyModel := entities.Model{
-		Title:       title,
-		Description: description,
-	}
-
-	updateModelErr = emptyModel.Validate("update")
-	if len(updateModelErr) > 0 {
-		c.JSON(http.StatusUnprocessableEntity, updateModelErr)
-		return
-	}
-
 	model.Title = title
 	model.Description = description
 	model.UpdatedAt = time.Now()
 
-	model.BeforeSave()
+	model.BeforeUpdate()
+
+	updateModelErr = model.Validate("update")
+	if len(updateModelErr) > 0 {
+		c.JSON(http.StatusUnprocessableEntity, updateModelErr)
+		return
+	}
 
 	updatedModel, dbUpdateErr := m.modelApp.UpdateModel(model)
 	if dbUpdateErr != nil {
 		c.JSON(http.StatusInternalServerError, dbUpdateErr)
 		return
 	}
+
 	c.JSON(http.StatusOK, updatedModel)
 }
 
@@ -240,11 +228,62 @@ func (m *Model) UpdateModel(c *gin.Context) {
 // @Failure      500  string  error
 // @Router       /model [get]
 func (m *Model) GetAllModel(c *gin.Context) {
-	allModels, err := m.modelApp.GetAllModel()
+
+	limit, err := strconv.Atoi(c.Query("_limit"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "invalid request")
+		return
+	}
+	page, err := strconv.Atoi(c.Query("_page"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "invalid request")
+		return
+	}
+
+	preModels, err := m.modelApp.GetAllModel(page, limit)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
+
+	var allModels []map[string]interface{}
+
+	for _, model := range preModels {
+		files, err := m.modelApp.GetFilesByModel(model.ID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		orderedFiles := map[string][]entities.File{
+			"glb":   {},
+			"img":   {},
+			"video": {},
+		}
+
+		for _, file := range files {
+			if file.Extension == ".glb" {
+				orderedFiles["glb"] = append(orderedFiles["glb"], file)
+			} else if file.Extension == ".jpeg" || file.Extension == ".png" || file.Extension == ".jpg" || file.Extension == ".gif" {
+				orderedFiles["img"] = append(orderedFiles["img"], file)
+			} else {
+				orderedFiles["video"] = append(orderedFiles["video"], file)
+			}
+		}
+
+		user, err := m.userApp.GetUser(model.UserID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+		readyModel := map[string]interface{}{
+			"model":  model,
+			"author": user.PublicUser(),
+			"files":  orderedFiles,
+		}
+		allModels = append(allModels, readyModel)
+	}
+
 	c.JSON(http.StatusOK, allModels)
 }
 
@@ -279,10 +318,25 @@ func (m *Model) GetModel(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
+	orderedFiles := map[string][]entities.File{
+		"glb":    {},
+		"img":    {},
+		"video:": {},
+	}
+
+	for _, file := range files {
+		if file.Extension == ".glb" {
+			orderedFiles["glb"] = append(orderedFiles["glb"], file)
+		} else if file.Extension == ".jpeg" || file.Extension == ".png" || file.Extension == ".jpg" || file.Extension == ".gif" {
+			orderedFiles["img"] = append(orderedFiles["img"], file)
+		} else {
+			orderedFiles["video"] = append(orderedFiles["video"], file)
+		}
+	}
 	Model := map[string]interface{}{
 		"model":  model,
 		"author": user.PublicUser(),
-		"files":  files,
+		"files":  orderedFiles,
 	}
 	c.JSON(http.StatusOK, Model)
 }
@@ -297,6 +351,7 @@ func (m *Model) GetModel(c *gin.Context) {
 // @Failure      422  string  error
 // @Failure      500  string  error
 // @Router       /model/{id} [delete]
+// @Security	 bearerAuth
 func (m *Model) DeleteModel(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
@@ -311,6 +366,16 @@ func (m *Model) DeleteModel(c *gin.Context) {
 	_, err = m.userApp.GetUser(metadata.UserId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	isAvaliable, err := m.modelApp.CheckAvailabilityModel(modelId, metadata.UserId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	if !isAvaliable {
+		c.JSON(http.StatusInternalServerError, "model is unavailable")
 		return
 	}
 
@@ -350,4 +415,87 @@ func (m *Model) DeleteModel(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, "model deleted")
+}
+
+// SaveModelFile doc
+// @Summary		Save model file
+// @Tags		File
+// @Accept		mpfd
+// @Produce		json
+// @Param		model_id  formData  string  false  "Model ID"
+// @Param		file      formData  file    true  "File"
+// @Success		201  {object}  entities.File
+// @Failure     401  string  unauthorized
+// @Failure     400  string  error
+// @Failure     422  string  error
+// @Failure     500  string  error
+// @Router		/model/addfile/ [post]
+// @Security	bearerAuth
+func (m *Model) SaveModelFile(c *gin.Context) {
+	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	userId, err := m.rd.FetchAuth(metadata.TokenUuid)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	_, err = m.userApp.GetUser(userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "user not found, unauthorized")
+		return
+	}
+
+	modelId, err := strconv.ParseUint(c.PostForm("model_id"), 10, 64)
+	if err != nil || modelId == 0 {
+		c.JSON(http.StatusBadRequest, "invalid query")
+		return
+	}
+
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "invalid request")
+		return
+	}
+
+	url, err := m.fm.UploadFile(file)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+	if url == "" {
+		c.JSON(http.StatusUnprocessableEntity, "something went wrong")
+		return
+	}
+
+	ext := filepath.Ext(file.Filename)
+
+	File := entities.File{
+		OwnerId:   userId,
+		Title:     file.Filename,
+		Url:       url,
+		Extension: ext,
+	}
+
+	File.Prepare()
+	saveFileErr := File.Validate("")
+	if len(saveFileErr) > 0 {
+		c.JSON(http.StatusUnprocessableEntity, saveFileErr)
+		return
+	}
+
+	modelFile, saveFileErr := m.modelApp.SaveModelFile(&File, modelId)
+	if len(saveFileErr) > 0 {
+		c.JSON(http.StatusUnprocessableEntity, saveFileErr)
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"file":       File,
+		"model_file": modelFile,
+	})
 }

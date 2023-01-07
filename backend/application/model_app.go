@@ -13,17 +13,16 @@ var _ ModelAppInterface = &modelApp{}
 
 type ModelAppInterface interface {
 	SaveModel(*entities.Model) (*entities.Model, map[string]string)
-	GetAllModel() ([]entities.Model, error)
+	GetAllModel(int, int) ([]entities.Model, error)
 	GetModel(uint64) (*entities.Model, error)
 	UpdateModel(*entities.Model) (*entities.Model, map[string]string)
 	DeleteModel(uint64) error
 
 	GetFilesByModel(uint64) ([]entities.File, error)
-	AddModelFile(*entities.ModelFile) (*entities.ModelFile, map[string]string)
+	SaveModelFile(*entities.File, uint64) (*entities.ModelFile, map[string]string)
 	DeleteModelFile(uint64) error
 	DeleteAllModelFiles(uint64) error
 
-	CheckAvailabilityFile(uint64, uint64) (bool, error)
 	CheckAvailabilityModel(uint64, uint64) (bool, error)
 }
 
@@ -31,8 +30,8 @@ func (m *modelApp) SaveModel(model *entities.Model) (*entities.Model, map[string
 	return m.md.SaveModel(model)
 }
 
-func (m *modelApp) GetAllModel() ([]entities.Model, error) {
-	return m.md.GetAllModel()
+func (m *modelApp) GetAllModel(page, limit int) ([]entities.Model, error) {
+	return m.md.GetAllModel(page, limit)
 }
 
 func (m *modelApp) GetModel(modelId uint64) (*entities.Model, error) {
@@ -51,8 +50,8 @@ func (m *modelApp) GetFilesByModel(modelId uint64) ([]entities.File, error) {
 	return m.md.GetFilesByModel(modelId)
 }
 
-func (m *modelApp) AddModelFile(file *entities.ModelFile) (*entities.ModelFile, map[string]string) {
-	return m.md.AddModelFile(file)
+func (m *modelApp) SaveModelFile(file *entities.File, modelId uint64) (*entities.ModelFile, map[string]string) {
+	return m.md.SaveModelFile(file, modelId)
 }
 
 func (m *modelApp) DeleteModelFile(fileId uint64) error {
@@ -63,10 +62,6 @@ func (m *modelApp) DeleteAllModelFiles(modelId uint64) error {
 	return m.md.DeleteAllModelFiles(modelId)
 }
 
-func (m *modelApp) CheckAvailabilityFile(fileId uint64, userId uint64) (bool, error) {
-	return m.md.CheckAvailabilityFile(fileId, userId)
-}
-
 func (m *modelApp) CheckAvailabilityModel(modelId uint64, userId uint64) (bool, error) {
-	return m.md.CheckAvailabilityFile(modelId, userId)
+	return m.md.CheckAvailabilityModel(modelId, userId)
 }
