@@ -52,12 +52,6 @@
         <div class="model__info-container">
           <p class="model__description">{{ model.model.description }}</p>
           <ul class="model__actions"> 
-            <!-- <li class="model__action">
-              <button class="model__action-btn btn">Редактировать</button>
-            </li> -->
-            <!-- <li class="model__action">
-              <button class="btn" @click="$router.push(`/${model.model.id}`)">Перейти к подробному описанию модели</button>
-            </li> -->
             <li class="model__action">
               <button v-show="isAuth" @click="$emit('remove', model)" class="model__action-btn btn">Удалить</button>
             </li>

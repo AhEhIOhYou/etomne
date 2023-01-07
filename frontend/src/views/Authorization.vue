@@ -24,8 +24,8 @@
 </template>
 
 <script>
-import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 import CustomInput from "@/components/UI/CustomInput";
+import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 
 export default {
   components: {
