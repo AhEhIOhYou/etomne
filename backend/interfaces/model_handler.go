@@ -17,18 +17,16 @@ type Model struct {
 	modelApp application.ModelAppInterface
 	userApp  application.UserAppInterface
 	fileApp  application.FileAppInterface
-	comApp   application.CommentAppInterface
 	fm       filemanager.ManagerFileInterface
 	rd       auth.AuthInterface
 	tk       auth.TokenInterface
 }
 
-func NewModel(mApp application.ModelAppInterface, uApp application.UserAppInterface, fApp application.FileAppInterface, comApp application.CommentAppInterface, fm filemanager.ManagerFileInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Model {
+func NewModel(mApp application.ModelAppInterface, uApp application.UserAppInterface, fApp application.FileAppInterface, fm filemanager.ManagerFileInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Model {
 	return &Model{
 		modelApp: mApp,
 		userApp:  uApp,
 		fileApp:  fApp,
-		comApp:   comApp,
 		fm:       fm,
 		rd:       rd,
 		tk:       tk,
@@ -378,13 +376,6 @@ func (m *Model) DeleteModel(c *gin.Context) {
 	}
 	if !isAvaliable {
 		c.JSON(http.StatusInternalServerError, "model is unavailable")
-		return
-	}
-
-	//Очистка комментариев
-	err = m.comApp.DeleteCommentsByModel(modelId)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
