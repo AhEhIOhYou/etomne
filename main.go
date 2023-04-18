@@ -4,6 +4,10 @@ package main
 // swagger embed files
 
 import (
+	"log"
+	"net/http"
+	"os"
+
 	"github.com/AhEhIOhYou/etomne/backend/infrastructure/auth"
 	"github.com/AhEhIOhYou/etomne/backend/infrastructure/logger"
 	"github.com/AhEhIOhYou/etomne/backend/infrastructure/persistence"
@@ -15,8 +19,6 @@ import (
 	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"log"
-	"os"
 )
 
 func init() {
@@ -42,14 +44,12 @@ servers:
 */
 func main() {
 
-	//Main DB vars
 	dbHost := os.Getenv("DB_HOST")
 	dbPassword := os.Getenv("DB_PASSWORD")
 	dbUser := os.Getenv("DB_USER")
 	dbName := os.Getenv("DB_NAME")
 	dbPort := os.Getenv("DB_PORT")
 
-	//Redis vars
 	redisHost := os.Getenv("REDIS_HOST")
 	redisPort := os.Getenv("REDIS_PORT")
 	redisPassword := os.Getenv("REDIS_PASSWORD")
@@ -58,8 +58,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	//services.Migrate()
 
 	redisService, err := auth.NewRedisDb(redisHost, redisPort, redisPassword)
 	if err != nil {
@@ -81,6 +79,10 @@ func main() {
 	r.Use(middleware.UploadStaticMiddleware())
 
 	r.Any("/", index)
+
+	r.GET("/ping", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, "pong")
+	})
 
 	u := r.Group("api/users")
 	{
