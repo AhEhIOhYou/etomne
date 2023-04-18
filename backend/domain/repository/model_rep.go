@@ -11,7 +11,7 @@ type ModelRepository interface {
 	UpdateModel(*entities.Model) (*entities.Model, map[string]string)
 	DeleteModel(uint64) error
 
-	GetFilesByModel(uint64) ([]entities.File, error)
+	GetFilesByModel(uint64) ([]entities.File, map[string]string)
 	SaveModelFile(*entities.File, uint64) (*entities.ModelFile, map[string]string)
 	DeleteModelFile(uint64) error
 	DeleteAllModelFiles(uint64) error

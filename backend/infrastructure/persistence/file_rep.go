@@ -20,52 +20,65 @@ func NewFileRepo(db *gorm.DB) *FileRepo {
 }
 
 func (r *FileRepo) SaveFile(file *entities.File) (*entities.File, map[string]string) {
+
 	dbErr := map[string]string{}
-	err := r.db.Debug().Create(&file).Error
+
+	err := r.db.Debug().Table("file").Create(&file).Error
 	if err != nil {
 		dbErr["db_error"] = "database error"
 		return nil, dbErr
 	}
+
 	return file, nil
 }
 
 func (r *FileRepo) GetFile(id uint64) (*entities.File, error) {
+
 	var file entities.File
-	err := r.db.Debug().Where("id = ?", id).Take(&file).Error
+
+	err := r.db.Debug().Table("file").Where("id = ?", id).Take(&file).Error
 	if err != nil {
 		return nil, errors.New("database error, please try again")
 	}
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("file not found")
 	}
+
 	return &file, nil
 }
 
 func (r *FileRepo) UpdateFile(file *entities.File) (*entities.File, map[string]string) {
+
 	dbErr := map[string]string{}
-	err := r.db.Debug().Save(&file).Error
+
+	err := r.db.Debug().Table("file").Save(&file).Error
 	if err != nil {
 		dbErr["db_error"] = "database error"
 		return nil, dbErr
 	}
+
 	return file, nil
 }
 
 func (r *FileRepo) DeleteFile(id uint64) error {
+
 	var file entities.File
-	err := r.db.Debug().Where("id = ?", id).Delete(&file).Error
+
+	err := r.db.Debug().Table("file").Where("id = ?", id).Delete(&file).Error
 	if err != nil {
 		return errors.New("database error, please try again")
 	}
+
 	return nil
 }
 
 func (r *FileRepo) CheckAvailabilityFile(fileId uint64, userId uint64) (bool, error) {
+
 	var result int
-	rows := r.db.Table("files").
+
+	rows := r.db.Table("file").
 		Select("COUNT(id)").
 		Where("owner_id = ?", userId, fileId).Limit(1).Row()
-
 	if err := rows.Scan(&result); err != nil {
 		return false, err
 	}

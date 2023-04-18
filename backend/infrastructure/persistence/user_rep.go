@@ -24,7 +24,7 @@ func NewUserRepo(db *gorm.DB) *UserRepo {
 
 func (r *UserRepo) SaveUser(user *entities.User) (*entities.User, map[string]string) {
 	dbErr := map[string]string{}
-	err := r.db.Debug().Create(&user).Error
+	err := r.db.Debug().Table("user").Create(&user).Error
 	if err != nil {
 		if strings.Contains(err.Error(), "duplicate") || strings.Contains(err.Error(), "Duplicate") {
 			dbErr["email_taken"] = "email already taken"
@@ -38,7 +38,7 @@ func (r *UserRepo) SaveUser(user *entities.User) (*entities.User, map[string]str
 
 func (r *UserRepo) GetUser(id uint64) (*entities.User, error) {
 	var user entities.User
-	err := r.db.Debug().Where("id = ?", id).Take(&user).Error
+	err := r.db.Debug().Table("user").Where("id = ?", id).Take(&user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (r *UserRepo) GetUser(id uint64) (*entities.User, error) {
 
 func (r *UserRepo) GetUsers(count uint64) ([]entities.User, error) {
 	var users []entities.User
-	err := r.db.Debug().Table("users").Limit(int(count)).Find(&users).Error
+	err := r.db.Debug().Table("user").Limit(int(count)).Find(&users).Error
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (r *UserRepo) GetUsers(count uint64) ([]entities.User, error) {
 func (r *UserRepo) GetUserByEmailAndPassword(u *entities.User) (*entities.User, map[string]string) {
 	var user entities.User
 	dbErr := map[string]string{}
-	err := r.db.Debug().Where("email = ?", u.Email).Take(&user).Error
+	err := r.db.Debug().Table("user").Where("email = ?", u.Email).Take(&user).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		dbErr["no_user"] = "user not found"
 		return nil, dbErr
@@ -82,7 +82,7 @@ func (r *UserRepo) GetUserByEmailAndPassword(u *entities.User) (*entities.User, 
 
 func (r *UserRepo) GetPhotosByUser(id uint64) ([]entities.File, error) {
 	var photos []entities.File
-	err := r.db.Debug().Joins("JOIN user_files on user_files.file_id=files.id").
+	err := r.db.Debug().Table("user").Joins("JOIN user_files on user_files.file_id=file.id").
 		Where("user_files.user_id = ?", id).Find(&photos).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("photos not found")

@@ -251,7 +251,7 @@ func (m *Model) GetAllModel(c *gin.Context) {
 	for _, model := range preModels {
 		files, err := m.modelApp.GetFilesByModel(model.ID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
+			c.JSON(http.StatusInternalServerError, err)
 			return
 		}
 
@@ -271,9 +271,9 @@ func (m *Model) GetAllModel(c *gin.Context) {
 			}
 		}
 
-		user, err := m.userApp.GetUser(model.UserID)
+		user, dbErr := m.userApp.GetUser(model.UserID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
+			c.JSON(http.StatusInternalServerError, dbErr)
 			return
 		}
 		readyModel := map[string]interface{}{
@@ -313,9 +313,9 @@ func (m *Model) GetModel(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	files, err := m.modelApp.GetFilesByModel(modelId)
+	files, dbErr := m.modelApp.GetFilesByModel(modelId)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, dbErr)
 		return
 	}
 	orderedFiles := map[string][]entities.File{
@@ -380,9 +380,9 @@ func (m *Model) DeleteModel(c *gin.Context) {
 	}
 
 	//Получение всех файлов модельки
-	files, err := m.modelApp.GetFilesByModel(modelId)
+	files, dbErr := m.modelApp.GetFilesByModel(modelId)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, dbErr)
 		return
 	}
 

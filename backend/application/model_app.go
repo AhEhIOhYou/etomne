@@ -18,7 +18,7 @@ type ModelAppInterface interface {
 	UpdateModel(*entities.Model) (*entities.Model, map[string]string)
 	DeleteModel(uint64) error
 
-	GetFilesByModel(uint64) ([]entities.File, error)
+	GetFilesByModel(uint64) ([]entities.File, map[string]string)
 	SaveModelFile(*entities.File, uint64) (*entities.ModelFile, map[string]string)
 	DeleteModelFile(uint64) error
 	DeleteAllModelFiles(uint64) error
@@ -46,7 +46,7 @@ func (m *modelApp) DeleteModel(modelId uint64) error {
 	return m.md.DeleteModel(modelId)
 }
 
-func (m *modelApp) GetFilesByModel(modelId uint64) ([]entities.File, error) {
+func (m *modelApp) GetFilesByModel(modelId uint64) ([]entities.File, map[string]string) {
 	return m.md.GetFilesByModel(modelId)
 }
 
