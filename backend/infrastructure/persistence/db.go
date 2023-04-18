@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"fmt"
+
 	"github.com/AhEhIOhYou/etomne/backend/domain/entities"
 	"github.com/AhEhIOhYou/etomne/backend/domain/repository"
 	"gorm.io/driver/postgres"
@@ -17,8 +18,8 @@ type Repos struct {
 
 func NewRepo(DbUser, DbPassword, DbPort, DbHost, DbName string) (*Repos, error) {
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		DbUser, DbPassword, DbHost, DbPort, DbName)
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		DbHost, DbUser, DbPassword, DbName, DbPort)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
