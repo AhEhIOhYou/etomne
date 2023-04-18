@@ -7,12 +7,12 @@ import (
 )
 
 type File struct {
-	ID        uint64    `gorm:"primary_key;auto_increment" json:"id"`
-	Title     string    `gorm:"size:100;not null;" json:"title"`
-	OwnerId   uint64    `gorm:"size:100;not null" json:"owner_id"`
-	Url       string    `gorm:"size:255;not null;" json:"url"`
-	Extension string    `gorm:"size:50;not null;" json:"extension"`
-	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	ID        uint64    `json:"id"`
+	Title     string    `json:"title"`
+	OwnerId   uint64    `json:"owner_id"`
+	Url       string    `json:"url"`
+	Extension string    `json:"extension"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type ModelFile struct {
