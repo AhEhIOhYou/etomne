@@ -12,8 +12,7 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "contact": {
             "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
+            "email": "email@man.you"
         },
         "version": "{{.Version}}"
     },
@@ -31,18 +30,58 @@ const docTemplate = `{
                 "summary": "Save user",
                 "parameters": [
                     {
-                        "description": "user data",
+                        "description": "User data",
                         "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.User"
+                            "$ref": "#/definitions/entities.UserRequest"
                         }
                     }
                 ],
                 "responses": {
                     "201": {
                         "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/entities.PublicUser"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get user data by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/entities.PublicUser"
                         }
@@ -75,37 +114,35 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.User": {
+        "entities.UserRequest": {
             "type": "object",
             "properties": {
-                "created_at": {
-                    "type": "string"
-                },
                 "email": {
                     "type": "string"
-                },
-                "id": {
-                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
                 },
                 "password": {
                     "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
+	Version:          "2.0",
 	Host:             "localhost:8093",
-	BasePath:         "/",
+	BasePath:         "/api",
 	Schemes:          []string{},
 	Title:            "ETOMNE project",
 	Description:      "This is a 3d model viewer app REST API",

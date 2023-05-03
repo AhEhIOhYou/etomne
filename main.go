@@ -1,8 +1,5 @@
 package main
 
-// gin-swagger middleware
-// swagger embed files
-
 import (
 	"log"
 	"net/http"
@@ -19,7 +16,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	_ "github.com/AhEhIOhYou/etomne/backend/docs"
+	_ "github.com/AhEhIOhYou/etomne/docs"
 )
 
 func init() {
@@ -28,27 +25,21 @@ func init() {
 	}
 }
 
-/*
-to swagger.yaml in components add
-securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-*/
-
-
 // @title ETOMNE project
-// @version 1.0
+// @version 2.0
 // @description This is a 3d model viewer app REST API
 
 // @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email support@swagger.io
+// @contact.email email@man.you
 
 // @host localhost:8093
-// @BasePath /
+// @BasePath /api
 // @query.collection.format multi
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+
 func main() {
 
 	dbHost := os.Getenv("DB_HOST")
@@ -94,7 +85,7 @@ func main() {
 	u := r.Group("api/users")
 	{
 		u.POST("", users.SaveUser)
-		u.GET("", users.GetUsers)
+		u.GET("/:user_id", users.GetUserByID)
 		u.POST("/login", authenticate.Login)
 		u.POST("/logout", middleware.AuthMiddleware(), authenticate.Logout)
 		u.POST("/refresh", authenticate.Refresh)
@@ -119,7 +110,6 @@ func main() {
 
 	logger.WriteLog(logger.Info, "THE SERVER HAS BEEN SUCCESSFULLY STARTED")
 
-	// docs route
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.LoadHTMLFiles("frontend/dist/index.html")

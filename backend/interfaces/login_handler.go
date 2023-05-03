@@ -55,11 +55,11 @@ func (au *Authenticate) Login(c *gin.Context) {
 		return
 	}
 
-	validateUser := user.Validate("login")
-	if len(validateUser) > 0 {
-		c.JSON(http.StatusUnprocessableEntity, validateUser)
-		return
-	}
+	// validateUser := user.Validate("")
+	// if len(validateUser) > 0 {
+	// 	c.JSON(http.StatusUnprocessableEntity, validateUser)
+	// 	return
+	// }
 
 	u, userErr := au.us.GetUserByEmailAndPassword(user)
 	if userErr != nil {

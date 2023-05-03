@@ -22,9 +22,14 @@ type PublicUser struct {
 	Name string `json:"name"`
 }
 
+type UserRequest struct {
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 //TODO create response with this structs
 type UserResponse struct {
-
 }
 
 type UserAuth struct {
@@ -49,6 +54,14 @@ func (user *User) PublicUser() interface{} {
 	}
 }
 
+func (userReq *UserRequest) NewUser() *User {
+	return &User{
+		Name:     userReq.Name,
+		Email:    userReq.Email,
+		Password: userReq.Password,
+	}
+}
+
 func (user *User) BeforeUpdate() {
 	user.Name = html.EscapeString(strings.TrimSpace(user.Name))
 	user.Email = html.EscapeString(strings.TrimSpace(user.Email))
@@ -57,7 +70,7 @@ func (user *User) BeforeUpdate() {
 	user.UpdatedAt = time.Now()
 }
 
-func (user *User) Prepared() {
+func (user *User) Prepare() {
 	user.Name = html.EscapeString(strings.TrimSpace(user.Name))
 	user.Email = html.EscapeString(strings.TrimSpace(user.Email))
 	hashedBytePass, _ := security.Hash(user.Password)
@@ -66,60 +79,31 @@ func (user *User) Prepared() {
 	user.UpdatedAt = time.Now()
 }
 
-func (user *User) Validate(action string) map[string]string {
-	var errorMessages = make(map[string]string)
+func (userReq *UserRequest) ValidateRequst(action string) string {
 	var err error
 
 	switch strings.ToLower(action) {
 	case "update":
-		if user.Email == "" {
-			errorMessages["email_required"] = "email required"
+		if userReq.Email == "" {
+			return "email required"
 		}
-		if user.Email != "" {
-			if err = checkmail.ValidateFormat(user.Email); err != nil {
-				errorMessages["invalid_email"] = "email email"
-			}
-		}
-
-	case "login":
-		if user.Password == "" {
-			errorMessages["password_required"] = "password is required"
-		}
-		if user.Email == "" {
-			errorMessages["email_required"] = "email is required"
-		}
-		if user.Email != "" {
-			if err = checkmail.ValidateFormat(user.Email); err != nil {
-				errorMessages["invalid_email"] = "please provide a valid email"
-			}
-		}
-	case "forgotpassword":
-		if user.Email == "" {
-			errorMessages["email_required"] = "email required"
-		}
-		if user.Email != "" {
-			if err = checkmail.ValidateFormat(user.Email); err != nil {
-				errorMessages["invalid_email"] = "please provide a valid email"
+		if userReq.Email != "" {
+			if err = checkmail.ValidateFormat(userReq.Email); err != nil {
+				return "email format error"
 			}
 		}
 	default:
-		if user.Name == "" {
-			errorMessages["name_required"] = "name is required"
+		if userReq.Password == "" {
+			return "password is required"
 		}
-		if user.Password == "" {
-			errorMessages["password_required"] = "password is required"
+		if userReq.Email == "" {
+			return "email is required"
 		}
-		if user.Password != "" && len(user.Password) < 6 {
-			errorMessages["invalid_password"] = "password should be at least 6 characters"
-		}
-		if user.Email == "" {
-			errorMessages["email_required"] = "email is required"
-		}
-		if user.Email != "" {
-			if err = checkmail.ValidateFormat(user.Email); err != nil {
-				errorMessages["invalid_email"] = "please provide a valid email"
+		if userReq.Email != "" {
+			if err = checkmail.ValidateFormat(userReq.Email); err != nil {
+				return "please provide a valid email"
 			}
 		}
 	}
-	return errorMessages
+	return ""
 }
