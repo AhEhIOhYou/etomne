@@ -14,11 +14,12 @@ import (
 	"github.com/AhEhIOhYou/etomne/backend/interfaces"
 	"github.com/AhEhIOhYou/etomne/backend/interfaces/filemanager"
 	"github.com/AhEhIOhYou/etomne/backend/interfaces/middleware"
-	"github.com/AhEhIOhYou/etomne/docs"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+
+	_ "github.com/AhEhIOhYou/etomne/backend/docs"
 )
 
 func init() {
@@ -34,14 +35,20 @@ securitySchemes:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
-openapi: 3.0.1
-info:
-  title: "aaaa"
-  version: 1.0.0
-servers:
-- url: https://modelshowtime.serdcebolit.ru/api
 */
+
+
+// @title ETOMNE project
+// @version 1.0
+// @description This is a 3d model viewer app REST API
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @host localhost:8093
+// @BasePath /
+// @query.collection.format multi
 func main() {
 
 	dbHost := os.Getenv("DB_HOST")
@@ -112,15 +119,9 @@ func main() {
 
 	logger.WriteLog(logger.Info, "THE SERVER HAS BEEN SUCCESSFULLY STARTED")
 
-	// programmatically set swagger info
-	docs.SwaggerInfo.Title = "Swagger Models API"
-	docs.SwaggerInfo.Description = "This is documentation"
-	docs.SwaggerInfo.Version = "0.3"
-	docs.SwaggerInfo.Host = "localhost:8093/api"
-	docs.SwaggerInfo.BasePath = ""
-	docs.SwaggerInfo.Schemes = []string{"http", "https"}
+	// docs route
+	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.LoadHTMLFiles("frontend/dist/index.html")
 
 	log.Fatal(r.Run(":" + "8093"))

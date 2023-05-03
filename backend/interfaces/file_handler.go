@@ -31,19 +31,6 @@ func NewFile(mApp application.ModelAppInterface, uApp application.UserAppInterfa
 	}
 }
 
-// SaveFile doc
-// @Summary		Save uploaded file
-// @Tags		File
-// @Accept		mpfd
-// @Produce		json
-// @Param		file      formData  file    true  "File"
-// @Success		201  {object}  entities.File
-// @Failure     401  string  unauthorized
-// @Failure     400  string  error
-// @Failure     422  string  error
-// @Failure     500  string  error
-// @Router		/file [post]
-// @Security	bearerAuth
 func (f *File) SaveFile(c *gin.Context) {
 	metadata, err := f.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
@@ -106,20 +93,6 @@ func (f *File) SaveFile(c *gin.Context) {
 	c.JSON(http.StatusCreated, saveFile)
 }
 
-// RemoveFile doc
-// @Summary		Remove uploaded file
-// @Tags		File
-// @Accept		mpfd
-// @Produce		json
-// @Param		file_id   path    string  true  "File ID"
-// @Param		model_id  query   string  false "Model ID"
-// @Success		201  {object}  entities.File
-// @Failure     401  string  unauthorized
-// @Failure     400  string  error
-// @Failure     422  string  error
-// @Failure     500  string  error
-// @Router		/file/{id} [post]
-// @Security	bearerAuth
 func (f *File) RemoveFile(c *gin.Context) {
 	metadata, err := f.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {

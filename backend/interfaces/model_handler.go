@@ -33,21 +33,6 @@ func NewModel(mApp application.ModelAppInterface, uApp application.UserAppInterf
 	}
 }
 
-// SaveModel godoc
-// @Summary      Save model
-// @Tags         Model
-// @Accept       mpfd
-// @Produce      json
-// @Param        title		   formData      string  true  "Model Title"
-// @Param        description   formData      string  true  "Model Description"
-// @Param        attachments   formData      file	 false "Model Files"		Format(binary)
-// @Success      201  {object}  entities.Model
-// @Failure      401  string  unauthorized
-// @Failure      400  string  user not found, unauthorized
-// @Failure      422  string  error
-// @Failure      500  string  error
-// @Router       /model [post]
-// @Security	 bearerAuth
 func (m *Model) SaveModel(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
@@ -136,21 +121,6 @@ func (m *Model) SaveModel(c *gin.Context) {
 	c.JSON(http.StatusCreated, saveModel)
 }
 
-// UpdateModel godoc
-// @Summary      Update model
-// @Tags         Model
-// @Accept       mpfd
-// @Produce      json
-// @Param        id		   	   path      string  true  "Model ID"
-// @Param        title		   formData  string  true  "Model Title"
-// @Param        description   formData  string  true  "Model Description"
-// @Success      201  {object}  entities.Model
-// @Failure      401  string  unauthorized
-// @Failure      400  string  invalid request
-// @Failure      422  string  error
-// @Failure      500  string  error
-// @Router       /model/{id} [put]
-// @Security	 bearerAuth
 func (m *Model) UpdateModel(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
@@ -217,16 +187,6 @@ func (m *Model) UpdateModel(c *gin.Context) {
 	c.JSON(http.StatusOK, updatedModel)
 }
 
-// GetAllModel godoc
-// @Summary      Get all models
-// @Tags         Model
-// @Produce      json
-// @Success      200  {array}  entities.Model
-// @Failure      401  string  unauthorized
-// @Failure      400  string  invalid request
-// @Failure      422  string  error
-// @Failure      500  string  error
-// @Router       /model [get]
 func (m *Model) GetAllModel(c *gin.Context) {
 
 	limit, err := strconv.Atoi(c.Query("_limit"))
@@ -287,16 +247,6 @@ func (m *Model) GetAllModel(c *gin.Context) {
 	c.JSON(http.StatusOK, allModels)
 }
 
-// GetModel godoc
-// @Summary      Get model
-// @Tags         Model
-// @Param        id   path      string  true  "Model ID"
-// @Success      200  {object}  entities.Model
-// @Failure      401  string  unauthorized
-// @Failure      400  string  invalid request
-// @Failure      422  string  error
-// @Failure      500  string  error
-// @Router       /model/{id} [get]
 func (m *Model) GetModel(c *gin.Context) {
 	modelId, err := strconv.ParseUint(c.Param("model_id"), 10, 64)
 	if err != nil {
@@ -341,17 +291,6 @@ func (m *Model) GetModel(c *gin.Context) {
 	c.JSON(http.StatusOK, Model)
 }
 
-// DeleteModel godoc
-// @Summary      Delete model
-// @Tags         Model
-// @Param        id   path      string  true  "Model ID"
-// @Success      200  {string} string  model deleted
-// @Failure      401  string  unauthorized
-// @Failure      400  string  invalid request
-// @Failure      422  string  error
-// @Failure      500  string  error
-// @Router       /model/{id} [delete]
-// @Security	 bearerAuth
 func (m *Model) DeleteModel(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
@@ -417,20 +356,6 @@ func (m *Model) DeleteModel(c *gin.Context) {
 	c.JSON(http.StatusOK, "model deleted")
 }
 
-// SaveModelFile doc
-// @Summary		Save model file
-// @Tags		File
-// @Accept		mpfd
-// @Produce		json
-// @Param		model_id  formData  string  false  "Model ID"
-// @Param		file      formData  file    true  "File"
-// @Success		201  {object}  entities.File
-// @Failure     401  string  unauthorized
-// @Failure     400  string  error
-// @Failure     422  string  error
-// @Failure     500  string  error
-// @Router		/model/addfile/ [post]
-// @Security	bearerAuth
 func (m *Model) SaveModelFile(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {

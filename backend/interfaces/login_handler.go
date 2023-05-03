@@ -45,16 +45,6 @@ type RToken struct {
 type Tokens struct {
 }
 
-// Login doc
-// @Summary		Login user
-// @Tags		Authorization
-// @Accept 		json
-// @Produce		json
-// @Param 		data 	body 	  AuthUser true "Auth user data"
-// @Success 	200 	{object}  UserData
-// @Failure     422  {string} string  "invalid json provided"
-// @Failure     500  {string} string  "error"
-// @Router		/users/login [post]
 func (au *Authenticate) Login(c *gin.Context) {
 
 	var user *entities.User
@@ -100,16 +90,6 @@ func (au *Authenticate) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, userData)
 }
 
-// Logout doc
-// @Summary		Logout user
-// @Tags		Authorization
-// @Accept 		json
-// @Produce		json
-// @Success 	200  {string} string  "successfully logged out"
-// @Failure     401  {string} string  "unauthorized"
-// @Failure     500  {string} string  "error"
-// @Router		/users/logout [post]
-// @Security	 bearerAuth
 func (au *Authenticate) Logout(c *gin.Context) {
 	metadata, err := au.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
@@ -124,18 +104,6 @@ func (au *Authenticate) Logout(c *gin.Context) {
 	c.JSON(http.StatusOK, "successfully logged out")
 }
 
-// Refresh doc
-// @Summary		Refresh user token
-// @Tags		Authorization
-// @Accept 		json
-// @Produce		json
-// @Param 		data  body 	  RToken true "Refresh token"
-// @Success 	200  {object} UserData
-// @Failure     401  {string} string  "unauthorized"
-// @Failure     403  {string} string  "error"
-// @Failure     422  {string} string  "error"
-// @Failure     500  {string} string  "error"
-// @Router		/users/refresh [post]
 func (au *Authenticate) Refresh(c *gin.Context) {
 	var rToken *RToken
 	if err := c.ShouldBindJSON(&rToken); err != nil {

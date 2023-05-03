@@ -33,16 +33,14 @@ type NewUser struct {
 	Password string `json:"password"`
 }
 
-// SaveUser godoc
-// @Summary     Save user
-// @Tags        Users
-// @Param       name		  json      string  true  "Username"
-// @Param       email         json      string  true  "User email"
-// @Param       password      json      string  true  "User password"
-// @Success     201   {object} entities.PublicUser
-// @Failure     422   {string} string  "invalid_json"
-// @Failure     500   {string} string  "error"
-// @Router      /users [post]
+// @Summary      Save user
+// @Tags         user
+// @Produce      json
+// @Param        data body entities.User true "user data"
+// @Success      201  {object}   entities.PublicUser
+// @Failure      422  string    string
+// @Failure      500  string    string
+// @Router       /users [post]
 func (s *Users) SaveUser(c *gin.Context) {
 	var user entities.User
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -67,16 +65,6 @@ func (s *Users) SaveUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, newUser.PublicUser())
 }
 
-// GetUsers godoc
-// @Summary     Get users
-// @Tags        Users
-// @Produce		json
-// @Param		user_id  query  string  false   "User ID"
-// @Param		count    query  string  false   "Count"
-// @Success     200  {object} []entities.PublicUser
-// @Failure     400  {string} string  "invalid query"
-// @Failure     500  {string} string  "error"
-// @Router      /users [get]
 func (s *Users) GetUsers(c *gin.Context) {
 	users := entities.Users{}
 	var err error
@@ -123,20 +111,6 @@ func (s *Users) GetUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, users.PublicUsers())
 }
 
-// SaveUserPhoto doc
-// @Summary		Save user photo
-// @Tags		Users
-// @Accept		mpfd
-// @Produce		json
-// @Param		size  formData  string  false "Size"
-// @Param		file  formData  file    true  "File"
-// @Success		201  {object}  entities.File
-// @Failure     401  string  unauthorized
-// @Failure     400  string  error
-// @Failure     422  string  error
-// @Failure     500  string  error
-// @Router		/users/addfile/ [post]
-// @Security	bearerAuth
 func (s *Users) SaveUserPhoto(c *gin.Context) {
 	metadata, err := s.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
