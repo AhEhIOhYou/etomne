@@ -9,9 +9,6 @@
       />
     </transition-group>
   </div>
-  <!-- <h2 v-else style="color: red">
-    Список моделей пуст
-  </h2> -->
 </template>
 
 <script>
