@@ -52,10 +52,10 @@ export default {
           refresh_token: refreshToken
         })
           .then(response => {
-            $cookies.set('access_token', response.data.access_token, '15min', '/');
-            $cookies.set('refresh_token', response.data.refresh_token, '7d', '/');
+            $cookies.set('access_token', response.data.tokens.access_token, '15min', '/');
+            $cookies.set('refresh_token', response.data.tokens.refresh_token, '7d', '/');
             localStorage.setItem('isAuth', true);
-            logoutFunc(response.data.access_token);
+            logoutFunc(response.data.tokens.access_token);
             console.log(response);
           })
           .catch(error => {

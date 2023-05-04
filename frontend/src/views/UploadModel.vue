@@ -7,7 +7,6 @@
     </div>
     <form class="form__form" method="post" @submit.prevent>
       <p class="form__title">Пожалуйста, введите данные для загрузки модели:</p>
-      <!-- <p class="form__error alert alert--error">{{ $store.state.authorization.error }}</p> -->
       <div class="form__container form__container--one">
         <div class="form__input-container input --grey">
           <label for="MODEL_NAME" class="form__label">Название модели:</label>
@@ -63,9 +62,9 @@ export default {
       setName: 'upload/setName',
       setDescription: 'upload/setDescription',
     }),
-    ...mapActions({
-      handleSubmitUpload: 'upload/handleSubmitUpload',
-    }),
+    // ...mapActions({
+    //   handleSubmitUpload: 'upload/handleSubmitUpload',
+    // }),
     handleFilesUpload(){
       this.attachments = this.$refs.attachments.files;
     },
@@ -112,11 +111,11 @@ export default {
           refresh_token: refreshToken
         })
           .then(response => {
-            $cookies.set('access_token', response.data.access_token, '15min', '/');
-            $cookies.set('refresh_token', response.data.refresh_token, '7d', '/');
+            $cookies.set('access_token', response.data.tokens.access_token, '15min', '/');
+            $cookies.set('refresh_token', response.data.tokens.refresh_token, '7d', '/');
             localStorage.setItem('isAuth', true);
             formOverlay.classList.add('form__overlay--active');
-            submitFilesFunc(response.data.access_token);
+            submitFilesFunc(response.data.tokens.access_token);
             console.log(response);
           })
           .catch(error => {

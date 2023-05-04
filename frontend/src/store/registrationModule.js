@@ -13,7 +13,7 @@ export const registrationModule = {
         state.login = login;
       },
       setEmail(state, email) {
-        state.email = email;
+        state.email = email; 
       },
       setPassword(state, password) {
         state.password = password;
