@@ -1,10 +1,91 @@
 basePath: /api
 definitions:
+  entities.File:
+    properties:
+      created_at:
+        type: string
+      extension:
+        type: string
+      id:
+        type: integer
+      owner_id:
+        type: integer
+      title:
+        type: string
+      url:
+        type: string
+    type: object
+  entities.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  entities.Model:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  entities.ModelData:
+    properties:
+      author:
+        $ref: '#/definitions/entities.PublicUser'
+      files:
+        $ref: '#/definitions/entities.SortedFiles'
+      model:
+        $ref: '#/definitions/entities.Model'
+    type: object
+  entities.ModelRequest:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    type: object
   entities.PublicUser:
     properties:
+      email:
+        type: string
       id:
         type: integer
       name:
+        type: string
+    type: object
+  entities.SortedFiles:
+    properties:
+      glb:
+        items:
+          $ref: '#/definitions/entities.File'
+        type: array
+      img:
+        items:
+          $ref: '#/definitions/entities.File'
+        type: array
+      other:
+        items:
+          $ref: '#/definitions/entities.File'
+        type: array
+      video:
+        items:
+          $ref: '#/definitions/entities.File'
+        type: array
+    type: object
+  entities.UserAuth:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
         type: string
     type: object
   entities.UserRequest:
@@ -16,15 +97,302 @@ definitions:
       password:
         type: string
     type: object
-host: localhost:8093
+  entities.UserResponse:
+    properties:
+      public_data:
+        $ref: '#/definitions/entities.PublicUser'
+      tokens:
+        $ref: '#/definitions/entities.UserAuth'
+    type: object
+host: localhost:8095
 info:
   contact:
     email: email@man.you
     name: API Support
-  description: This is a 3d model viewer app REST API
+  description: This is the REST API of the application for viewing 3d models
   title: ETOMNE project
   version: "2.0"
 paths:
+  /file:
+    post:
+      parameters:
+      - description: Body with files
+        in: formData
+        name: file
+        required: true
+        type: file
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.File'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Save file
+      tags:
+      - file
+  /file/{file_id}:
+    delete:
+      parameters:
+      - description: File ID
+        in: path
+        name: file_id
+        required: true
+        type: integer
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.File'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Delete file by ID
+      tags:
+      - file
+  /model:
+    post:
+      parameters:
+      - description: Model data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/entities.ModelRequest'
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.Model'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Save model
+      tags:
+      - model
+    put:
+      parameters:
+      - description: Query page param
+        in: query
+        name: _page
+        type: integer
+      - description: Query limit param
+        in: query
+        name: _limit
+        type: integer
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: Array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get a list of models with the specified quantity and position
+      tags:
+      - model
+  /model/{model_id}:
+    delete:
+      parameters:
+      - description: Model ID
+        in: path
+        name: model_id
+        required: true
+        type: integer
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Delete model by ID
+      tags:
+      - model
+    get:
+      parameters:
+      - description: Model ID
+        in: path
+        name: model_id
+        required: true
+        type: integer
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.ModelData'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get model by ID
+      tags:
+      - model
+    put:
+      parameters:
+      - description: Model ID
+        in: path
+        name: model_id
+        required: true
+        type: integer
+      - description: Model updated data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/entities.ModelRequest'
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.Model'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Update model
+      tags:
+      - model
+  /model/{model_id}/addfile:
+    post:
+      parameters:
+      - description: Model ID
+        in: path
+        name: model_id
+        required: true
+        type: integer
+      - description: Body with files
+        in: formData
+        name: file
+        required: true
+        type: file
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.File'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Save model file
+      tags:
+      - file
   /users:
     post:
       parameters:
@@ -78,9 +446,91 @@ paths:
       summary: Get user data by ID
       tags:
       - user
-securityDefinitions:
-  BearerAuth:
-    in: header
-    name: Authorization
-    type: apiKey
+  /users/login:
+    post:
+      parameters:
+      - description: User login data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/entities.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.UserResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Login user
+      tags:
+      - Auth
+  /users/logout:
+    get:
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Logout user
+      tags:
+      - Auth
+  /users/refresh:
+    post:
+      parameters:
+      - description: User tokens data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UserAuth'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.UserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: string
+        "422":
+          description: Unprocessable Entity
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Refresh user session
+      tags:
+      - Auth
 swagger: "2.0"
