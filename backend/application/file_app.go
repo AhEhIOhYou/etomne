@@ -12,14 +12,14 @@ type fileApp struct {
 var _ FileAppInterface = &fileApp{}
 
 type FileAppInterface interface {
-	SaveFile(*entities.File) (*entities.File, map[string]string)
+	SaveFile(*entities.File) (*entities.File, error)
 	GetFile(uint64) (*entities.File, error)
-	UpdateFile(file *entities.File) (*entities.File, map[string]string)
+	UpdateFile(file *entities.File) (*entities.File, error)
 	DeleteFile(uint64) error
 	CheckAvailabilityFile(uint64, uint64) (bool, error)
 }
 
-func (f *fileApp) SaveFile(file *entities.File) (*entities.File, map[string]string) {
+func (f *fileApp) SaveFile(file *entities.File) (*entities.File, error) {
 	return f.fl.SaveFile(file)
 }
 
@@ -27,7 +27,7 @@ func (f *fileApp) GetFile(fileId uint64) (*entities.File, error) {
 	return f.fl.GetFile(fileId)
 }
 
-func (f *fileApp) UpdateFile(file *entities.File) (*entities.File, map[string]string) {
+func (f *fileApp) UpdateFile(file *entities.File) (*entities.File, error) {
 	return f.fl.UpdateFile(file)
 }
 

@@ -12,18 +12,13 @@ type userApp struct {
 var _ UserAppInterface = &userApp{}
 
 type UserAppInterface interface {
-	SaveUser(*entities.User) (*entities.User, map[string]string)
+	SaveUser(*entities.User) (*entities.User, error)
 	GetUser(uint64) (*entities.User, error)
 	GetUsers(uint64) ([]entities.User, error)
-	GetUserByEmailAndPassword(*entities.User) (*entities.User, map[string]string)
-
-	GetPhotosByUser(uint64) ([]entities.File, error)
-	SaveUserPhoto(*entities.File, uint64, uint64) (*entities.UserPhoto, map[string]string)
-	DeleteUserPhoto(uint64) error
-	DeleteAllUserPhotos(uint64) error
+	GetUserByEmailAndPassword(*entities.User) (*entities.User, error)
 }
 
-func (u *userApp) SaveUser(user *entities.User) (*entities.User, map[string]string) {
+func (u *userApp) SaveUser(user *entities.User) (*entities.User, error) {
 	return u.us.SaveUser(user)
 }
 
@@ -35,21 +30,6 @@ func (u *userApp) GetUsers(count uint64) ([]entities.User, error) {
 	return u.us.GetUsers(count)
 }
 
-func (u *userApp) GetUserByEmailAndPassword(user *entities.User) (*entities.User, map[string]string) {
+func (u *userApp) GetUserByEmailAndPassword(user *entities.User) (*entities.User, error) {
 	return u.us.GetUserByEmailAndPassword(user)
-}
-func (u *userApp) GetPhotosByUser(userId uint64) ([]entities.File, error) {
-	return u.us.GetPhotosByUser(userId)
-}
-
-func (u *userApp) SaveUserPhoto(file *entities.File, userId, size uint64) (*entities.UserPhoto, map[string]string) {
-	return u.us.SaveUserPhoto(file, userId, size)
-}
-
-func (u *userApp) DeleteUserPhoto(fileId uint64) error {
-	return u.us.DeleteUserPhoto(fileId)
-}
-
-func (u *userApp) DeleteAllUserPhotos(userId uint64) error {
-	return u.us.DeleteAllUserPhotos(userId)
 }

@@ -2,15 +2,17 @@ package interfaces
 
 import (
 	"fmt"
-	"github.com/AhEhIOhYou/etomne/backend/application"
-	"github.com/AhEhIOhYou/etomne/backend/domain/entities"
-	"github.com/AhEhIOhYou/etomne/backend/infrastructure/auth"
-	"github.com/AhEhIOhYou/etomne/backend/interfaces/filemanager"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"path/filepath"
 	"strconv"
-	"time"
+
+	"github.com/AhEhIOhYou/etomne/backend/application"
+	"github.com/AhEhIOhYou/etomne/backend/constants"
+	"github.com/AhEhIOhYou/etomne/backend/domain/entities"
+	"github.com/AhEhIOhYou/etomne/backend/infrastructure/auth"
+	"github.com/AhEhIOhYou/etomne/backend/infrastructure/utils"
+	"github.com/AhEhIOhYou/etomne/backend/interfaces/filemanager"
+	"github.com/gin-gonic/gin"
 )
 
 type Model struct {
@@ -33,357 +35,340 @@ func NewModel(mApp application.ModelAppInterface, uApp application.UserAppInterf
 	}
 }
 
+//	@Summary	Save model
+//	@Tags		model
+//	@Produce	json
+//	@Param		data	body		entities.ModelRequest	true	"Model data"
+//	@Success	201		{object}	entities.Model
+//	@Failure	400		string		string
+//	@Failure	401		string		string
+//	@Failure	500		string		string
+//	@Router		/model [post]
+//	Security	BearerAuth
+//	@Param		Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 func (m *Model) SaveModel(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
+		c.JSON(http.StatusUnauthorized, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	userId, err := m.rd.FetchAuth(metadata.TokenUuid)
+	userID, err := m.rd.FetchAuth(metadata.TokenUuid)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
+		c.JSON(http.StatusUnauthorized, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	_, err = m.userApp.GetUser(userId)
+	_, err = m.userApp.GetUser(userID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "user not found, unauthorized")
+		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	title := c.PostForm("title")
-	description := c.PostForm("description")
-	if fmt.Sprintf("%T", title) != "string" || fmt.Sprintf("%T", description) != "string" {
-		c.JSON(http.StatusUnprocessableEntity, "invalid_json")
+	var modelReq entities.ModelRequest
+
+	if err := c.ShouldBindJSON(&modelReq); err != nil {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	var Model = entities.Model{
-		UserID:      userId,
-		Title:       title,
-		Description: description,
-	}
-
-	Model.Prepare()
-
-	saveModelErr := Model.Validate("")
-	if len(saveModelErr) > 0 {
-		c.JSON(http.StatusUnprocessableEntity, saveModelErr)
+	validateErr := modelReq.Validate()
+	if len(validateErr) > 0 {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, validateErr))
 		return
 	}
 
-	saveModel, saveErr := m.modelApp.SaveModel(&Model)
-	if saveErr != nil {
-		c.JSON(http.StatusInternalServerError, saveErr)
+	newModel := modelReq.NewModel()
+	newModel.Prepare()
+
+	savedModel, err := m.modelApp.SaveModel(newModel)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	files := c.Request.MultipartForm.File["attachments"]
-	if len(files) > 0 {
-		for _, file := range files {
-
-			//Загрузка файла на сервер
-			url, err := m.fm.UploadFile(file)
-			if err != nil {
-				c.JSON(http.StatusUnprocessableEntity, err.Error())
-				return
-			}
-			if url == "" {
-				c.JSON(http.StatusUnprocessableEntity, "something went wrong")
-				return
-			}
-
-			ext := filepath.Ext(file.Filename)
-
-			File := entities.File{
-				OwnerId:   userId,
-				Title:     file.Filename,
-				Url:       url,
-				Extension: ext,
-			}
-
-			File.Prepare()
-			saveFileErr := File.Validate("")
-			if len(saveFileErr) > 0 {
-				c.JSON(http.StatusUnprocessableEntity, saveFileErr)
-				return
-			}
-
-			_, saveFileErr = m.modelApp.SaveModelFile(&File, Model.ID)
-			if len(saveFileErr) > 0 {
-				c.JSON(http.StatusUnprocessableEntity, saveFileErr)
-				return
-			}
-		}
-	}
-
-	c.JSON(http.StatusCreated, saveModel)
+	c.JSON(http.StatusCreated, savedModel)
 }
 
+//	@Summary	Update model
+//	@Tags		model
+//	@Produce	json
+//	@Param		model_id	path		int						true	"Model ID"
+//	@Param		data		body		entities.ModelRequest	true	"Model updated data"
+//	@Success	201			{object}	entities.Model
+//	@Failure	400			string		string
+//	@Failure	401			string		string
+//	@Failure	500			string		string
+//	@Router		/model/{model_id} [put]
+//	Security	BearerAuth
+//	@Param		Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 func (m *Model) UpdateModel(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, "Unauthorized")
+		c.JSON(http.StatusUnauthorized, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	userId, err := m.rd.FetchAuth(metadata.TokenUuid)
+	userID, err := m.rd.FetchAuth(metadata.TokenUuid)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, "Unauthorized")
+		c.JSON(http.StatusUnauthorized, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	user, err := m.userApp.GetUser(userId)
+	user, err := m.userApp.GetUser(userID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "user not found, unauthorized")
+		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	modelId, err := strconv.ParseUint(c.Param("model_id"), 10, 64)
+	modelID, err := strconv.ParseUint(c.Param("model_id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "invalid request")
+		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	model, err := m.modelApp.GetModel(modelId)
+	model, err := m.modelApp.GetModel(modelID)
 	if err != nil {
-		c.JSON(http.StatusNotFound, err.Error())
+		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
 	if user.ID != model.UserID {
-		c.JSON(http.StatusUnauthorized, "you are not the owner of this model")
+		c.JSON(http.StatusUnauthorized, constants.ModelNotAvaliable)
 		return
 	}
 
-	var updateModelErr = make(map[string]string)
+	var modelReq entities.ModelRequest
 
-	title := c.PostForm("title")
-	description := c.PostForm("description")
-
-	if fmt.Sprintf("%T", title) != "string" || fmt.Sprintf("%T", description) != "string" {
-		c.JSON(http.StatusUnprocessableEntity, "Invalid json")
+	if err := c.ShouldBindJSON(&modelReq); err != nil {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
+		return
 	}
 
-	model.Title = title
-	model.Description = description
-	model.UpdatedAt = time.Now()
+	validateErr := modelReq.Validate()
+	if len(validateErr) > 0 {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, validateErr))
+		return
+	}
+
+	if modelReq.Title != model.Title {
+		model.Title = modelReq.Title
+	}
+
+	if modelReq.Description != model.Description {
+		model.Description = modelReq.Description
+	}
 
 	model.BeforeUpdate()
 
-	updateModelErr = model.Validate("update")
-	if len(updateModelErr) > 0 {
-		c.JSON(http.StatusUnprocessableEntity, updateModelErr)
-		return
-	}
-
-	updatedModel, dbUpdateErr := m.modelApp.UpdateModel(model)
-	if dbUpdateErr != nil {
-		c.JSON(http.StatusInternalServerError, dbUpdateErr)
+	updatedModel, err := m.modelApp.UpdateModel(model)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
 	c.JSON(http.StatusOK, updatedModel)
 }
 
-func (m *Model) GetAllModel(c *gin.Context) {
+//	@Summary	Get a list of models with the specified quantity and position
+//	@Tags		model
+//	@Param		_page	query	int	false	"Query page param"
+//	@Param		_limit	query	int	false	"Query limit param"
+//	@Success	201		{Array}	[]entities.ModelData
+//	@Failure	400		string	string
+//	@Failure	401		string	string
+//	@Failure	500		string	string
+//	@Router		/model   [put]
+func (m *Model) GetModelList(c *gin.Context) {
 
 	limit, err := strconv.Atoi(c.Query("_limit"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "invalid request")
+		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
 		return
 	}
+
 	page, err := strconv.Atoi(c.Query("_page"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "invalid request")
+		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	preModels, err := m.modelApp.GetAllModel(page, limit)
+	var readyModels []entities.ModelData
+
+	rawModels, err := m.modelApp.GetAllModel(page, limit)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	var allModels []map[string]interface{}
+	for _, model := range rawModels {
 
-	for _, model := range preModels {
+		user, err := m.userApp.GetUser(model.UserID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
+			return
+		}
+
 		files, err := m.modelApp.GetFilesByModel(model.ID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, err)
+			c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 			return
 		}
 
-		orderedFiles := map[string][]entities.File{
-			"glb":   {},
-			"img":   {},
-			"video": {},
-		}
-
-		for _, file := range files {
-			if file.Extension == ".glb" {
-				orderedFiles["glb"] = append(orderedFiles["glb"], file)
-			} else if file.Extension == ".jpeg" || file.Extension == ".png" || file.Extension == ".jpg" || file.Extension == ".gif" {
-				orderedFiles["img"] = append(orderedFiles["img"], file)
-			} else {
-				orderedFiles["video"] = append(orderedFiles["video"], file)
-			}
-		}
-
-		user, dbErr := m.userApp.GetUser(model.UserID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, dbErr)
-			return
-		}
-		readyModel := map[string]interface{}{
-			"model":  model,
-			"author": user.PublicUser(),
-			"files":  orderedFiles,
-		}
-		allModels = append(allModels, readyModel)
+		readyModels = append(readyModels, entities.ModelData{
+			Model: model,
+			User:  *user.PublicUser(),
+			Files: utils.SortFiles(files),
+		})
 	}
 
-	c.JSON(http.StatusOK, allModels)
+	c.JSON(http.StatusOK, readyModels)
 }
 
+//	@Summary	Get model by ID
+//	@Tags		model
+//	@Param		model_id	path		int	true	"Model ID"
+//	@Success	201			{object}	entities.ModelData
+//	@Failure	400			string		string
+//	@Failure	401			string		string
+//	@Failure	500			string		string
+//	@Router		/model/{model_id}  [get]
 func (m *Model) GetModel(c *gin.Context) {
 	modelId, err := strconv.ParseUint(c.Param("model_id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "invalid request")
+		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
 		return
 	}
+
 	model, err := m.modelApp.GetModel(modelId)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
 	}
+
 	user, err := m.userApp.GetUser(model.UserID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
-	}
-	files, dbErr := m.modelApp.GetFilesByModel(modelId)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, dbErr)
-		return
-	}
-	orderedFiles := map[string][]entities.File{
-		"glb":    {},
-		"img":    {},
-		"video:": {},
 	}
 
-	for _, file := range files {
-		if file.Extension == ".glb" {
-			orderedFiles["glb"] = append(orderedFiles["glb"], file)
-		} else if file.Extension == ".jpeg" || file.Extension == ".png" || file.Extension == ".jpg" || file.Extension == ".gif" {
-			orderedFiles["img"] = append(orderedFiles["img"], file)
-		} else {
-			orderedFiles["video"] = append(orderedFiles["video"], file)
-		}
+	files, err := m.modelApp.GetFilesByModel(modelId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
+		return
 	}
-	Model := map[string]interface{}{
-		"model":  model,
-		"author": user.PublicUser(),
-		"files":  orderedFiles,
-	}
-	c.JSON(http.StatusOK, Model)
+
+	c.JSON(http.StatusOK, &entities.ModelData{
+		Model: *model,
+		User:  *user.PublicUser(),
+		Files: utils.SortFiles(files),
+	})
 }
 
+//	@Summary	Delete model by ID
+//	@Tags		model
+//	@Param		model_id	path	int	true	"Model ID"
+//	@Success	201			string	string
+//	@Failure	400			string	string
+//	@Failure	401			string	string
+//	@Failure	500			string	string
+//	@Router		/model/{model_id} [delete]
+//	Security	BearerAuth
+//	@Param		Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 func (m *Model) DeleteModel(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
+		c.JSON(http.StatusUnauthorized, fmt.Sprintf(constants.Failed, err))
 		return
 	}
-	modelId, err := strconv.ParseUint(c.Param("model_id"), 10, 64)
+
+	modelID, err := strconv.ParseUint(c.Param("model_id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "invalid request")
+		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
 		return
 	}
+
 	_, err = m.userApp.GetUser(metadata.UserId)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	isAvaliable, err := m.modelApp.CheckAvailabilityModel(modelId, metadata.UserId)
+	isAvaliable, err := m.modelApp.CheckAvailabilityModel(modelID, metadata.UserId)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
 	}
+
 	if !isAvaliable {
-		c.JSON(http.StatusInternalServerError, "model is unavailable")
+		c.JSON(http.StatusInternalServerError, constants.ModelNotAvaliable)
 		return
 	}
 
-	//Получение всех файлов модельки
-	files, dbErr := m.modelApp.GetFilesByModel(modelId)
+	files, err := m.modelApp.GetFilesByModel(modelID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, dbErr)
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	//Отвязывание файлов от модели
-	err = m.modelApp.DeleteAllModelFiles(modelId)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	//Удаление файлов с бд и хранилища
+	// Delete files from storage
 	for _, file := range files {
-		var deleteFileErr error
-		deleteFileErr = m.fileApp.DeleteFile(file.ID)
-		if deleteFileErr != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
-			return
-		}
-		deleteFileErr = m.fm.DeleteFile(file.Url)
-		if deleteFileErr != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
+		err = m.fm.DeleteFile(file.Url)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 			return
 		}
 	}
 
-	//Удаление модели
-	err = m.modelApp.DeleteModel(modelId)
+	err = m.modelApp.DeleteModel(modelID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
 	}
-	c.JSON(http.StatusOK, "model deleted")
+
+	c.JSON(http.StatusOK, constants.ModelDeleteSuccessful)
 }
 
+//	@Summary	Save model file
+//	@Tags		file
+//	@Produce	json
+//	@Param		model_id	path		int		true	"Model ID"
+//	@Param		file		formData	file	true	"Body with files"
+//	@Success	201			{object}	entities.File
+//	@Failure	400			string		string
+//	@Failure	401			string		string
+//	@Failure	500			string		string
+//	@Router		/model/{model_id}/addfile     [post]
+//	Security	BearerAuth
+//	@Param		Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 func (m *Model) SaveModelFile(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
+		c.JSON(http.StatusUnauthorized, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	userId, err := m.rd.FetchAuth(metadata.TokenUuid)
+	userID, err := m.rd.FetchAuth(metadata.TokenUuid)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
+		c.JSON(http.StatusUnauthorized, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	_, err = m.userApp.GetUser(userId)
+	_, err = m.userApp.GetUser(userID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "user not found, unauthorized")
+		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
 	modelId, err := strconv.ParseUint(c.PostForm("model_id"), 10, 64)
 	if err != nil || modelId == 0 {
-		c.JSON(http.StatusBadRequest, "invalid query")
+		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
 	file, err := c.FormFile("file")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "invalid request")
+		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
@@ -393,34 +378,38 @@ func (m *Model) SaveModelFile(c *gin.Context) {
 		return
 	}
 	if url == "" {
-		c.JSON(http.StatusUnprocessableEntity, "something went wrong")
+		c.JSON(http.StatusUnprocessableEntity, constants.FileURLError)
 		return
 	}
 
 	ext := filepath.Ext(file.Filename)
 
 	File := entities.File{
-		OwnerId:   userId,
+		OwnerId:   userID,
 		Title:     file.Filename,
 		Url:       url,
 		Extension: ext,
 	}
 
 	File.Prepare()
-	saveFileErr := File.Validate("")
-	if len(saveFileErr) > 0 {
-		c.JSON(http.StatusUnprocessableEntity, saveFileErr)
+
+	validateErr := File.Validate()
+	if len(validateErr) > 0 {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, validateErr))
 		return
 	}
 
-	modelFile, saveFileErr := m.modelApp.SaveModelFile(&File, modelId)
-	if len(saveFileErr) > 0 {
-		c.JSON(http.StatusUnprocessableEntity, saveFileErr)
+	savedFile, err := m.fileApp.SaveFile(&File)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"file":       File,
-		"model_file": modelFile,
-	})
+	modelFile, err := m.modelApp.SaveModelFile(savedFile, modelId)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, fmt.Sprintf(constants.Failed, err))
+		return
+	}
+
+	c.JSON(http.StatusCreated, modelFile)
 }

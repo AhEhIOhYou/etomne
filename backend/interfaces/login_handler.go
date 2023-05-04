@@ -2,14 +2,16 @@ package interfaces
 
 import (
 	"fmt"
+	"net/http"
+	"os"
+	"strconv"
+
 	"github.com/AhEhIOhYou/etomne/backend/application"
+	"github.com/AhEhIOhYou/etomne/backend/constants"
 	"github.com/AhEhIOhYou/etomne/backend/domain/entities"
 	"github.com/AhEhIOhYou/etomne/backend/infrastructure/auth"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"os"
-	"strconv"
 )
 
 type Authenticate struct {
@@ -26,148 +28,159 @@ func NewAuthenticate(uApp application.UserAppInterface, rd auth.AuthInterface, t
 	}
 }
 
-type AuthUser struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type UserData struct {
-	ID           uint64 `json:"id"`
-	Name         string `json:"name"`
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-}
-
-type RToken struct {
-	RefreshToken string `json:"refresh_token"`
-}
-
-type Tokens struct {
-}
-
+//	@Summary	Login user
+//	@Tags		Auth
+//	@Produce	json
+//	@Param		data	body		entities.LoginRequest	true	"User login data"
+//	@Success	200		{object}	entities.UserResponse
+//	@Failure	422		string		string
+//	@Failure	500		string		string
+//	@Router		/users/login [post]
 func (au *Authenticate) Login(c *gin.Context) {
+	var userLogin *entities.LoginRequest
 
-	var user *entities.User
-	var tokenErr = map[string]string{}
-
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, "invalid json provided")
+	if err := c.ShouldBindJSON(&userLogin); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	// validateUser := user.Validate("")
-	// if len(validateUser) > 0 {
-	// 	c.JSON(http.StatusUnprocessableEntity, validateUser)
-	// 	return
-	// }
+	userLogin.Prepare()
 
-	u, userErr := au.us.GetUserByEmailAndPassword(user)
-	if userErr != nil {
-		c.JSON(http.StatusInternalServerError, userErr)
+	user, err := au.us.GetUserByEmailAndPassword(&entities.User{
+		Email:    userLogin.Email,
+		Password: userLogin.Password,
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	ts, tErr := au.tk.CreateToken(u.ID)
-	if tErr != nil {
-		tokenErr["token_error"] = tErr.Error()
-		c.JSON(http.StatusInternalServerError, tErr.Error())
+	ts, err := au.tk.CreateToken(user.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	saveErr := au.rd.CreateAuth(u.ID, ts)
-	if saveErr != nil {
-		c.JSON(http.StatusInternalServerError, saveErr.Error())
+	err = au.rd.CreateAuth(user.ID, ts)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	var userData = UserData{
-		ID:           u.ID,
-		Name:         u.Name,
-		AccessToken:  ts.AccessToken,
-		RefreshToken: ts.RefreshToken,
-	}
-
-	c.JSON(http.StatusOK, userData)
+	c.JSON(http.StatusOK, &entities.UserResponse{
+		PublicUser: entities.PublicUser{
+			ID:    user.ID,
+			Name:  user.Name,
+			Email: user.Email,
+		},
+		UserAuth: entities.UserAuth{
+			RefreshToken: ts.RefreshToken,
+			AccessToken:  ts.AccessToken,
+		},
+	})
 }
 
+//	@Summary	Logout user
+//	@Tags		Auth
+//	@Success	200	{string}	string
+//	@Failure	401	string		string
+//	@Failure	500	string		string
+//	@Router		/users/logout [get]
+//	Security	BearerAuth
+//	@Param		Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 func (au *Authenticate) Logout(c *gin.Context) {
 	metadata, err := au.tk.ExtractTokenMetadata(c.Request)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
+		c.JSON(http.StatusUnauthorized, fmt.Sprintf(constants.Failed, err))
 		return
 	}
-	deleteErr := au.rd.DeleteTokens(metadata)
-	if deleteErr != nil {
-		c.JSON(http.StatusInternalServerError, deleteErr.Error())
+	err = au.rd.DeleteTokens(metadata)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
 	}
-	c.JSON(http.StatusOK, "successfully logged out")
+	c.JSON(http.StatusOK, constants.LogoutSuccessful)
 }
 
+//	@Summary	Refresh user session
+//	@Tags		Auth
+//	@Produce	json
+//	@Param		data	body		entities.UserAuth	true	"User tokens data"
+//	@Success	200		{object}	entities.UserResponse
+//	@Failure	401		string		string
+//	@Failure	403		string		string
+//	@Failure	422		string		string
+//	@Failure	500		string		string
+//	@Router		/users/refresh [post]
 func (au *Authenticate) Refresh(c *gin.Context) {
-	var rToken *RToken
-	if err := c.ShouldBindJSON(&rToken); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, err.Error())
+	var tokens *entities.UserAuth
+
+	if err := c.ShouldBindJSON(&tokens); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	token, err := jwt.Parse(rToken.RefreshToken, func(token *jwt.Token) (interface{}, error) {
-		//Make sure that the token method conform to "SigningMethodHMAC"
+	token, err := jwt.Parse(tokens.RefreshToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return []byte(os.Getenv("REFRESH_SECRET")), nil
 	})
+
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
 	if _, ok := token.Claims.(jwt.Claims); !ok && !token.Valid {
-		c.JSON(http.StatusUnauthorized, err)
+		c.JSON(http.StatusUnauthorized, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
+
 	if ok && token.Valid {
 		refreshUuid, ok := claims["refresh_uuid"].(string)
 		if !ok {
-			c.JSON(http.StatusUnprocessableEntity, "cannot get uuid")
+			c.JSON(http.StatusUnprocessableEntity, fmt.Sprintf(constants.Failed, constants.CannotGetUUID))
 			return
 		}
 
-		userId, err := strconv.ParseUint(fmt.Sprintf("%.f", claims["user_id"]), 10, 64)
+		userID, err := strconv.ParseUint(fmt.Sprintf("%.f", claims["user_id"]), 10, 64)
 		if err != nil {
-			c.JSON(http.StatusUnprocessableEntity, "error occurred")
+			c.JSON(http.StatusUnprocessableEntity, fmt.Sprintf(constants.Failed, err))
 			return
 		}
 
-		delErr := au.rd.DeleteRefresh(refreshUuid)
-		if delErr != nil { //if any goes wrong
-			c.JSON(http.StatusUnauthorized, "unauthorized")
+		err = au.rd.DeleteRefresh(refreshUuid)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, fmt.Sprintf(constants.Failed, constants.Unauthorized))
 			return
 		}
 
-		ts, createErr := au.tk.CreateToken(userId)
-		if createErr != nil {
-			c.JSON(http.StatusForbidden, createErr.Error())
+		ts, err := au.tk.CreateToken(userID)
+		if err != nil {
+			c.JSON(http.StatusForbidden, fmt.Sprintf(constants.Failed, err))
 			return
 		}
 
-		saveErr := au.rd.CreateAuth(userId, ts)
-		if saveErr != nil {
-			c.JSON(http.StatusForbidden, saveErr.Error())
+		err = au.rd.CreateAuth(userID, ts)
+		if err != nil {
+			c.JSON(http.StatusForbidden, fmt.Sprintf(constants.Failed, err))
 			return
 		}
 
-		var userData = UserData{
-			ID:           userId,
-			AccessToken:  ts.AccessToken,
-			RefreshToken: ts.RefreshToken,
-		}
-
-		c.JSON(http.StatusCreated, userData)
+		c.JSON(http.StatusCreated, &entities.UserResponse{
+			PublicUser: entities.PublicUser{
+				ID: userID,
+			},
+			UserAuth: entities.UserAuth{
+				RefreshToken: ts.RefreshToken,
+				AccessToken:  ts.AccessToken,
+			},
+		})
 	} else {
-		c.JSON(http.StatusUnauthorized, "refresh token expired")
+		c.JSON(http.StatusUnauthorized, constants.RefreshTokenExpired)
 	}
 }

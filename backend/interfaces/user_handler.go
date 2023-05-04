@@ -1,14 +1,16 @@
 package interfaces
 
 import (
+	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/AhEhIOhYou/etomne/backend/application"
+	"github.com/AhEhIOhYou/etomne/backend/constants"
 	"github.com/AhEhIOhYou/etomne/backend/domain/entities"
 	"github.com/AhEhIOhYou/etomne/backend/infrastructure/auth"
 	"github.com/AhEhIOhYou/etomne/backend/interfaces/filemanager"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"path/filepath"
-	"strconv"
 )
 
 type Users struct {
@@ -27,136 +29,66 @@ func NewUsers(userApp application.UserAppInterface, fm filemanager.ManagerFileIn
 	}
 }
 
-// @Summary      Save user
-// @Tags         user
-// @Produce      json
-// @Param        data body entities.UserRequest true "User data"
-// @Success      201  {object}  entities.PublicUser
-// @Failure      422  string    string
-// @Failure      500  string    string
-// @Router       /users [post]
+//	@Summary	Save user
+//	@Tags		user
+//	@Produce	json
+//	@Param		data	body		entities.UserRequest	true	"User data"
+//	@Success	201		{object}	entities.PublicUser
+//	@Failure	422		string		string
+//	@Failure	500		string		string
+//	@Router		/users [post]
 func (s *Users) SaveUser(c *gin.Context) {
 	var userReq entities.UserRequest
+
 	if err := c.ShouldBindJSON(&userReq); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, "invalid_json")
+		c.JSON(http.StatusUnprocessableEntity, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	validateErr := userReq.ValidateRequst("")
+	validateErr := userReq.Validate()
 	if len(validateErr) > 0 {
-		c.JSON(http.StatusInternalServerError, validateErr)
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, validateErr))
 		return
 	}
 
-	user := userReq.NewUser()
-	user.Prepare()
+	newUser := userReq.NewUser()
+	newUser.Prepare()
 
-	newUser, err := s.userApp.SaveUser(user)
+	savedUser, err := s.userApp.SaveUser(newUser)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	c.JSON(http.StatusCreated, newUser.PublicUser())
+	c.JSON(http.StatusCreated, savedUser.PublicUser())
 }
 
-// @Summary      Get user data by ID
-// @Tags         user
-// @Produce      json
-// @Param        id   path      int  true  "User ID"
-// @Success      200  {object}  entities.PublicUser
-// @Failure      422  string    string
-// @Failure      500  string    string
-// @Router       /users/{id} [get]
+//	@Summary	Get user data by ID
+//	@Tags		user
+//	@Produce	json
+//	@Param		id	path		int	true	"User ID"
+//	@Success	200	{object}	entities.PublicUser
+//	@Failure	422	string		string
+//	@Failure	500	string		string
+//	@Router		/users/{id} [get]
 func (s *Users) GetUserByID(c *gin.Context) {
 	var err error
 
-	var userId uint64
+	var userID uint64
 	userIdQuery := c.Param("user_id")
-	userId, err = strconv.ParseUint(userIdQuery, 10, 64)
+	userID, err = strconv.ParseUint(userIdQuery, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "invalid query")
+		c.JSON(http.StatusBadRequest, constants.UserIDInvalid)
 		return
 	}
 
-	user, err := s.userApp.GetUser(userId)
+	user, err := s.userApp.GetUser(userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
 	c.JSON(http.StatusOK, user.PublicUser())
 }
 
-// Unused
-func (s *Users) SaveUserPhoto(c *gin.Context) {
-	metadata, err := s.tk.ExtractTokenMetadata(c.Request)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
-		return
-	}
-
-	userId, err := s.rd.FetchAuth(metadata.TokenUuid)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
-		return
-	}
-
-	_, err = s.userApp.GetUser(userId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, "user not found, unauthorized")
-		return
-	}
-
-	photoSize, err := strconv.ParseUint(c.PostForm("photo_size"), 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, "invalid query")
-		return
-	}
-	if photoSize == 0 {
-		photoSize = 200
-	}
-
-	file, err := c.FormFile("file")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, "invalid request")
-		return
-	}
-
-	url, err := s.fm.UploadFile(file)
-	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, err.Error())
-		return
-	}
-	if url == "" {
-		c.JSON(http.StatusUnprocessableEntity, "something went wrong")
-		return
-	}
-
-	ext := filepath.Ext(file.Filename)
-
-	File := entities.File{
-		OwnerId:   userId,
-		Title:     file.Filename,
-		Url:       url,
-		Extension: ext,
-	}
-
-	File.Prepare()
-	saveFileErr := File.Validate("")
-	if len(saveFileErr) > 0 {
-		c.JSON(http.StatusUnprocessableEntity, saveFileErr)
-		return
-	}
-
-	userPhoto, saveFileErr := s.userApp.SaveUserPhoto(&File, userId, 100)
-	if len(saveFileErr) > 0 {
-		c.JSON(http.StatusUnprocessableEntity, saveFileErr)
-		return
-	}
-
-	c.JSON(http.StatusCreated, gin.H{
-		"file":       File,
-		"user_photo": userPhoto,
-	})
-}
+// TODO edit user, delete and update user permissions

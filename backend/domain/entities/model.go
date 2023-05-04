@@ -4,6 +4,8 @@ import (
 	"html"
 	"strings"
 	"time"
+
+	"github.com/AhEhIOhYou/etomne/backend/constants"
 )
 
 type Model struct {
@@ -13,6 +15,24 @@ type Model struct {
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+type ModelRequest struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+}
+
+type ModelData struct {
+	Model Model       `json:"model"`
+	User  PublicUser  `json:"author"`
+	Files SortedFiles `json:"files"`
+}
+
+func (modelReq *ModelRequest) NewModel() *Model {
+	return &Model{
+		Title:       modelReq.Title,
+		Description: modelReq.Description,
+	}
 }
 
 func (m *Model) BeforeUpdate() {
@@ -28,18 +48,19 @@ func (m *Model) Prepare() {
 	m.UpdatedAt = time.Now()
 }
 
-func (m *Model) Validate(action string) map[string]string {
-	var errorMessages = make(map[string]string)
-
-	switch strings.ToLower(action) {
-	case "update":
-		if m.Title == "" || m.Title == "null" {
-			errorMessages["title_required"] = "title is required"
-		}
-	default:
-		if m.Title == "" || m.Title == "null" {
-			errorMessages["title_required"] = "title is required"
-		}
+func (model *ModelRequest) Validate() string {
+	if model.Title == "" {
+		return constants.ModelTitleCantBeEmpty
 	}
-	return errorMessages
+	return ""
+}
+
+func (model *Model) Validate() string {
+	if model.Title == "" {
+		return constants.ModelTitleCantBeEmpty
+	}
+	if model.UserID == 0 {
+		return constants.UserIDInvalid
+	}
+	return ""
 }

@@ -1,11 +1,13 @@
 package entities
 
 import (
-	"github.com/AhEhIOhYou/etomne/backend/infrastructure/security"
-	"github.com/badoux/checkmail"
 	"html"
 	"strings"
 	"time"
+
+	"github.com/AhEhIOhYou/etomne/backend/constants"
+	"github.com/AhEhIOhYou/etomne/backend/infrastructure/security"
+	"github.com/badoux/checkmail"
 )
 
 type User struct {
@@ -18,8 +20,9 @@ type User struct {
 }
 
 type PublicUser struct {
-	ID   uint64 `json:"id"`
-	Name string `json:"name"`
+	ID    uint64 `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
 type UserRequest struct {
@@ -28,13 +31,19 @@ type UserRequest struct {
 	Password string `json:"password"`
 }
 
-//TODO create response with this structs
-type UserResponse struct {
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type UserAuth struct {
 	RefreshToken string `json:"refresh_token"`
 	AccessToken  string `json:"access_token"`
+}
+
+type UserResponse struct {
+	PublicUser `json:"public_data"`
+	UserAuth   `json:"tokens"`
 }
 
 type Users []User
@@ -47,10 +56,11 @@ func (users Users) PublicUsers() []interface{} {
 	return res
 }
 
-func (user *User) PublicUser() interface{} {
+func (user *User) PublicUser() *PublicUser {
 	return &PublicUser{
-		ID:   user.ID,
-		Name: user.Name,
+		ID:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
 	}
 }
 
@@ -65,8 +75,6 @@ func (userReq *UserRequest) NewUser() *User {
 func (user *User) BeforeUpdate() {
 	user.Name = html.EscapeString(strings.TrimSpace(user.Name))
 	user.Email = html.EscapeString(strings.TrimSpace(user.Email))
-	hashPassword, _ := security.Hash(user.Password)
-	user.Password = string(hashPassword)
 	user.UpdatedAt = time.Now()
 }
 
@@ -79,31 +87,30 @@ func (user *User) Prepare() {
 	user.UpdatedAt = time.Now()
 }
 
-func (userReq *UserRequest) ValidateRequst(action string) string {
-	var err error
+func (user *LoginRequest) Prepare() {
+	user.Email = html.EscapeString(strings.TrimSpace(user.Email))
+}
 
-	switch strings.ToLower(action) {
-	case "update":
-		if userReq.Email == "" {
-			return "email required"
-		}
-		if userReq.Email != "" {
-			if err = checkmail.ValidateFormat(userReq.Email); err != nil {
-				return "email format error"
-			}
-		}
-	default:
-		if userReq.Password == "" {
-			return "password is required"
-		}
-		if userReq.Email == "" {
-			return "email is required"
-		}
-		if userReq.Email != "" {
-			if err = checkmail.ValidateFormat(userReq.Email); err != nil {
-				return "please provide a valid email"
-			}
-		}
+func (user UserRequest) Validate() string {
+	if user.Password == "" {
+		return constants.PasswordCantBeEmpty
+	}
+	if user.Email == "" {
+		return constants.EmailCantBeEmpty
+	} else if err := checkmail.ValidateFormat(user.Email); err != nil {
+		return constants.EmailWrongFormat
+	}
+	return ""
+}
+
+func (user User) Validate() string {
+	if user.Password == "" {
+		return constants.PasswordCantBeEmpty
+	}
+	if user.Email == "" {
+		return constants.EmailCantBeEmpty
+	} else if err := checkmail.ValidateFormat(user.Email); err != nil {
+		return constants.EmailWrongFormat
 	}
 	return ""
 }

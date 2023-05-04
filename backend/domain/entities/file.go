@@ -4,6 +4,8 @@ import (
 	"html"
 	"strings"
 	"time"
+
+	"github.com/AhEhIOhYou/etomne/backend/constants"
 )
 
 type File struct {
@@ -15,15 +17,30 @@ type File struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-type ModelFile struct {
-	FileId  uint64 `gorm:"not null" json:"file_id"`
-	ModelId uint64 `gorm:"not null" json:"model_id"`
+type Files []File
+
+type FileRequest struct {
+	Title   string `json:"title"`
+	OwnerId uint64 `json:"owner_id"`
 }
 
-type UserPhoto struct {
-	FileId uint64 `gorm:"not null" json:"file_id"`
-	UserId uint64 `gorm:"not null" json:"user_id"`
-	Size   uint64 `gorm:"not null" json:"size"`
+type ModelFile struct {
+	FileId  uint64 `json:"file_id"`
+	ModelId uint64 `json:"model_id"`
+}
+
+type SortedFiles struct {
+	GLB   Files `json:"glb"`
+	IMG   Files `json:"img"`
+	Video Files `json:"video"`
+	Other Files `json:"other"`
+}
+
+func (fileReq *FileRequest) NewFile() *File {
+	return &File{
+		Title:   fileReq.Title,
+		OwnerId: fileReq.OwnerId,
+	}
 }
 
 func (f *File) Prepare() {
@@ -31,20 +48,22 @@ func (f *File) Prepare() {
 	f.CreatedAt = time.Now()
 }
 
-type Files []File
-
-func (f *File) Validate(action string) map[string]string {
-	var errorMessages = make(map[string]string)
-
-	switch strings.ToLower(action) {
-	case "update":
-		if f.Title == "" || f.Title == "null" {
-			errorMessages["title_required"] = "title is required"
-		}
-	default:
-		if f.Title == "" || f.Title == "null" {
-			errorMessages["title_required"] = "title is required"
-		}
+func (f *FileRequest) Validate() string {
+	if f.Title == "" {
+		return constants.FileTitleCantBeEmpty
 	}
-	return errorMessages
+	if f.OwnerId == 0 {
+		return constants.UserIDInvalid
+	}
+	return ""
+}
+
+func (f *File) Validate() string {
+	if f.Title == "" {
+		return constants.FileTitleCantBeEmpty
+	}
+	if f.OwnerId == 0 {
+		return constants.UserIDInvalid
+	}
+	return ""
 }
