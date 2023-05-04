@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/AhEhIOhYou/etomne/backend"
-	"github.com/AhEhIOhYou/etomne/backend/constants"
-	"github.com/AhEhIOhYou/etomne/backend/infrastructure/logger"
+	"github.com/AhEhIOhYou/etomne/pkg/server"
+	"github.com/AhEhIOhYou/etomne/pkg/server/constants"
+	"github.com/AhEhIOhYou/etomne/pkg/server/infrastructure/logger"
 	"github.com/joho/godotenv"
 )
 
@@ -14,5 +14,5 @@ func init() {
 }
 
 func main() {
-	backend.Start()
+	server.Start()
 }
