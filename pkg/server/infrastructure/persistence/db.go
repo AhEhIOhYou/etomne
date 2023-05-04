@@ -18,7 +18,7 @@ type Repos struct {
 
 func NewRepo(DbUser, DbPassword, DbPort, DbHost, DbName string) (*Repos, error) {
 
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s",
 		DbHost, DbUser, DbPassword, DbName, DbPort)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 

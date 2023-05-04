@@ -62,8 +62,6 @@ func Start() {
 
 	logger.WriteLog(logger.Info, constants.DatabaseConnectionSuccess)
 
-	logger.WriteLog(logger.Info, constants.ServerStartSuccess)
-
 	tk := auth.NewToken()
 	fm := filemanager.NewFileUpload()
 
