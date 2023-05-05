@@ -89,8 +89,6 @@ func (us *Users) GetUserByID(c *gin.Context) {
 	c.JSON(http.StatusOK, user.PublicUser())
 }
 
-// TODO edit user, delete and update user permissions
-
 //	@Summary	Update user data
 //	@Tags		user
 //	@Produce	json
@@ -100,7 +98,7 @@ func (us *Users) GetUserByID(c *gin.Context) {
 //	@Failure	400		string		string
 //	@Failure	401		string		string
 //	@Failure	500		string		string
-//	@Router		/users/{user_id} [put]
+//	@Router		/users/update/{user_id} [post]
 //	@Param		Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 func (us *Users) UpdateUser(c *gin.Context) {
 	metadata, err := us.tk.ExtractTokenMetadata(c.Request)
@@ -221,4 +219,80 @@ func (us *Users) DeleteUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, constants.DeletedSuccessful)
+}
+
+//	@Summary	Update user admin rights
+//	@Tags		user
+//	@Produce	json
+//	@Param		user_id	path		int						true	"User ID"
+//	@Param		data	body		entities.UserRequest	true	"User updated data"
+//	@Success	200		{object}	entities.User
+//	@Failure	400		string		string
+//	@Failure	401		string		string
+//	@Failure	500		string		string
+//	@Router		/users/update/admin/{user_id} [post]
+//	@Param		Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
+func (us *Users) UpdateUserAdminRights(c *gin.Context) {
+	metadata, err := us.tk.ExtractTokenMetadata(c.Request)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, fmt.Sprintf(constants.Failed, err))
+		return
+	}
+
+	currentUserID, err := us.rd.FetchAuth(metadata.TokenUuid)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, fmt.Sprintf(constants.Failed, err))
+		return
+	}
+
+	currentUser, err := us.userApp.GetUser(currentUserID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
+		return
+	}
+
+	updatableUserID, err := strconv.ParseUint(c.Param("user_id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
+		return
+	}
+
+	if !utils.AccessVerification(updatableUserID, currentUser, true) {
+		c.JSON(http.StatusUnauthorized, constants.NotEnoughRights)
+		return
+	}
+
+	updatableUser, err := us.userApp.GetUser(updatableUserID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
+		return
+	}
+
+	var userReq entities.UserRequest
+
+	if err := c.ShouldBindJSON(&userReq); err != nil {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
+		return
+	}
+
+	if (userReq == entities.UserRequest{}) {
+		c.JSON(http.StatusOK, updatableUser)
+		return
+	}
+
+	updatableUser.IsAdmin = userReq.IsAdmin
+
+	validateErr := updatableUser.Validate()
+	if len(validateErr) > 0 {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, validateErr))
+		return
+	}
+
+	updatedUser, err := us.userApp.UpdateUser(updatableUser)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
+		return
+	}
+
+	c.JSON(http.StatusOK, updatedUser)
 }

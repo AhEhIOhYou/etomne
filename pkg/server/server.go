@@ -90,7 +90,8 @@ func Start() {
 		u.GET("/:user_id", users.GetUserByID)
 		u.POST("/login", authenticate.Login)
 		u.GET("/logout", middleware.AuthMiddleware(), authenticate.Logout)
-		u.PUT("/:user_id", middleware.AuthMiddleware(), users.UpdateUser)
+		u.POST("/update/:user_id", middleware.AuthMiddleware(), users.UpdateUser)
+		u.POST("/update/admin/:user_id", middleware.AuthMiddleware(), users.UpdateUserAdminRights)
 		u.DELETE("/:user_id", middleware.AuthMiddleware(), users.DeleteUser)
 		u.POST("/refresh", authenticate.Refresh)
 	}
@@ -98,7 +99,7 @@ func Start() {
 	m := router.Group("api/model")
 	{
 		m.POST("", middleware.AuthMiddleware(), models.SaveModel)
-		m.PUT("/:model_id", middleware.AuthMiddleware(), models.UpdateModel)
+		m.POST("/update/:model_id", middleware.AuthMiddleware(), models.UpdateModel)
 		m.GET("/:model_id", models.GetModel)
 		m.DELETE("/:model_id", middleware.AuthMiddleware(), models.DeleteModel)
 		m.GET("", models.GetModelList)

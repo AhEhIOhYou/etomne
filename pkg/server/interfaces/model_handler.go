@@ -98,7 +98,7 @@ func (m *Model) SaveModel(c *gin.Context) {
 //	@Failure	400			string		string
 //	@Failure	401			string		string
 //	@Failure	500			string		string
-//	@Router		/model/{model_id} [put]
+//	@Router		/model/update/{model_id} [post]
 //	@Param		Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 func (m *Model) UpdateModel(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
