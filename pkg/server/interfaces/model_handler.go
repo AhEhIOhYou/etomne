@@ -44,7 +44,6 @@ func NewModel(mApp application.ModelAppInterface, uApp application.UserAppInterf
 //	@Failure	401		string		string
 //	@Failure	500		string		string
 //	@Router		/model [post]
-//	Security	BearerAuth
 //	@Param		Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 func (m *Model) SaveModel(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
@@ -95,12 +94,11 @@ func (m *Model) SaveModel(c *gin.Context) {
 //	@Produce	json
 //	@Param		model_id	path		int						true	"Model ID"
 //	@Param		data		body		entities.ModelRequest	true	"Model updated data"
-//	@Success	201			{object}	entities.Model
+//	@Success	200			{object}	entities.Model
 //	@Failure	400			string		string
 //	@Failure	401			string		string
 //	@Failure	500			string		string
 //	@Router		/model/{model_id} [put]
-//	Security	BearerAuth
 //	@Param		Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 func (m *Model) UpdateModel(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
@@ -127,14 +125,14 @@ func (m *Model) UpdateModel(c *gin.Context) {
 		return
 	}
 
-	model, err := m.modelApp.GetModel(modelID)
+	updatableModel, err := m.modelApp.GetModel(modelID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	if user.ID != model.UserID {
-		c.JSON(http.StatusUnauthorized, constants.ModelNotAvaliable)
+	if !utils.AccessVerification(updatableModel.UserID, user, false) {
+		c.JSON(http.StatusUnauthorized, constants.NotEnoughRights)
 		return
 	}
 
@@ -145,23 +143,27 @@ func (m *Model) UpdateModel(c *gin.Context) {
 		return
 	}
 
-	validateErr := modelReq.Validate()
+	if (modelReq == entities.ModelRequest{}) {
+		c.JSON(http.StatusOK, updatableModel)
+		return
+	}
+
+	if len(modelReq.Title) != 0 {
+		updatableModel.Title = modelReq.Title
+	}
+	if len(modelReq.Description) != 0 {
+		updatableModel.Description = modelReq.Description
+	}
+
+	updatableModel.BeforeUpdate()
+
+	validateErr := updatableModel.Validate()
 	if len(validateErr) > 0 {
 		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, validateErr))
 		return
 	}
 
-	if modelReq.Title != model.Title {
-		model.Title = modelReq.Title
-	}
-
-	if modelReq.Description != model.Description {
-		model.Description = modelReq.Description
-	}
-
-	model.BeforeUpdate()
-
-	updatedModel, err := m.modelApp.UpdateModel(model)
+	updatedModel, err := m.modelApp.UpdateModel(updatableModel)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
@@ -268,12 +270,11 @@ func (m *Model) GetModel(c *gin.Context) {
 //	@Summary	Delete model by ID
 //	@Tags		model
 //	@Param		model_id	path	int	true	"Model ID"
-//	@Success	201			string	string
+//	@Success	200			string	string
 //	@Failure	400			string	string
 //	@Failure	401			string	string
 //	@Failure	500			string	string
 //	@Router		/model/{model_id} [delete]
-//	Security	BearerAuth
 //	@Param		Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 func (m *Model) DeleteModel(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
@@ -288,20 +289,20 @@ func (m *Model) DeleteModel(c *gin.Context) {
 		return
 	}
 
-	_, err = m.userApp.GetUser(metadata.UserId)
+	user, err := m.userApp.GetUser(metadata.UserId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	isAvaliable, err := m.modelApp.CheckAvailabilityModel(modelID, metadata.UserId)
+	model, err := m.modelApp.GetModel(modelID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
+		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	if !isAvaliable {
-		c.JSON(http.StatusInternalServerError, constants.ModelNotAvaliable)
+	if !utils.AccessVerification(model.UserID, user, false) {
+		c.JSON(http.StatusUnauthorized, constants.NotEnoughRights)
 		return
 	}
 
@@ -326,7 +327,7 @@ func (m *Model) DeleteModel(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, constants.ModelDeleteSuccessful)
+	c.JSON(http.StatusOK, constants.DeletedSuccessful)
 }
 
 //	@Summary	Save model file
@@ -339,7 +340,6 @@ func (m *Model) DeleteModel(c *gin.Context) {
 //	@Failure	401			string		string
 //	@Failure	500			string		string
 //	@Router		/model/{model_id}/addfile     [post]
-//	Security	BearerAuth
 //	@Param		Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 func (m *Model) SaveModelFile(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)

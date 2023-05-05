@@ -135,17 +135,3 @@ func (r *ModelRepo) DeleteAllModelFiles(modelId uint64) error {
 
 	return nil
 }
-
-func (r *ModelRepo) CheckAvailabilityModel(modelId uint64, userId uint64) (bool, error) {
-	var result int
-	rows := r.db.
-		Table("model").
-		Select("COUNT(model.id)").
-		Where("model.id = ? AND model.user_id = ?", modelId, userId).Limit(1).Row()
-
-	if err := rows.Scan(&result); err != nil {
-		return false, err
-	}
-
-	return result == 1, nil
-}

@@ -15,6 +15,4 @@ type ModelRepository interface {
 	SaveModelFile(*entities.File, uint64) (*entities.File, error)
 	DeleteModelFile(uint64) error
 	DeleteAllModelFiles(uint64) error
-
-	CheckAvailabilityModel(uint64, uint64) (bool, error)
 }
