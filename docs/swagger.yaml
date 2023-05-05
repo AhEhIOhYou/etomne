@@ -59,6 +59,8 @@ definitions:
         type: string
       id:
         type: integer
+      is_admin:
+        type: boolean
       name:
         type: string
     type: object
@@ -81,6 +83,23 @@ definitions:
           $ref: '#/definitions/entities.File'
         type: array
     type: object
+  entities.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      is_admin:
+        type: boolean
+      name:
+        type: string
+      password:
+        type: string
+      updated_at:
+        type: string
+    type: object
   entities.UserAuth:
     properties:
       access_token:
@@ -92,6 +111,8 @@ definitions:
     properties:
       email:
         type: string
+      is_admin:
+        type: boolean
       name:
         type: string
       password:
@@ -265,8 +286,8 @@ paths:
         required: true
         type: string
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
             type: string
         "400":
@@ -333,8 +354,8 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
             $ref: '#/definitions/entities.Model'
         "400":
@@ -444,6 +465,81 @@ paths:
           schema:
             type: string
       summary: Get user data by ID
+      tags:
+      - user
+  /users/{user_id}:
+    delete:
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Delete user by ID
+      tags:
+      - user
+    put:
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: User updated data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UserRequest'
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.User'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Update user data
       tags:
       - user
   /users/login:
