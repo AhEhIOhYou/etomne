@@ -87,7 +87,6 @@ func (au *Authenticate) Login(c *gin.Context) {
 //	@Failure	401	string		string
 //	@Failure	500	string		string
 //	@Router		/users/logout [get]
-//	Security	BearerAuth
 //	@Param		Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 func (au *Authenticate) Logout(c *gin.Context) {
 	metadata, err := au.tk.ExtractTokenMetadata(c.Request)

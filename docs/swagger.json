@@ -18,7 +18,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "file"
+                    "File"
                 ],
                 "summary": "Save file",
                 "parameters": [
@@ -69,7 +69,7 @@
         "/file/{file_id}": {
             "delete": {
                 "tags": [
-                    "file"
+                    "File"
                 ],
                 "summary": "Delete file by ID",
                 "parameters": [
@@ -118,9 +118,9 @@
             }
         },
         "/model": {
-            "put": {
+            "get": {
                 "tags": [
-                    "model"
+                    "Model"
                 ],
                 "summary": "Get a list of models with the specified quantity and position",
                 "parameters": [
@@ -169,7 +169,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "model"
+                    "Model"
                 ],
                 "summary": "Save model",
                 "parameters": [
@@ -225,7 +225,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "model"
+                    "Model"
                 ],
                 "summary": "Update model",
                 "parameters": [
@@ -285,7 +285,7 @@
         "/model/{model_id}": {
             "get": {
                 "tags": [
-                    "model"
+                    "Model"
                 ],
                 "summary": "Get model by ID",
                 "parameters": [
@@ -326,7 +326,7 @@
             },
             "delete": {
                 "tags": [
-                    "model"
+                    "Model"
                 ],
                 "summary": "Delete model by ID",
                 "parameters": [
@@ -380,7 +380,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "file"
+                    "Model"
                 ],
                 "summary": "Save model file",
                 "parameters": [
@@ -441,7 +441,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "User"
                 ],
                 "summary": "Save user",
                 "parameters": [
@@ -617,7 +617,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "User"
                 ],
                 "summary": "Update user admin rights",
                 "parameters": [
@@ -680,7 +680,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "User"
                 ],
                 "summary": "Update user data",
                 "parameters": [
@@ -743,7 +743,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "User"
                 ],
                 "summary": "Get user data by ID",
                 "parameters": [
@@ -780,7 +780,7 @@
         "/users/{user_id}": {
             "delete": {
                 "tags": [
-                    "user"
+                    "User"
                 ],
                 "summary": "Delete user by ID",
                 "parameters": [

@@ -31,7 +31,7 @@ func NewUsers(userApp application.UserAppInterface, fm filemanager.ManagerFileIn
 }
 
 //	@Summary	Save user
-//	@Tags		user
+//	@Tags		User
 //	@Produce	json
 //	@Param		data	body		entities.UserRequest	true	"User data"
 //	@Success	201		{object}	entities.PublicUser
@@ -65,7 +65,7 @@ func (us *Users) SaveUser(c *gin.Context) {
 }
 
 //	@Summary	Get user data by ID
-//	@Tags		user
+//	@Tags		User
 //	@Produce	json
 //	@Param		id	path		int	true	"User ID"
 //	@Success	200	{object}	entities.PublicUser
@@ -90,7 +90,7 @@ func (us *Users) GetUserByID(c *gin.Context) {
 }
 
 //	@Summary	Update user data
-//	@Tags		user
+//	@Tags		User
 //	@Produce	json
 //	@Param		user_id	path		int						true	"User ID"
 //	@Param		data	body		entities.UserRequest	true	"User updated data"
@@ -174,7 +174,7 @@ func (us *Users) UpdateUser(c *gin.Context) {
 }
 
 //	@Summary	Delete user by ID
-//	@Tags		user
+//	@Tags		User
 //	@Param		user_id	path	int	true	"User ID"
 //	@Success	200		string	string
 //	@Failure	400		string	string
@@ -222,7 +222,7 @@ func (us *Users) DeleteUser(c *gin.Context) {
 }
 
 //	@Summary	Update user admin rights
-//	@Tags		user
+//	@Tags		User
 //	@Produce	json
 //	@Param		user_id	path		int						true	"User ID"
 //	@Param		data	body		entities.UserRequest	true	"User updated data"

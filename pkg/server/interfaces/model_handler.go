@@ -36,7 +36,7 @@ func NewModel(mApp application.ModelAppInterface, uApp application.UserAppInterf
 }
 
 //	@Summary	Save model
-//	@Tags		model
+//	@Tags		Model
 //	@Produce	json
 //	@Param		data	body		entities.ModelRequest	true	"Model data"
 //	@Success	201		{object}	entities.Model
@@ -90,7 +90,7 @@ func (m *Model) SaveModel(c *gin.Context) {
 }
 
 //	@Summary	Update model
-//	@Tags		model
+//	@Tags		Model
 //	@Produce	json
 //	@Param		model_id	path		int						true	"Model ID"
 //	@Param		data		body		entities.ModelRequest	true	"Model updated data"
@@ -173,14 +173,14 @@ func (m *Model) UpdateModel(c *gin.Context) {
 }
 
 //	@Summary	Get a list of models with the specified quantity and position
-//	@Tags		model
+//	@Tags		Model
 //	@Param		_page	query	int	false	"Query page param"
 //	@Param		_limit	query	int	false	"Query limit param"
 //	@Success	201		{Array}	[]entities.ModelData
 //	@Failure	400		string	string
 //	@Failure	401		string	string
 //	@Failure	500		string	string
-//	@Router		/model   [put]
+//	@Router		/model	[get]
 func (m *Model) GetModelList(c *gin.Context) {
 
 	limit, err := strconv.Atoi(c.Query("_limit"))
@@ -228,7 +228,7 @@ func (m *Model) GetModelList(c *gin.Context) {
 }
 
 //	@Summary	Get model by ID
-//	@Tags		model
+//	@Tags		Model
 //	@Param		model_id	path		int	true	"Model ID"
 //	@Success	201			{object}	entities.ModelData
 //	@Failure	400			string		string
@@ -268,7 +268,7 @@ func (m *Model) GetModel(c *gin.Context) {
 }
 
 //	@Summary	Delete model by ID
-//	@Tags		model
+//	@Tags		Model
 //	@Param		model_id	path	int	true	"Model ID"
 //	@Success	200			string	string
 //	@Failure	400			string	string
@@ -331,7 +331,7 @@ func (m *Model) DeleteModel(c *gin.Context) {
 }
 
 //	@Summary	Save model file
-//	@Tags		file
+//	@Tags		Model
 //	@Produce	json
 //	@Param		model_id	path		int		true	"Model ID"
 //	@Param		file		formData	file	true	"Body with files"

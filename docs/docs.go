@@ -25,7 +25,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "file"
+                    "File"
                 ],
                 "summary": "Save file",
                 "parameters": [
@@ -76,7 +76,7 @@ const docTemplate = `{
         "/file/{file_id}": {
             "delete": {
                 "tags": [
-                    "file"
+                    "File"
                 ],
                 "summary": "Delete file by ID",
                 "parameters": [
@@ -125,9 +125,9 @@ const docTemplate = `{
             }
         },
         "/model": {
-            "put": {
+            "get": {
                 "tags": [
-                    "model"
+                    "Model"
                 ],
                 "summary": "Get a list of models with the specified quantity and position",
                 "parameters": [
@@ -176,7 +176,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "model"
+                    "Model"
                 ],
                 "summary": "Save model",
                 "parameters": [
@@ -232,7 +232,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "model"
+                    "Model"
                 ],
                 "summary": "Update model",
                 "parameters": [
@@ -292,7 +292,7 @@ const docTemplate = `{
         "/model/{model_id}": {
             "get": {
                 "tags": [
-                    "model"
+                    "Model"
                 ],
                 "summary": "Get model by ID",
                 "parameters": [
@@ -333,7 +333,7 @@ const docTemplate = `{
             },
             "delete": {
                 "tags": [
-                    "model"
+                    "Model"
                 ],
                 "summary": "Delete model by ID",
                 "parameters": [
@@ -387,7 +387,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "file"
+                    "Model"
                 ],
                 "summary": "Save model file",
                 "parameters": [
@@ -448,7 +448,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "User"
                 ],
                 "summary": "Save user",
                 "parameters": [
@@ -624,7 +624,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "User"
                 ],
                 "summary": "Update user admin rights",
                 "parameters": [
@@ -687,7 +687,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "User"
                 ],
                 "summary": "Update user data",
                 "parameters": [
@@ -750,7 +750,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "User"
                 ],
                 "summary": "Get user data by ID",
                 "parameters": [
@@ -787,7 +787,7 @@ const docTemplate = `{
         "/users/{user_id}": {
             "delete": {
                 "tags": [
-                    "user"
+                    "User"
                 ],
                 "summary": "Delete user by ID",
                 "parameters": [

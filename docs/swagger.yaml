@@ -169,7 +169,7 @@ paths:
             type: string
       summary: Save file
       tags:
-      - file
+      - File
   /file/{file_id}:
     delete:
       parameters:
@@ -203,8 +203,38 @@ paths:
             type: string
       summary: Delete file by ID
       tags:
-      - file
+      - File
   /model:
+    get:
+      parameters:
+      - description: Query page param
+        in: query
+        name: _page
+        type: integer
+      - description: Query limit param
+        in: query
+        name: _limit
+        type: integer
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: Array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get a list of models with the specified quantity and position
+      tags:
+      - Model
     post:
       parameters:
       - description: Model data
@@ -240,37 +270,7 @@ paths:
             type: string
       summary: Save model
       tags:
-      - model
-    put:
-      parameters:
-      - description: Query page param
-        in: query
-        name: _page
-        type: integer
-      - description: Query limit param
-        in: query
-        name: _limit
-        type: integer
-      responses:
-        "201":
-          description: Created
-          schema:
-            type: Array
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "401":
-          description: Unauthorized
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: Get a list of models with the specified quantity and position
-      tags:
-      - model
+      - Model
   /model/{model_id}:
     delete:
       parameters:
@@ -304,7 +304,7 @@ paths:
             type: string
       summary: Delete model by ID
       tags:
-      - model
+      - Model
     get:
       parameters:
       - description: Model ID
@@ -331,7 +331,7 @@ paths:
             type: string
       summary: Get model by ID
       tags:
-      - model
+      - Model
   /model/{model_id}/addfile:
     post:
       parameters:
@@ -372,7 +372,7 @@ paths:
             type: string
       summary: Save model file
       tags:
-      - file
+      - Model
   /model/update/{model_id}:
     post:
       parameters:
@@ -414,7 +414,7 @@ paths:
             type: string
       summary: Update model
       tags:
-      - model
+      - Model
   /users:
     post:
       parameters:
@@ -441,7 +441,7 @@ paths:
             type: string
       summary: Save user
       tags:
-      - user
+      - User
   /users/{id}:
     get:
       parameters:
@@ -467,7 +467,7 @@ paths:
             type: string
       summary: Get user data by ID
       tags:
-      - user
+      - User
   /users/{user_id}:
     delete:
       parameters:
@@ -501,7 +501,7 @@ paths:
             type: string
       summary: Delete user by ID
       tags:
-      - user
+      - User
   /users/login:
     post:
       parameters:
@@ -630,7 +630,7 @@ paths:
             type: string
       summary: Update user data
       tags:
-      - user
+      - User
   /users/update/admin/{user_id}:
     post:
       parameters:
@@ -672,5 +672,5 @@ paths:
             type: string
       summary: Update user admin rights
       tags:
-      - user
+      - User
 swagger: "2.0"

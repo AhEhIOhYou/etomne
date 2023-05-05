@@ -35,7 +35,7 @@ func NewFile(mApp application.ModelAppInterface, uApp application.UserAppInterfa
 }
 
 //	@Summary	Save file
-//	@Tags		file
+//	@Tags		File
 //	@Produce	json
 //	@Param		file	formData	file	true	"Body with files"
 //	@Success	201		{object}	entities.File
@@ -43,7 +43,6 @@ func NewFile(mApp application.ModelAppInterface, uApp application.UserAppInterfa
 //	@Failure	401		string		string
 //	@Failure	500		string		string
 //	@Router		/file [post]
-//	Security	BearerAuth
 //	@Param		Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 func (f *File) SaveFile(c *gin.Context) {
 	metadata, err := f.tk.ExtractTokenMetadata(c.Request)
@@ -107,14 +106,13 @@ func (f *File) SaveFile(c *gin.Context) {
 }
 
 //	@Summary	Delete file by ID
-//	@Tags		file
+//	@Tags		File
 //	@Param		file_id	path		int	true	"File ID"
 //	@Success	200		{object}	entities.File
 //	@Failure	400		string		string
 //	@Failure	401		string		string
 //	@Failure	500		string		string
 //	@Router		/file/{file_id} [delete]
-//	Security	BearerAuth
 //	@Param		Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 func (f *File) RemoveFile(c *gin.Context) {
 	metadata, err := f.tk.ExtractTokenMetadata(c.Request)
