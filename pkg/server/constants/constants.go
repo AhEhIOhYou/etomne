@@ -46,11 +46,12 @@ const (
 	//Security errors
 	PasswordHashError   = "error hashing password: %v"
 	PasswordVerifyError = "error verifying password: %v"
+	NotEnoughRights = "not enough rights"
 
 	UsernameIsAvailable    = "Username is available"
 	RegistrationSuccessful = "Registration successful"
 	LoginSuccessful        = "login successful"
 	LogoutSuccessful       = "logout successful"
 	YouAreLoggedIn         = "you are logged in"
-	ModelDeleteSuccessful  = "model was successfully deleted"
+	DeletedSuccessful  = "successfully deleted"
 )

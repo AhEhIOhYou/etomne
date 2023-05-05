@@ -90,6 +90,8 @@ func Start() {
 		u.GET("/:user_id", users.GetUserByID)
 		u.POST("/login", authenticate.Login)
 		u.GET("/logout", middleware.AuthMiddleware(), authenticate.Logout)
+		u.PUT("/:user_id", middleware.AuthMiddleware(), users.UpdateUser)
+		u.DELETE("/:user_id", middleware.AuthMiddleware(), users.DeleteUser)
 		u.POST("/refresh", authenticate.Refresh)
 	}
 

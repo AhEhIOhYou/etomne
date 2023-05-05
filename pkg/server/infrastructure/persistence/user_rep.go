@@ -77,3 +77,25 @@ func (r *UserRepo) GetUserByEmailAndPassword(u *entities.User) (*entities.User, 
 
 	return &user, nil
 }
+
+func (r *UserRepo) UpdateUser(user *entities.User) (*entities.User, error) {
+	err := r.db.Debug().Table("user").Save(&user).Error
+	if err != nil {
+		if strings.Contains(err.Error(), "duplicate") || strings.Contains(err.Error(), "Duplicate") {
+			return nil, err
+		}
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (r *UserRepo) DeleteUser(ID uint64) error {
+	var user entities.User
+	err := r.db.Debug().Table("user").Where("id = ?", ID).Delete(&user).Error
+	if err != nil {
+		return errors.New("database error, please try again")
+	}
+
+	return nil
+}

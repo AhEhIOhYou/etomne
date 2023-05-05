@@ -15,20 +15,23 @@ type User struct {
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
 	Password  string    `json:"password"`
+	IsAdmin   bool      `json:"is_admin"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type PublicUser struct {
-	ID    uint64 `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	ID      uint64 `json:"id"`
+	Name    string `json:"name"`
+	Email   string `json:"email"`
+	IsAdmin bool   `json:"is_admin"`
 }
 
 type UserRequest struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+	IsAdmin  bool   `json:"is_admin"`
 }
 
 type LoginRequest struct {
@@ -58,9 +61,10 @@ func (users Users) PublicUsers() []interface{} {
 
 func (user *User) PublicUser() *PublicUser {
 	return &PublicUser{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
+		ID:      user.ID,
+		Name:    user.Name,
+		Email:   user.Email,
+		IsAdmin: user.IsAdmin,
 	}
 }
 
@@ -81,6 +85,7 @@ func (user *User) BeforeUpdate() {
 func (user *User) Prepare() {
 	user.Name = html.EscapeString(strings.TrimSpace(user.Name))
 	user.Email = html.EscapeString(strings.TrimSpace(user.Email))
+	user.IsAdmin = false
 	hashedBytePass, _ := security.Hash(user.Password)
 	user.Password = string(hashedBytePass)
 	user.CreatedAt = time.Now()
