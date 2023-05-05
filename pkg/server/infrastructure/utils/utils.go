@@ -34,3 +34,16 @@ func SortFiles(files []entities.File) entities.SortedFiles {
 
 	return readyFiles
 }
+
+func AccessVerification(checkedID uint64, checkerUser *entities.User, forAdminOnly bool) bool {
+	if forAdminOnly && !checkerUser.IsAdmin {
+		return false
+	}
+
+	if checkedID == checkerUser.ID || checkerUser.IsAdmin {
+		return true
+	} else {
+		return false
+	}
+}
+
