@@ -13,12 +13,19 @@ import (
 	"github.com/AhEhIOhYou/etomne/pkg/server/interfaces/filemanager"
 	"github.com/AhEhIOhYou/etomne/pkg/server/interfaces/middleware"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	_ "github.com/AhEhIOhYou/etomne/docs"
 )
+
+func init() {
+	if err := godotenv.Load(".env"); err != nil {
+		logger.WriteLog(logger.Error, constants.ServerNotFoundEnvFile)
+	}
+}
 
 //	@title			ETOMNE project
 //	@version		2.0
@@ -44,7 +51,7 @@ func Start() {
 
 	redisHost := os.Getenv("REDIS_HOST")
 	redisPort := os.Getenv("REDIS_PORT")
-	redisPassword := os.Getenv("REDIS_PASSWORD")
+	redisPassword := os.Getenv("REDIS_PASS")
 
 	logger.WriteLog(logger.Info, constants.DatabaseConnectionStart)
 
