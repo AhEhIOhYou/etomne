@@ -33,6 +33,7 @@
           </label>
         </div>
       </div>
+      <DropFile @onChange='onSaved'/>
       <button type="submit" @click="submitFilesHandler" class="form__button btn">Загрузить модель</button>
     </form>
     <div class="modal">
@@ -44,17 +45,20 @@
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 import axios from "axios";
+import DropFile from "@/components/DropFile.vue";
 import CustomInput from "@/components/UI/CustomInput";
 import CustomTextarea from "@/components/UI/CustomTextarea";
 
 export default {
   components: {
     CustomInput,
-    CustomTextarea
+    CustomTextarea,
+    DropFile
   },
   data(){
     return {
       attachments: '',
+      filesId: []
     }
   },
   methods: {
@@ -65,25 +69,32 @@ export default {
     // ...mapActions({
     //   handleSubmitUpload: 'upload/handleSubmitUpload',
     // }),
+    onSaved (data) {
+      this.filesId = data;
+    }, 
     handleFilesUpload(){
       this.attachments = this.$refs.attachments.files;
     },
-    submitFilesHandler(){
+    submitFilesHandler(evt){
+      evt.preventDefault();
       const accessToken = $cookies.get("access_token");
       const refreshToken = $cookies.get("refresh_token");
       const formOverlay = document.querySelector('.form__overlay');
-      let formData = new FormData();
-      formData.append('title', this.name);
-      formData.append('description', this.description);
-      for( var i = 0; i < this.attachments.length; i++ ){
-          let attachment = this.attachments[i];
-          formData.append('attachments', attachment);
-        }
+      
+      // let formData = new FormData();
+      // for( var i = 0; i < this.attachments.length; i++ ){
+      //     let attachment = this.attachments[i];
+      //     formData.append('attachments', attachment);
+      //   }
+
+      const title = this.name;
+      const description = this.description;
 
       const submitFilesFunc = (access) => {
-      axios.post( '/api/model',
-        formData,
+      axios.post('/api/model',
         {
+          title: title,
+          description: description,
           headers: {
             'Content-Type': 'multipart/form-data',
             'Authorization': `Bearer ${access}`
