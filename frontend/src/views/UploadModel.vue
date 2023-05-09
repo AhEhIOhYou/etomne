@@ -58,7 +58,7 @@ export default {
   data(){
     return {
       attachments: '',
-      filesId: []
+      files_id: []
     }
   },
   methods: {
@@ -70,7 +70,7 @@ export default {
     //   handleSubmitUpload: 'upload/handleSubmitUpload',
     // }),
     onSaved (data) {
-      this.filesId = data;
+      this.files_id = data;
     }, 
     handleFilesUpload(){
       this.attachments = this.$refs.attachments.files;
@@ -80,19 +80,15 @@ export default {
       const accessToken = $cookies.get("access_token");
       const refreshToken = $cookies.get("refresh_token");
       const formOverlay = document.querySelector('.form__overlay');
+      const ids = JSON.parse(JSON.stringify(this.files_id));
 
       const title = this.name;
       const description = this.description;
-      console.log(this.filesId);
       const data = {
-        data: {
-          description: description,
-          title: title,
-          files_id: this.filesId,
-        }
+        description: description,
+        title: title,
+        files_id: ids.files_id
       }
-
-      console.log(data);
 
       const submitFilesFunc = (access) => {
       axios.post('/api/model',
