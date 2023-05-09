@@ -20,6 +20,7 @@ type ModelAppInterface interface {
 
 	GetFilesByModel(uint64) ([]entities.File, error)
 	SaveModelFile(*entities.File, uint64) (*entities.File, error)
+	AddFileToModel(uint64, uint64) error
 	DeleteModelFile(uint64) error
 	DeleteAllModelFiles(uint64) error
 }
@@ -50,6 +51,10 @@ func (m *modelApp) GetFilesByModel(modelId uint64) ([]entities.File, error) {
 
 func (m *modelApp) SaveModelFile(file *entities.File, modelId uint64) (*entities.File, error) {
 	return m.md.SaveModelFile(file, modelId)
+}
+
+func (m *modelApp) AddFileToModel(fileID uint64, modelID uint64) error {
+	return m.md.AddFileToModel(fileID, modelID)
 }
 
 func (m *modelApp) DeleteModelFile(fileId uint64) error {

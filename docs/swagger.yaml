@@ -50,6 +50,10 @@ definitions:
     properties:
       description:
         type: string
+      files_id:
+        items:
+          type: integer
+        type: array
       title:
         type: string
     type: object

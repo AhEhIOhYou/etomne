@@ -914,6 +914,12 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "files_id": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "title": {
                     "type": "string"
                 }

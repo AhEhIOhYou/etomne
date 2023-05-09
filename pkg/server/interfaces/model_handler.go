@@ -79,11 +79,19 @@ func (m *Model) SaveModel(c *gin.Context) {
 
 	newModel := modelReq.NewModel()
 	newModel.Prepare()
+	newModel.UserID = userID
 
 	savedModel, err := m.modelApp.SaveModel(newModel)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
+	}
+
+	for _, id := range modelReq.FilesId {
+		err = m.modelApp.AddFileToModel(id, savedModel.ID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
+		}
 	}
 
 	c.JSON(http.StatusCreated, savedModel)
@@ -143,7 +151,7 @@ func (m *Model) UpdateModel(c *gin.Context) {
 		return
 	}
 
-	if (modelReq == entities.ModelRequest{}) {
+	if len(modelReq.Title) == 0 && len(modelReq.Description) == 0 {
 		c.JSON(http.StatusOK, updatableModel)
 		return
 	}

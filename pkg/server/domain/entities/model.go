@@ -18,8 +18,9 @@ type Model struct {
 }
 
 type ModelRequest struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
+	Title       string   `json:"title"`
+	Description string   `json:"description"`
+	FilesId     []uint64 `json:"files_id"`
 }
 
 type ModelData struct {

@@ -13,6 +13,7 @@ type ModelRepository interface {
 
 	GetFilesByModel(uint64) ([]entities.File, error)
 	SaveModelFile(*entities.File, uint64) (*entities.File, error)
+	AddFileToModel(uint64, uint64) error
 	DeleteModelFile(uint64) error
 	DeleteAllModelFiles(uint64) error
 }

@@ -116,6 +116,19 @@ func (r *ModelRepo) SaveModelFile(file *entities.File, modelId uint64) (*entitie
 	return file, nil
 }
 
+func (r *ModelRepo) AddFileToModel(fileID, modelID uint64) error {
+	modelFile := entities.ModelFile{
+		ModelId: modelID,
+		FileId:  fileID,
+	}
+	err := r.db.Debug().Create(&modelFile).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *ModelRepo) DeleteModelFile(fileId uint64) error {
 	var fModel entities.ModelFile
 	err := r.db.Debug().Table("model_files").Where("file_id = ?", fileId).Delete(&fModel).Error
