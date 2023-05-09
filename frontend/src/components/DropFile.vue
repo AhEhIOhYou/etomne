@@ -54,7 +54,7 @@ export default {
     return {
       isDragging: false,
       files: '',
-      filesId: []
+      files_id: []
     };
   },
   methods: {
@@ -64,13 +64,12 @@ export default {
       this.files = this.$refs.file.files;
 
       this.$emit('onChange', {
-        filesId: this.filesId
+        files_id: this.files_id
       })
 
       const saveFile = (file, access) => {
         let fileData = new FormData();  
         fileData.append('file', file);
-        console.log(fileData.get('file'));   
         axios.post('/api/file',
           fileData,
           {
@@ -80,8 +79,7 @@ export default {
             }
           }
         ).then(response => {
-            this.filesId.push(response.data.id);
-            console.log(response);
+            this.files_id.push(response.data.id);
           })
           .catch(error => {
             console.log(error);
