@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <form class="main">
     <div
       class="dropzone-container"
       @dragover="dragover"
@@ -43,7 +43,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </form>
 </template>
 
 <script>
@@ -64,22 +64,23 @@ export default {
       this.files = this.$refs.file.files;
 
       this.$emit('onChange', {
-        filesId: this.files
+        filesId: this.filesId
       })
 
       const saveFile = (file, access) => {
-        let fileData = new FormData();
+        let fileData = new FormData();  
         fileData.append('file', file);
+        console.log(fileData.get('file'));   
         axios.post('/api/file',
+          fileData,
           {
-            fileData,
             headers: {
               'Content-Type': 'multipart/form-data',
               'Authorization': `Bearer ${access}`
             }
           }
         ).then(response => {
-            // this.filesId.append(response.id);
+            this.filesId.push(response.data.id);
             console.log(response);
           })
           .catch(error => {

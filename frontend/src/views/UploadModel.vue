@@ -80,23 +80,26 @@ export default {
       const accessToken = $cookies.get("access_token");
       const refreshToken = $cookies.get("refresh_token");
       const formOverlay = document.querySelector('.form__overlay');
-      
-      // let formData = new FormData();
-      // for( var i = 0; i < this.attachments.length; i++ ){
-      //     let attachment = this.attachments[i];
-      //     formData.append('attachments', attachment);
-      //   }
 
       const title = this.name;
       const description = this.description;
+      console.log(this.filesId);
+      const data = {
+        data: {
+          description: description,
+          title: title,
+          files_id: this.filesId,
+        }
+      }
+
+      console.log(data);
 
       const submitFilesFunc = (access) => {
       axios.post('/api/model',
+        data,
         {
-          title: title,
-          description: description,
           headers: {
-            'Content-Type': 'multipart/form-data',
+            // 'Content-Type': 'multipart/form-data',
             'Authorization': `Bearer ${access}`
           }
         }
