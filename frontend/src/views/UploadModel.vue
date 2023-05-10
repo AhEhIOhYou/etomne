@@ -19,20 +19,6 @@
           <CustomTextarea :model-value="description" @update:model-value="setDescription" class="form__input" id="MODEL_DESCRIPTION" name="MODEL_DESCRIPTION" placeholder="Введите описание модели"/>
         </div>
       </div>
-      <div class="form__container form__container--one">
-        <div class="form__upload-file">
-          <p class="form__upload-text">Загрузить файлы:</p>
-          <input class="visually-hidden form__upload-input" ref="attachments" v-on:change="handleFilesUpload" type="file" name="MODEL_FILES" id="MODEL_FILES" accept="image/*, video/*, .glb, .gltf" multiple required>
-          <label class="form__upload-label" for="MODEL_FILES">
-            <span class="btn form__upload-button">
-              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none">
-                <path d="M6.25013 18.7501H18.7501V20.8334H6.25013V18.7501ZM12.5001 3.73547L5.51367 10.7219L6.98659 12.1948L11.4585 7.72297V16.6667H13.5418V7.72297L18.0137 12.1948L19.4866 10.7219L12.5001 3.73547Z"/>
-              </svg>
-              <span>Выбрать файлы</span>
-            </span>
-          </label>
-        </div>
-      </div>
       <DropFile @onChange='onSaved'/>
       <button type="submit" @click="submitFilesHandler" class="form__button btn">Загрузить модель</button>
     </form>
