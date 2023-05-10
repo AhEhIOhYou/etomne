@@ -1,5 +1,5 @@
 <template>
-  <form class="main">
+  <form class="dropzone">
     <div
       class="dropzone-container"
       @dragover="dragover"
@@ -18,8 +18,8 @@
       />
 
       <label for="fileInput" class="file-label">
-        <div v-if="isDragging">Release to drop files here.</div>
-        <div v-else>Drop files here or <u>click here</u> to upload.</div>
+        <div v-if="isDragging">Отпустите, чтобы перетащить сюда файлы.</div>
+        <div style="text-align: center;" v-else>Перетащите файлы сюда или нажмите здесь, чтобы загрузить.</div>
       </label>
 
       <div class="preview-container mt-4" v-if="files.length">
@@ -62,7 +62,6 @@ export default {
       const accessToken = $cookies.get("access_token");
       const refreshToken = $cookies.get("refresh_token");
       this.files = this.$refs.file.files;
-
       this.$emit('onChange', {
         files_id: this.files_id
       })
@@ -149,13 +148,8 @@ export default {
 </script>
 
 <style>
-.main {
-  display: flex;
-  flex-grow: 1;
-  align-items: center;
-  height: 100vh;
-  justify-content: center;
-  text-align: center;
+.dropzone {
+  margin-bottom: 1.5rem;
 }
 .dropzone-container {
   padding: 4rem;

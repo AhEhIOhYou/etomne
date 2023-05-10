@@ -42,6 +42,7 @@ export const registrationModule = {
             password: state.password
           })
           .then(response => {
+            window.location.href = '/';
             console.log(response);
           })
           .catch(error => {

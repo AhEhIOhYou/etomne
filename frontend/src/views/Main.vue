@@ -34,7 +34,7 @@ export default {
       const accessToken = $cookies.get("access_token");
       const modelId = model.model.id;
       axios.delete(`/api/model/${modelId}`,
-      {
+      { 
         data: { 
           id: modelId
         }, 

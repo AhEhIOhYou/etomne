@@ -4,7 +4,7 @@
       <h2 class="model__title">{{ model.model.title }}</h2>
       <div class="model__swipers">
         <swiper
-          :slides-per-view="1"
+          :slides-per-view="1" 
           :space-between="20"
           :allowTouchMove="false"
           :modules="[Thumbs]"
@@ -12,16 +12,16 @@
           class="model__default-swiper"
         >
           <swiper-slide v-for="model in model.files.glb">
-            <model-viewer auto-rotate class="model__model" :src="'https://modelshowtime.serdcebolit.ru/' + model.url" camera-controls=""></model-viewer>
+            <model-viewer auto-rotate class="model__model" :src="'http://localhost:8095/' + model.url" camera-controls=""></model-viewer>
           </swiper-slide>
           <swiper-slide v-for="img in model.files.img">
-            <img :src="'https://modelshowtime.serdcebolit.ru/' + img.url">
+            <img :src="'http://localhost:8095/' + img.url">
           </swiper-slide>
           <swiper-slide v-for="video in model.files.video">
-            <video controls :src="'https://modelshowtime.serdcebolit.ru/' + video.url"></video>
+            <video controls :src="'http://localhost:8095/' + video.url"></video>
           </swiper-slide>
         </swiper>
-        <swiper v-if="model.files.glb.length > 1 || model.files.img.length > 0" class="model__thumbs-swiper"
+        <swiper v-if="model.files.glb || model.files.img || model.files.other || model.files.video" class="model__thumbs-swiper"
           @swiper="setThumbsSwiper"
           :slides-per-view="4"
           :space-between="10"
@@ -33,13 +33,13 @@
           :navigation="true"
         >
           <swiper-slide v-for="model in model.files.glb">
-            <model-viewer auto-rotate class="model__model" :src="'https://modelshowtime.serdcebolit.ru/' + model.url"></model-viewer>
+            <model-viewer auto-rotate class="model__model" :src="'http://localhost:8095/' + model.url"></model-viewer>
           </swiper-slide>
           <swiper-slide v-for="img in model.files.img">
-            <img :src="'https://modelshowtime.serdcebolit.ru/' + img.url">
+            <img :src="'http://localhost:8095/' + img.url">
           </swiper-slide>
           <swiper-slide v-for="video in model.files.video">
-            <video class="model__video" :src="'https://modelshowtime.serdcebolit.ru/' + video.url"></video>
+            <video class="model__video" :src="'http://localhost:8095/' + video.url"></video>
           </swiper-slide>
         </swiper>
       </div>
