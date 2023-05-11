@@ -10,6 +10,7 @@ import (
 	"github.com/AhEhIOhYou/etomne/pkg/server/constants"
 	"github.com/AhEhIOhYou/etomne/pkg/server/domain/entities"
 	"github.com/AhEhIOhYou/etomne/pkg/server/infrastructure/auth"
+	"github.com/AhEhIOhYou/etomne/pkg/server/infrastructure/utils"
 	"github.com/AhEhIOhYou/etomne/pkg/server/interfaces/filemanager"
 	"github.com/gin-gonic/gin"
 )
@@ -107,11 +108,11 @@ func (f *File) SaveFile(c *gin.Context) {
 
 //	@Summary	Delete file by ID
 //	@Tags		File
-//	@Param		file_id	path		int	true	"File ID"
-//	@Success	200		{object}	entities.File
-//	@Failure	400		string		string
-//	@Failure	401		string		string
-//	@Failure	500		string		string
+//	@Param		file_id	path	int	true	"File ID"
+//	@Success	200		string	string
+//	@Failure	400		string	string
+//	@Failure	401		string	string
+//	@Failure	500		string	string
 //	@Router		/file/{file_id} [delete]
 //	@Param		Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 func (f *File) RemoveFile(c *gin.Context) {
@@ -127,7 +128,7 @@ func (f *File) RemoveFile(c *gin.Context) {
 		return
 	}
 
-	_, err = f.userApp.GetUser(userID)
+	user, err := f.userApp.GetUser(userID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
 		return
@@ -139,19 +140,15 @@ func (f *File) RemoveFile(c *gin.Context) {
 		return
 	}
 
-	isAvaliable, err := f.fileApp.CheckAvailabilityFile(fileID, userID)
+	file, err := f.fileApp.GetFile(fileID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
-		return
-	}
-	if !isAvaliable {
-		c.JSON(http.StatusInternalServerError, constants.FileNotAvaliable)
+		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
 		return
 	}
 
-	file, err := f.fileApp.GetFile(fileID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
+	isAvaliable := utils.AccessVerification(file.OwnerId, user, false)
+	if !isAvaliable {
+		c.JSON(http.StatusInternalServerError, constants.FileNotAvaliable)
 		return
 	}
 
@@ -169,5 +166,5 @@ func (f *File) RemoveFile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, file)
+	c.Data(http.StatusOK, "charset=utf8", []byte("ok"))
 }
