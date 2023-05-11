@@ -53,7 +53,7 @@ export default {
   data() {
     return {
       isDragging: false,
-      files: '',
+      files: [],
       files_id: []
     };
   },
@@ -61,7 +61,7 @@ export default {
     onChange() {
       const accessToken = $cookies.get("access_token");
       const refreshToken = $cookies.get("refresh_token");
-      this.files = this.$refs.file.files;
+      this.files = [...this.$refs.file.files];
       this.$emit('onChange', {
         files_id: this.files_id
       })
@@ -79,6 +79,7 @@ export default {
           }
         ).then(response => {
             this.files_id.push(response.data.id);
+            console.log(response);
           })
           .catch(error => {
             console.log(error);
@@ -125,7 +126,48 @@ export default {
     },
 
     remove(i) {
+      const accessToken = $cookies.get("access_token");
+      const refreshToken = $cookies.get("refresh_token");
+      const fileId = this.files_id[i];
       this.files.splice(i, 1);
+
+      const removeFile = (id, access) => {
+        axios.delete(`/api/file/${id}`,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              'Authorization': `Bearer ${access}`
+            }
+          }
+        ).then(response => {
+            const index = this.files_id.indexOf(id);
+            console.log(this.files_id);
+            this.files_id.splice(index, 1);
+            console.log(this.files_id);
+            console.log(response);
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      };
+
+      if (accessToken === null && refreshToken) {
+        axios.post('/api/users/refresh', {
+          refresh_token: refreshToken
+        })
+          .then(response => {
+            $cookies.set('access_token', response.data.tokens.access_token, '15min', '/');
+            $cookies.set('refresh_token', response.data.tokens.refresh_token, '7d', '/');
+            localStorage.setItem('isAuth', true);
+            removeFile(fileId, accessToken);
+            console.log(response);
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      } else {
+        removeFile(fileId, accessToken);
+      }
     },
 
     dragover(e) {
