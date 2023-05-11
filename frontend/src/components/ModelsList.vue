@@ -4,7 +4,7 @@
       <models-item
         v-for="model in models"
         :model="model"
-        :key="model.model.id"
+        :key="model.model.id" 
         @remove="$emit('remove', model)"
       />
     </transition-group>
