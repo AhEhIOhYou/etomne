@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Main from '../views/Main'
-// import ModelPageId from '@/views/ModelPageId'
 import Authorization from '@/views/Authorization'
 import Registration from '@/views/Registration'
 import UploadModel from '@/views/UploadModel'
+import EditModel from '@/views/EditModel'
 
 const routes = [
   {
@@ -11,10 +11,6 @@ const routes = [
     name: 'main',
     component: Main
   },
-  // {
-  //   path: '/:id',
-  //   component: ModelPageId
-  // },
   {
     path: '/authorization',
     name: 'authorization',
@@ -29,7 +25,11 @@ const routes = [
     path: '/uploadmodel',
     name: 'uploadmodel',
     component: UploadModel,
-  }
+  },
+  {
+    path: '/:id',
+    component: EditModel
+  },
 ]
 
 const router = createRouter({
