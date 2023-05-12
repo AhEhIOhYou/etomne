@@ -336,7 +336,7 @@ paths:
       summary: Get model by ID
       tags:
       - Model
-  /model/{model_id}/addfile:
+  /model/addfile/{model_id}:
     post:
       parameters:
       - description: Model ID

@@ -110,7 +110,7 @@ func Start() {
 		m.GET("/:model_id", models.GetModel)
 		m.DELETE("/:model_id", middleware.AuthMiddleware(), models.DeleteModel)
 		m.GET("", models.GetModelList)
-		m.POST("/:model_id/addfile", middleware.AuthMiddleware(), models.SaveModelFile)
+		m.POST("/addfile/:model_id", middleware.AuthMiddleware(), models.SaveModelFile)
 	}
 
 	f := router.Group("api/file")

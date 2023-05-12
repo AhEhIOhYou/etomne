@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -347,7 +348,7 @@ func (m *Model) DeleteModel(c *gin.Context) {
 //	@Failure	400			string		string
 //	@Failure	401			string		string
 //	@Failure	500			string		string
-//	@Router		/model/{model_id}/addfile     [post]
+//	@Router		/model/addfile/{model_id}	[post]
 //	@Param		Authorization	header	string	true	"Insert your access token"	default(Bearer <Add access token here>)
 func (m *Model) SaveModelFile(c *gin.Context) {
 	metadata, err := m.tk.ExtractTokenMetadata(c.Request)
@@ -368,8 +369,8 @@ func (m *Model) SaveModelFile(c *gin.Context) {
 		return
 	}
 
-	modelId, err := strconv.ParseUint(c.PostForm("model_id"), 10, 64)
-	if err != nil || modelId == 0 {
+	modelID, err := strconv.ParseUint(c.Param("model_id"), 10, 64)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
 		return
 	}
@@ -407,13 +408,7 @@ func (m *Model) SaveModelFile(c *gin.Context) {
 		return
 	}
 
-	savedFile, err := m.fileApp.SaveFile(&File)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
-		return
-	}
-
-	modelFile, err := m.modelApp.SaveModelFile(savedFile, modelId)
+	modelFile, err := m.modelApp.SaveModelFile(&File, modelID)
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, fmt.Sprintf(constants.Failed, err))
 		return
