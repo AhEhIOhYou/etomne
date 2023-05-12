@@ -111,7 +111,7 @@ export default {
             localStorage.setItem('isAuth', true);
             formOverlay.classList.add('form__overlay--active');
             submitFilesFunc(modelId, response.data.tokens.access_token);
-            // window.location.href = '/';
+            window.location.href = '/';
             console.log(response);
           })
           .catch(error => {
