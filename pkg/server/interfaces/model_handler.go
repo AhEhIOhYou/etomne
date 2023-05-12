@@ -2,7 +2,6 @@ package interfaces
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"path/filepath"
 	"strconv"
