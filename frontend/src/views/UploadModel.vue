@@ -2,7 +2,7 @@
   <div class="form">
     <div class="form__overlay">
       <div class="form__spinner" role="status">
-        <span class="form__loading">Loading...</span>
+        <span class="form__loading">Загрузка...</span>
       </div>
     </div>
     <form class="form__form" method="post" @submit.prevent>
@@ -19,7 +19,7 @@
           <CustomTextarea :model-value="description" @update:model-value="setDescription" class="form__input" id="MODEL_DESCRIPTION" name="MODEL_DESCRIPTION" placeholder="Введите описание модели"/>
         </div>
       </div>
-      <DropFile @onChange='onSaved'/>
+      <UploadFiles @onChange='onSaved'/>
       <button type="submit" @click="submitFilesHandler" class="form__button btn">Загрузить модель</button>
     </form>
     <div class="modal">
@@ -31,7 +31,7 @@
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
 import axios from "axios";
-import DropFile from "@/components/DropFile.vue";
+import UploadFiles from "@/components/UploadFiles.vue";
 import CustomInput from "@/components/UI/CustomInput";
 import CustomTextarea from "@/components/UI/CustomTextarea";
 
@@ -39,7 +39,7 @@ export default {
   components: {
     CustomInput,
     CustomTextarea,
-    DropFile
+    UploadFiles
   },
   data(){
     return {
@@ -52,9 +52,6 @@ export default {
       setName: 'upload/setName',
       setDescription: 'upload/setDescription',
     }),
-    // ...mapActions({
-    //   handleSubmitUpload: 'upload/handleSubmitUpload',
-    // }),
     onSaved (data) {
       this.files_id = data;
     }, 
@@ -81,7 +78,6 @@ export default {
         data,
         {
           headers: {
-            // 'Content-Type': 'multipart/form-data',
             'Authorization': `Bearer ${access}`
           }
         }
@@ -94,7 +90,7 @@ export default {
           setTimeout(() => {
             modal.classList.remove('modal--active');
           }, 5000);
-          console.log(response);
+          window.location.href = '/authorization';
         })
         .catch(error => {
           formOverlay.classList.remove('form__overlay--active');

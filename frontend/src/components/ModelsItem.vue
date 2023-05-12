@@ -53,6 +53,9 @@
           <p class="model__description">{{ model.model.description }}</p>
           <ul class="model__actions"> 
             <li class="model__action">
+              <button v-show="isAuth" @click="$router.push(`/${model.model.id}`)" class="model__action-btn btn btn--white">Редактировать</button>
+            </li>
+            <li class="model__action">
               <button v-show="isAuth" @click="$emit('remove', model)" class="model__action-btn btn">Удалить</button>
             </li>
           </ul>
