@@ -131,7 +131,7 @@ export default {
         let fileData = new FormData();  
         fileData.append('file', file);
         
-        axios.post(`/model/${modelId}/addfile`,
+        axios.post(`api/model/addfile/${modelId}`,
           fileData,
           {
             headers: {
@@ -313,6 +313,9 @@ export default {
 }
 .preview-container {
   display: flex;
+  flex-wrap: wrap;
+  column-gap: 10px;
+  row-gap: 10px;
   margin-top: 2rem;
 }
 .preview-card {
