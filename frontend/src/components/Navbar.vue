@@ -8,7 +8,8 @@
         </li>
         <li class="main-nav__item">
           <router-link v-if="!isAuth" class="main-nav__link btn" to="/authorization">Авторизация</router-link>
-          <button v-else @click="logout" class="main-nav__link btn" type="button">Выйти</button>
+          <router-link v-if="isAuth" class="main-nav__link btn" to="/lk">Личный кабинет</router-link>
+          <button v-if="isAuth" @click="logout" class="main-nav__link btn btn--white" type="button">Выйти</button>
         </li>
       </ul>
     </div>
@@ -16,8 +17,7 @@
 </template>
 <script>
 import axios from "axios";
-// import VueCookies from 'vue-cookies';
-// import auth from '@/assets/functions/auth.js';
+import VueCookies from 'vue-cookies';
 
 export default {  
   name: 'navbar',

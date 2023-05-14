@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
+import {mapState, mapMutations, mapActions} from 'vuex';
 import CustomInput from "@/components/UI/CustomInput";
 
 export default {

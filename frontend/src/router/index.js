@@ -4,6 +4,8 @@ import Authorization from '@/views/Authorization'
 import Registration from '@/views/Registration'
 import UploadModel from '@/views/UploadModel'
 import EditModel from '@/views/EditModel'
+import EditAccount from '@/views/EditAccount'
+import MyAccount from '@/views/MyAccount'
 
 const routes = [
   {
@@ -30,6 +32,14 @@ const routes = [
     path: '/:id',
     component: EditModel
   },
+  {
+    path: '/edit',
+    component: EditAccount
+  },
+  {
+    path: '/lk',
+    component: MyAccount
+  }
 ]
 
 const router = createRouter({
