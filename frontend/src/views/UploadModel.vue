@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
+import {mapState, mapMutations} from 'vuex';
 import axios from "axios";
 import UploadFiles from "@/components/UploadFiles.vue";
 import CustomInput from "@/components/UI/CustomInput";
@@ -64,7 +64,6 @@ export default {
       const refreshToken = $cookies.get("refresh_token");
       const formOverlay = document.querySelector('.form__overlay');
       const ids = JSON.parse(JSON.stringify(this.files_id));
-
       const title = this.name;
       const description = this.description;
       const data = {

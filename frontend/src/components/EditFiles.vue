@@ -17,7 +17,7 @@
       <div v-if="defaultFiles.length" class="preview-container mt-4">
         <div v-for="file in defaultFiles" :key="file.title" class="preview-card">
           <div>
-            <img class="preview-img" :src="'http://localhost:8095/' + file.url"/>
+            <img v-if="checkImages(file.url)" class="preview-img" :src="'http://localhost:8095/' + file.url"/>
             <p :title="file.title">
               {{ file.title }}
             </p>
@@ -63,7 +63,7 @@
       <div v-if="files.length" class="preview-container mt-4">
         <div v-for="file in files" :key="file.name" class="preview-card">
           <div>
-            <img class="preview-img" :src="generateThumbnail(file)" />
+            <img v-if="checkImages(file.name)" class="preview-img" :src="generateThumbnail(file)" />
             <p :title="file.name">
               {{ makeName(file.name) }}
             </p>
@@ -117,6 +117,9 @@ export default {
         }
       }
       return urlsAndTitles;
+    },
+    checkImages(str) {
+      return (/\.(jpeg|jpg|png)$/i).test(str);
     },
     onChange() {
       const accessToken = $cookies.get("access_token");

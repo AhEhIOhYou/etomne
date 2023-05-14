@@ -25,7 +25,7 @@
       <div class="preview-container mt-4" v-if="files.length">
         <div v-for="file in files" :key="file.name" class="preview-card">
           <div>
-            <img class="preview-img" :src="generateThumbnail(file)" />
+            <img v-if="checkImages(file.name)" class="preview-img" :src="generateThumbnail(file)" />
             <p :title="file.name">
               {{ makeName(file.name) }}
             </p>
@@ -58,6 +58,9 @@ export default {
     };
   },
   methods: {
+    checkImages(str) {
+      return (/\.(jpeg|jpg|png)$/i).test(str);
+    },
     onChange() {
       const accessToken = $cookies.get("access_token");
       const refreshToken = $cookies.get("refresh_token");
@@ -65,6 +68,7 @@ export default {
       this.$emit('onChange', {
         files_id: this.files_id
       })
+      console.log(this.files);
 
       const saveFile = (file, access) => {
         let fileData = new FormData();  

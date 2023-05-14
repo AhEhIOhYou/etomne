@@ -10,13 +10,13 @@
       <div class="form__container form__container--one">
         <div class="form__input-container input --grey">
           <label for="MODEL_NAME" class="form__label">Новое название модели:</label>
-          <CustomInput :model-value="name" @update:model-value="setName" class="form__input" type="text" id="MODEL_NAME" name="MODEL_NAME" maxlength="255" :placeholder="this.model.model.title" required/>
+          <CustomInput :model-value="name" @update:model-value="setName" class="form__input" type="text" id="MODEL_NAME" name="MODEL_NAME" maxlength="255" :value="this.model.model.title" placeholder="Новое название модели" required/>
         </div>
       </div>
       <div class="form__container form__container--one">
         <div class="form__input-container input --grey">
           <label for="MODEL_DESCRIPTION" class="form__label">Новое описание модели:</label>
-          <CustomTextarea :model-value="description" @update:model-value="setDescription" class="form__input" id="MODEL_DESCRIPTION" name="MODEL_DESCRIPTION" :placeholder="this.model.model.description"/>
+          <CustomTextarea :model-value="description" @update:model-value="setDescription" class="form__input" id="MODEL_DESCRIPTION" name="MODEL_DESCRIPTION" :value="this.model.model.description" placeholder="Новое описание модели"/>
         </div>
       </div>
       <EditFiles :model="model" @onChange='onSaved'/>
