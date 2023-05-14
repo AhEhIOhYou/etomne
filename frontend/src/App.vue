@@ -21,6 +21,7 @@ export default {
   },
   methods: {
     fetchData() {
+      this.$store.commit('models/setUserId', null);
       const isAccessTokenExist = $cookies.isKey('access_token');
       const isRefreshTokenExit = $cookies.isKey('refresh_token');
       if (!isAccessTokenExist && isRefreshTokenExit) {

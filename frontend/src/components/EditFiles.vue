@@ -103,8 +103,6 @@ export default {
     this.defaultFiles.forEach((file) => {
       this.defaultFilesId.push(file.id);
     });
-    console.log(this.defaultFiles);
-    console.log(this.defaultFilesId);
   }, 
   methods: {
     getUrlsAndTitles(files) {
@@ -144,7 +142,6 @@ export default {
           }
         ).then(response => {
             this.files_id.push(response.data.id);
-            console.log(response);
           })
           .catch(error => {
             console.log(error);
@@ -162,7 +159,6 @@ export default {
             for (let i = 0; i < this.files.length; i++) {
               saveFile(this.files[i], accessToken);
             }
-            console.log(response);
           })
           .catch(error => {
             console.log(error);
@@ -206,7 +202,6 @@ export default {
         ).then(response => {
             const index = this.defaultFilesId.indexOf(id);
             this.defaultFilesId.splice(index, 1);
-            console.log(response);
           })
           .catch(error => {
             console.log(error);
@@ -222,7 +217,6 @@ export default {
             $cookies.set('refresh_token', response.data.tokens.refresh_token, '7d', '/');
             localStorage.setItem('isAuth', true);
             removeFile(fileId, accessToken);
-            console.log(response);
           })
           .catch(error => {
             console.log(error);
@@ -248,7 +242,6 @@ export default {
         ).then(response => {
             const index = this.files_id.indexOf(id);
             this.files_id.splice(index, 1);
-            console.log(response);
           })
           .catch(error => {
             console.log(error);
@@ -264,7 +257,6 @@ export default {
             $cookies.set('refresh_token', response.data.tokens.refresh_token, '7d', '/');
             localStorage.setItem('isAuth', true);
             removeFile(fileId, accessToken);
-            console.log(response);
           })
           .catch(error => {
             console.log(error);

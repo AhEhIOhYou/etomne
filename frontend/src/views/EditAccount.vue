@@ -16,6 +16,7 @@
         </div>
       </div>
       <button type="submit" @click="handleSubmitEdit" class="form__button btn">Обновить данные</button>
+      <router-link class="form__button btn btn--white" to="/lk">Отмена</router-link>
     </form>
   </div>
 </template>
@@ -66,7 +67,6 @@ export default {
           this.userInfo = response.data;
           this.$store.commit('edit/setLogin', this.userInfo.name);
           this.$store.commit('edit/setEmail', this.userInfo.email);
-          console.log(response);
         })
         .catch(error => {
           console.log(error);
@@ -82,7 +82,6 @@ export default {
           $cookies.set('refresh_token', response.data.tokens.refresh_token, '7d', '/');
           localStorage.setItem('isAuth', true);
           showUserInfo(userId);
-          console.log(response);
         })
         .catch(error => {
           console.log(error);

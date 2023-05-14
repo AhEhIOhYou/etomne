@@ -36,7 +36,6 @@ export const authorizationModule = {
           password: state.password
         })
         .then(response => {
-          console.log(response);
           $cookies.set('access_token', response.data.tokens.access_token, '15min', '/');
           $cookies.set('refresh_token', response.data.tokens.refresh_token, '7d', '/');
           commit('setId', `${response.data.public_data.id}`);

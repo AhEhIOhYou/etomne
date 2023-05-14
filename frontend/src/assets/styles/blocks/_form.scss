@@ -204,6 +204,10 @@
     min-width: 11rem;
     width: 100%;
 
+    &:not(:last-child) {
+      margin-bottom: 1.5rem;
+    }
+
     @media (max-width: 767px) {
       min-width: auto;
       width: 100%;

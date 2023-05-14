@@ -93,7 +93,6 @@ export default {
           setTimeout(() => {
             modal.classList.remove('modal--active');
           }, 5000);
-          console.log(response);
         })
         .catch(error => {
           formOverlay.classList.remove('form__overlay--active');
@@ -112,7 +111,6 @@ export default {
             formOverlay.classList.add('form__overlay--active');
             submitFilesFunc(modelId, response.data.tokens.access_token);
             window.location.href = '/';
-            console.log(response);
           })
           .catch(error => {
             console.log(error);
@@ -127,8 +125,6 @@ export default {
       .get(`/api/model/${id}`)
       .then(response => {
         this.model = response.data;
-        console.log(response.data);
-        console.log(this.model.model);
       })
       .catch(error => {
         console.log(error);

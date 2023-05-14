@@ -107,7 +107,6 @@ export default {
             localStorage.setItem('isAuth', true);
             formOverlay.classList.add('form__overlay--active');
             submitFilesFunc(response.data.tokens.access_token);
-            console.log(response);
           })
           .catch(error => {
             console.log(error);

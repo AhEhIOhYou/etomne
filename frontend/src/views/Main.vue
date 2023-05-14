@@ -49,7 +49,6 @@ export default {
         if(models.length <= 1) {
           this.loadMoreModels();
         }
-        console.log(response);
       })
       .catch(error => {
         console.log(error);

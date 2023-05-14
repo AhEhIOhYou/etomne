@@ -4,6 +4,7 @@ import VueCookies from 'vue-cookies';
 export const modelsModule = {
     state: () => ({
         models: [],
+        userId: null,
         isModelsLoading: false,
         page: 1,
         limit: 1,
@@ -13,23 +14,37 @@ export const modelsModule = {
             state.models = models;
         },
         setLoading(state, bool) {
-            state.isModelsLoading = bool
+            state.isModelsLoading = bool;
         },
-        setPage(state, page) {
-            state.page = page
+        setUserId(state, userId) {
+            state.userId = userId;
+        },
+        setPage(state, page) { 
+            state.page = page;
         },
     },
     actions: {
         async fetchModels({state, commit}) {
             try {
                 commit('setLoading', true);
-                const response = await axios.get('/api/model', {
-                    params: {
-                        _page: state.page,
-                        _limit: state.limit
-                    }
-                });
-                commit('setModels', response.data)
+                if (state.userId === null) {
+                    const response = await axios.get('/api/model', {
+                        params: {
+                            _page: state.page,
+                            _limit: state.limit
+                        }
+                    });
+                    commit('setModels', response.data)
+                } else {
+                    const response = await axios.get('/api/model', {
+                        params: {
+                            _page: state.page,
+                            _limit: state.limit,
+                            user_id: state.userId
+                        }
+                    });
+                    commit('setModels', response.data)
+                }
             } catch (e) {
                 console.log(e);
             } finally {
@@ -39,13 +54,24 @@ export const modelsModule = {
         async loadMoreModels({state, commit}) {
             try {
                 commit('setPage', state.page + 1)
-                const response = await axios.get('/api/model', {
-                    params: {
-                        _page: state.page,
-                        _limit: state.limit
-                    }
-                });
-                commit('setModels', [...state.models, ...response.data]);
+                if (state.userId === null) {
+                    const response = await axios.get('/api/model', {
+                        params: {
+                            _page: state.page,
+                            _limit: state.limit
+                        }
+                    });
+                    commit('setModels', [...state.models, ...response.data]);
+                } else {
+                    const response = await axios.get('/api/model', {
+                        params: {
+                            _page: state.page,
+                            _limit: state.limit,
+                            user_id: state.userId
+                        }
+                    });
+                    commit('setModels', [...state.models, ...response.data]);
+                }
             } catch (e) {
                 console.log(e)
             }
