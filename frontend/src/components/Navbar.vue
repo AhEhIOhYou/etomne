@@ -56,7 +56,6 @@ export default {
             $cookies.set('refresh_token', response.data.tokens.refresh_token, '7d', '/');
             localStorage.setItem('isAuth', true);
             logoutFunc(response.data.tokens.access_token);
-            console.log(response);
           })
           .catch(error => {
             console.log(error);

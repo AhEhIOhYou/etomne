@@ -43,8 +43,7 @@ export const registrationModule = {
             password: state.password
           })
           .then(response => {
-            window.location.href = '/';
-            console.log(response);
+            window.location.href = '/authorization';
           })
           .catch(error => {
             console.log(error);

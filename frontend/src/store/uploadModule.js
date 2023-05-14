@@ -23,7 +23,6 @@ export const uploadModule = {
           description: state.password
         })
         .then(response => {
-          console.log(response);
         })
         .catch(error => {
           console.loog(error);

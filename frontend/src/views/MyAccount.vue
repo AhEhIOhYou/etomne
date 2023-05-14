@@ -32,11 +32,12 @@ export default {
   data() {
     return {
       userInfo: null,
-    }
+    } 
   },
   methods: {
     ...mapMutations({
       setPage: 'models/setPage',
+      setUserId: 'models/setUserId'
     }),
     ...mapActions({
       loadMoreModels: 'models/loadMoreModels',
@@ -62,7 +63,6 @@ export default {
         if(models.length <= 1) {
           this.loadMoreModels();
         }
-        console.log(response);
       })
       .catch(error => {
         console.log(error);
@@ -92,12 +92,12 @@ export default {
     const accessToken = $cookies.get("access_token");
     const refreshToken = $cookies.get("refresh_token");
     const userId = localStorage.getItem("id");
+    this.$store.commit('models/setUserId', userId);
 
     const showUserInfo = (id) => {
       axios.get(`api/users/${id}`
       ).then(response => {
           this.userInfo = response.data;
-          console.log(response);
         })
         .catch(error => {
           console.log(error);
@@ -113,7 +113,6 @@ export default {
           $cookies.set('refresh_token', response.data.tokens.refresh_token, '7d', '/');
           localStorage.setItem('isAuth', true);
           showUserInfo(userId);
-          console.log(response);
         })
         .catch(error => {
           console.log(error);

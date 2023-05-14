@@ -26,7 +26,6 @@ export const editModule = {
         const accessToken = $cookies.get("access_token");
         const error = document.querySelector('.alert--error');
         if(state.login.length === 0) {
-          console.log(state.login.length);
           commit('setError', 'Имя пользователя не может быть пустым');
           error.classList.add('alert--enable');
         } else if (state.email.length === 0) {
@@ -48,7 +47,6 @@ export const editModule = {
           })
           .then(response => {
             window.location.href = '/lk';
-            console.log(response);
           })
           .catch(error => {
             console.log(error);
