@@ -46,12 +46,27 @@ func (r *ModelRepo) GetModel(id uint64) (*entities.Model, error) {
 	return model, nil
 }
 
-func (r *ModelRepo) GetAllModel(page, limit int) ([]entities.Model, error) {
+func (r *ModelRepo) GetAllModels(page, limit int, userID uint64) ([]entities.Model, error) {
 	var models []entities.Model
-	offset := (page - 1) * limit
-	err := r.db.Debug().Table("model").Limit(limit).Offset(offset).Order("created_at desc").Find(&models).Error
+	var err error
+
+	if limit <= 0 || limit > 100 {
+		limit = 20
+	}
+	if page <= 0 {
+		page = 1
+	}
+
+	offset := (page-1) * limit
+
+	dbRes := r.db.Debug().Table("model").Limit(limit).Offset(offset).Order("created_at desc")
+	if userID != 0 {
+		dbRes = dbRes.Where("user_id = ?", userID)
+	}
+	err = dbRes.Find(&models).Error
+
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, errors.New("model not found")
+		return nil, errors.New("empty")
 	}
 	if err != nil {
 		return nil, err

@@ -142,6 +142,12 @@ const docTemplate = `{
                         "description": "Query limit param",
                         "name": "_limit",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Query user ID param",
+                        "name": "user_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {

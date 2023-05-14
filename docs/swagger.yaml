@@ -219,6 +219,10 @@ paths:
         in: query
         name: _limit
         type: integer
+      - description: Query user ID param
+        in: query
+        name: user_id
+        type: integer
       responses:
         "201":
           description: Created

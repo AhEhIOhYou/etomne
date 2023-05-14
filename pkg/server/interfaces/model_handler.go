@@ -184,6 +184,7 @@ func (m *Model) UpdateModel(c *gin.Context) {
 //	@Tags		Model
 //	@Param		_page	query	int	false	"Query page param"
 //	@Param		_limit	query	int	false	"Query limit param"
+//	@Param		user_id	query	int	false	"Query user ID param"
 //	@Success	201		{Array}	[]entities.ModelData
 //	@Failure	400		string	string
 //	@Failure	401		string	string
@@ -191,21 +192,15 @@ func (m *Model) UpdateModel(c *gin.Context) {
 //	@Router		/model	[get]
 func (m *Model) GetModelList(c *gin.Context) {
 
-	limit, err := strconv.Atoi(c.Query("_limit"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
-		return
-	}
+	limit, _ := strconv.Atoi(c.Query("_limit"))
 
-	page, err := strconv.Atoi(c.Query("_page"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, fmt.Sprintf(constants.Failed, err))
-		return
-	}
+	page, _ := strconv.Atoi(c.Query("_page"))
+
+	userID, _ := strconv.ParseUint(c.Query("user_id"), 10, 64)
 
 	var readyModels []entities.ModelData
 
-	rawModels, err := m.modelApp.GetAllModel(page, limit)
+	rawModels, err := m.modelApp.GetAllModels(page, limit, userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, fmt.Sprintf(constants.Failed, err))
 		return
