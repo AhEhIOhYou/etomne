@@ -33,11 +33,15 @@
   }
 
   &__description {
-    margin: 0 0 10px;
+    margin: 0;
     font-size: 14px;
     font-weight: 400;
     line-height: 21px;
     word-wrap: break-word;
+
+    &:not(:last-child) {
+      margin-bottom: 10px;
+    }
   }
 
   &__author,

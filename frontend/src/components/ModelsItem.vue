@@ -51,12 +51,12 @@
         <h3 class="model__sub-title">Описание</h3>
         <div class="model__info-container">
           <p class="model__description">{{ model.model.description }}</p>
-          <ul class="model__actions"> 
+          <ul v-if="isAuth && (this.isAdmin || this.userId == model.author.id)" class="model__actions"> 
             <li class="model__action">
-              <button v-show="isAuth" @click="$router.push(`/${model.model.id}`)" class="model__action-btn btn btn--white">Редактировать</button>
+              <button @click="$router.push(`/${model.model.id}`)" class="model__action-btn btn btn--white">Редактировать</button>
             </li>
             <li class="model__action">
-              <button v-show="isAuth" @click="$emit('remove', model)" class="model__action-btn btn">Удалить</button>
+              <button @click="$emit('remove', model)" class="model__action-btn btn">Удалить</button>
             </li>
           </ul>
         </div>
@@ -102,6 +102,14 @@ export default {
     model: {
       type: Object,
       required: true,
+    },
+    isAdmin: {
+      type: Boolean,
+      required: true,
+    },
+    userId: {
+      type: Number,
+      required: true
     }
   },
   computed: {
