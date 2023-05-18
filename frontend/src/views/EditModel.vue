@@ -10,13 +10,13 @@
       <div class="form__container form__container--one">
         <div class="form__input-container input --grey">
           <label for="MODEL_NAME" class="form__label">Новое название модели:</label>
-          <CustomInput :model-value="name" @update:model-value="setName" class="form__input" type="text" id="MODEL_NAME" name="MODEL_NAME" maxlength="255" :value="this.model.model.title" placeholder="Новое название модели" required/>
+          <CustomInput :model-value="name" @update:model-value="setName" class="form__input" type="text" id="MODEL_NAME" name="MODEL_NAME" maxlength="255" placeholder="Новое название модели" required/>
         </div>
       </div>
       <div class="form__container form__container--one">
         <div class="form__input-container input --grey">
           <label for="MODEL_DESCRIPTION" class="form__label">Новое описание модели:</label>
-          <CustomTextarea :model-value="description" @update:model-value="setDescription" class="form__input" id="MODEL_DESCRIPTION" name="MODEL_DESCRIPTION" :value="this.model.model.description" placeholder="Новое описание модели"/>
+          <CustomTextarea :model-value="description" @update:model-value="setDescription" class="form__input" id="MODEL_DESCRIPTION" name="MODEL_DESCRIPTION" placeholder="Новое описание модели"/>
         </div>
       </div>
       <EditFiles :model="model" @onChange='onSaved'/>
@@ -88,11 +88,16 @@ export default {
           formOverlay.classList.remove('form__overlay--active');
           const form = document.querySelector('.form__form');
           form.reset();
+          this.$store.commit('upload/setName', '');
+          this.$store.commit('upload/setDescription', '');
           const modal = document.querySelector('.modal');
           modal.classList.add('modal--active');
           setTimeout(() => {
             modal.classList.remove('modal--active');
           }, 5000);
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 1500);
         })
         .catch(error => {
           formOverlay.classList.remove('form__overlay--active');
@@ -110,7 +115,6 @@ export default {
             localStorage.setItem('isAuth', true);
             formOverlay.classList.add('form__overlay--active');
             submitFilesFunc(modelId, response.data.tokens.access_token);
-            window.location.href = '/';
           })
           .catch(error => {
             console.log(error);
@@ -125,6 +129,8 @@ export default {
       .get(`/api/model/${id}`)
       .then(response => {
         this.model = response.data;
+        this.$store.commit('upload/setName', this.model.model.title);
+        this.$store.commit('upload/setDescription', this.model.model.description);
       })
       .catch(error => {
         console.log(error);

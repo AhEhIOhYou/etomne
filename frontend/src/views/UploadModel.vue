@@ -89,7 +89,7 @@ export default {
           setTimeout(() => {
             modal.classList.remove('modal--active');
           }, 5000);
-          window.location.href = '/authorization';
+          window.location.href = '/';
         })
         .catch(error => {
           formOverlay.classList.remove('form__overlay--active');
