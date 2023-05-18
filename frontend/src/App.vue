@@ -22,6 +22,8 @@ export default {
   methods: {
     fetchData() {
       this.$store.commit('models/setUserId', null);
+      this.$store.commit('upload/setName', '');
+      this.$store.commit('upload/setDescription', '');
       const isAccessTokenExist = $cookies.isKey('access_token');
       const isRefreshTokenExit = $cookies.isKey('refresh_token');
       if (!isAccessTokenExist && isRefreshTokenExit) {

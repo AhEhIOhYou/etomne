@@ -5,9 +5,9 @@
       <dd class="account__info-description">{{ this.userInfo.name}}</dd>
       <dt class="account__info-term">Почта:</dt>
       <dd class="account__info-description">{{ this.userInfo.email }}</dd>
-      <dt class="account__info-term">Является ли админом:</dt>
-      <dd v-if="this.userInfo.is_admin" class="account__info-description">Является</dd>
-      <dd v-else class="account__info-description">Не является</dd>
+      <dt class="account__info-term">Являюсь ли админом:</dt>
+      <dd v-if="this.userInfo.is_admin" class="account__info-description">Являюсь</dd>
+      <dd v-else class="account__info-description">Не являюсь</dd>
     </dl>
     <router-link class="account__btn btn" to="/edit">Изменить данные</router-link>
   </div>
