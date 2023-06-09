@@ -2,7 +2,12 @@
   display: grid;
   grid-template-columns: 1fr 310px;
   column-gap: 24px;
+  row-gap: 20px;
   align-items: flex-start;
+
+  @media (max-width: 1023px) {
+    grid-template-columns: 1fr;
+  }
 
   &:not(:last-of-type) {
     margin-bottom: 1.5rem;
@@ -30,6 +35,10 @@
     width: 100%;
     border-radius: 4px;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+    @media (max-width: 1023px) {
+      max-width: none;
+    }
   }
 
   &__description {
@@ -146,6 +155,10 @@
 
   &__swipers {
     margin: 0 -8px;
+
+    & .model__default-swiper .swiper-slide {
+      width: 100% !important;
+    }
   }
 
   &__default-swiper {
@@ -154,6 +167,10 @@
 
     & .swiper-slide {
       height: 624px;
+
+      @media (max-width: 767px) {
+        height: auto;
+      }
     }
 
     & img {

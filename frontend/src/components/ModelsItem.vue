@@ -23,7 +23,7 @@
         </swiper>
         <swiper v-if="model.files.glb || model.files.img || model.files.other || model.files.video" class="model__thumbs-swiper"
           @swiper="setThumbsSwiper"
-          :slides-per-view="4"
+          :slides-per-view="2"
           :space-between="10"
           :freeMode="true"
           :watchSlidesProgress="true"
@@ -31,6 +31,11 @@
           :modules="[Thumbs, FreeMode, Navigation]"
           :mousewheel="true"
           :navigation="true"
+          :breakpoints="{
+            '768': {
+              slidesPerView: 4,
+            },
+          }"
         >
           <swiper-slide v-for="model in model.files.glb">
             <model-viewer auto-rotate class="model__model" :src="'http://localhost:8095/' + model.url"></model-viewer>
