@@ -25,20 +25,18 @@
       <div class="preview-container mt-4" v-if="files.length">
         <div v-for="file in files" :key="file.name" class="preview-card">
           <div>
-            <img v-if="checkImages(file.name)" class="preview-img" :src="generateThumbnail(file)" />
-            <p :title="file.name">
-              {{ makeName(file.name) }}
-            </p>
-          </div>
-          <div>
             <button
               class="ml-2"
               type="button"
-              @click="remove(files.indexOf(file))"
+              @click="defaultRemove(defaultFiles.indexOf(file))"
               title="Удалить файл"
             >
               <b>&times;</b>
             </button>
+            <img v-if="checkImages(file.name)" class="preview-img" :src="generateThumbnail(file)" />
+            <p :title="file.name">
+              {{ makeName(file.name) }}
+            </p>
           </div>
         </div>
       </div>
@@ -186,7 +184,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 .dropzone {
   margin-bottom: 1.5rem;
 }
@@ -216,9 +214,24 @@ export default {
 }
 .preview-card {
   display: flex;
+  flex-direction: column;
   border: 1px solid #a2a2a2;
   padding: 5px;
   margin-left: 5px;
+
+  & p {
+    word-break: break-word;
+  } 
+
+  & .ml-2 {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin-left: auto;
+  }
 }
 .preview-img {
   width: 50px;
