@@ -7,16 +7,7 @@ services:
       dockerfile: ./frontend/Dockerfile
       args:
         PUBLIC_PATH: "${FRONTEND_PUBLIC_PATH:-/}"
+    image: dengoose/model3d-frontend:latest
   backend-api:
-    command: air ./cmd/main.go -b 0.0.0.0
-    volumes:
-      - .:/usr/src/app
-    ports:
-      - "8095:8095"
     build: .
-  postgres:
-    ports:
-      - "5433:5432"
-  redis:
-    ports:
-      - "6378:6379"
+    image: dengoose/model3d-backend:latest

@@ -3,11 +3,7 @@ version: '3.8'
 services:
   frontend:
     container_name: model3d-frontend
-    build:
-      context: ./
-      dockerfile: ./frontend/Dockerfile
-      args:
-        PUBLIC_PATH: "${FRONTEND_PUBLIC_PATH:-/}"
+    image: dengoose/model3d-frontend:latest
     ports:
       - "${FRONTEND_PUBLIC_PORT}:80"
     depends_on:
@@ -17,7 +13,7 @@ services:
     restart: unless-stopped
   backend-api:
     container_name: model3d-api
-    build: .
+    image: dengoose/model3d-backend:latest
     env_file:
       - .env
     depends_on:
