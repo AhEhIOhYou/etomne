@@ -6,9 +6,10 @@ on:
 
 jobs:
   build:
+    name: Сборка и пуш образов в Docker Hub
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Docker login
         env:
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
