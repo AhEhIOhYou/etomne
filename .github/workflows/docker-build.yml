@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  docker-build:
     name: Сборка и пуш образов в Docker Hub
     runs-on: ubuntu-latest
     steps:
@@ -16,9 +16,26 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run:
           docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-      - name: Docker build backend
+      - name: Docker build
         run:
           docker-compose -f docker-compose.build.yml build --parallel
       - name: Push containers
         run:
           docker-compose -f docker-compose.build.yml push
+#  deploy:
+#    name: Деплой кода на сервер
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Пул Докер образов и перезапуск сервера
+#        uses: appleboy/ssh-action@v0.1.10
+#        with:
+#          host: ${{ secrets.SSH_HOST }}
+#          username: ${{ secrets.SSH_USERNAME }}
+#          password: ${{ secrets.SSH_PASSWORD }}
+#          port: ${{ secrets.SSH_PORT }}
+#          script_stop: true
+#          script: |
+#            cd /root/etomne
+#            docker-compose -f docker-compose.build.yml pull
+#            docker-compose -f docker-compose.yml -f docker-compose.test-server.yml down
+#            docker-compose -f docker-compose.yml -f docker-compose.test-server.yml up -d

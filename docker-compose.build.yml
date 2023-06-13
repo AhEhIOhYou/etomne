@@ -5,8 +5,6 @@ services:
     build:
       context: ./
       dockerfile: ./frontend/Dockerfile
-      args:
-        PUBLIC_PATH: "${FRONTEND_PUBLIC_PATH:-/}"
     image: dengoose/model3d-frontend:latest
   backend-api:
     build: .

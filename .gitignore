@@ -11,3 +11,6 @@ tmp/
 # Убираем бд постгреса и redis из репозитория
 postgres-db/
 redis/
+
+# Убираю ненужный файл для деплоя на тестовом сервере
+docker-compose.test-server.yml

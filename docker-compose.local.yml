@@ -5,8 +5,6 @@ services:
     build:
       context: ./
       dockerfile: ./frontend/Dockerfile
-      args:
-        PUBLIC_PATH: "${FRONTEND_PUBLIC_PATH:-/}"
   backend-api:
     command: air ./cmd/main.go -b 0.0.0.0
     volumes:
