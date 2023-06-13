@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  backend-api:
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "8095:8095"
+  postgres:
+    ports:
+      - "5433:5432"
+  redis:
+    ports:
+      - "6378:6379"
