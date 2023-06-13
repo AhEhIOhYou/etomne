@@ -3,3 +3,11 @@
 /logs/
 .env
 node_modules
+
+# Убираем билды го из репозитория
+tmp/
+.air.toml
+
+# Убираем бд постгреса и redis из репозитория
+postgres-db/
+redis/
