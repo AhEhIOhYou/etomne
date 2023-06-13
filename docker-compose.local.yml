@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   backend-api:
+    command: air ./cmd/main.go -b 0.0.0.0
     volumes:
       - .:/usr/src/app
     ports:

@@ -6,3 +6,4 @@ node_modules
 
 # Убираем билды го из репозитория
 tmp/
+.air.toml
