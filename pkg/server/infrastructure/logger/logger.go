@@ -22,7 +22,12 @@ func TagText(tag int) string {
 }
 
 func WriteLog(tag int, msg string) {
-	f, err := os.OpenFile("logs/main_log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	loggerPath := os.Getenv("LOGS_PATH")
+
+	if _, err := os.Stat(loggerPath); os.IsNotExist(err) {
+		os.MkdirAll(loggerPath, os.ModePerm)
+	}
+	f, err := os.OpenFile(loggerPath + "/main_log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("error opening file: %v", err)
 		return
@@ -43,7 +48,9 @@ func WriteLog(tag int, msg string) {
 }
 
 func WriteLogToFile(tag int, msg string, fileName string) {
-	f, err := os.OpenFile("logs/"+fileName+"_log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	loggerPath := os.Getenv("LOGS_PATH")
+
+	f, err := os.OpenFile(loggerPath + "/"+fileName+"_log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("error opening file: %v", err)
 		return
