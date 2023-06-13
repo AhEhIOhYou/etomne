@@ -26,6 +26,9 @@ func (fu *fileManager) UploadFile(file *multipart.FileHeader) (string, error) {
 	newFileName := security.CreateName(file.Filename)
 	fileExtension := filepath.Ext(file.Filename)
 	uploadDir := os.Getenv("UPLOAD_DIR")
+	if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
+    		os.MkdirAll(uploadDir, os.ModePerm)
+    	}
 	path := uploadDir + "/" + newFileName + fileExtension
 
 	src, err := file.Open()
