@@ -12,13 +12,13 @@
           class="model__default-swiper"
         >
           <swiper-slide v-for="model in model.files.glb">
-            <model-viewer auto-rotate class="model__model" :src="'http://localhost:8095/' + model.url" camera-controls=""></model-viewer>
+            <model-viewer auto-rotate class="model__model" :src="getOrigin() + '/' + model.url" camera-controls=""></model-viewer>
           </swiper-slide>
           <swiper-slide v-for="img in model.files.img">
-            <img :src="'http://localhost:8095/' + img.url">
+            <img :src="getOrigin() + '/' + img.url">
           </swiper-slide>
           <swiper-slide v-for="video in model.files.video">
-            <video controls :src="'http://localhost:8095/' + video.url"></video>
+            <video controls :src="getOrigin() + '/' + video.url"></video>
           </swiper-slide>
         </swiper>
         <swiper v-if="model.files.glb || model.files.img || model.files.other || model.files.video" class="model__thumbs-swiper"
@@ -38,13 +38,13 @@
           }"
         >
           <swiper-slide v-for="model in model.files.glb">
-            <model-viewer auto-rotate class="model__model" :src="'http://localhost:8095/' + model.url"></model-viewer>
+            <model-viewer auto-rotate class="model__model" :src="getOrigin() + '/' + model.url"></model-viewer>
           </swiper-slide>
           <swiper-slide v-for="img in model.files.img">
-            <img :src="'http://localhost:8095/' + img.url">
+            <img :src="getOrigin() + '/' + img.url">
           </swiper-slide>
           <swiper-slide v-for="video in model.files.video">
-            <video class="model__video" :src="'http://localhost:8095/' + video.url"></video>
+            <video class="model__video" :src="getOrigin() + '/' + video.url"></video>
           </swiper-slide>
         </swiper>
       </div>
@@ -88,6 +88,9 @@ export default {
     toDateString(date) {
       return new Date(date).toLocaleDateString('ru-RU', { year: 'numeric', month: 'numeric', day: 'numeric' })
     },
+      getOrigin() {
+        return window.location.origin;
+      }
   },
   setup() {
     const thumbsSwiper = ref(null);

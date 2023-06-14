@@ -11,6 +11,8 @@ services:
       - postgres
       - redis
     restart: unless-stopped
+    volumes:
+      - ./upload/:/usr/share/nginx/html/upload/
   backend-api:
     container_name: model3d-api
     image: dengoose/model3d-backend:latest

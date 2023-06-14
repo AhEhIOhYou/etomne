@@ -25,7 +25,7 @@
             <b>&times;</b>
           </button>
           <div>
-            <img v-if="checkImages(file.url)" class="preview-img" :src="'http://localhost:8095/' + file.url"/>
+            <img v-if="checkImages(file.url)" class="preview-img" :src="getOrigin() + '/' + file.url"/>
             <p :title="file.title">
               {{ file.title }}
             </p>
@@ -276,6 +276,9 @@ export default {
       this.$refs.file.files = e.dataTransfer.files;
       this.onChange();
       this.isDragging = false;
+    },
+    getOrigin() {
+        return window.location.origin;
     },
   },
 };
