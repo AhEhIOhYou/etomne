@@ -14,12 +14,13 @@ services:
   backend-api:
     container_name: model3d-api
     image: dengoose/model3d-backend:latest
+    volumes:
+      - ./upload/:/usr/src/app/upload/
     env_file:
       - .env
     depends_on:
       - redis
       - postgres
-    command: go run ./cmd/main.go
     restart: unless-stopped
   postgres:
     container_name: model3d-postgres

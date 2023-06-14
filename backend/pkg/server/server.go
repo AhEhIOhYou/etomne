@@ -124,6 +124,6 @@ func Start() {
 	logger.WriteLog(logger.Error,
 		fmt.Sprintf(
 			constants.ServerStartErr,
-			router.Run(":8095")),
+			router.Run(":8080")),
 	)
 }

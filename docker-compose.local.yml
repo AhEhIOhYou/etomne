@@ -3,15 +3,16 @@ version: '3.8'
 services:
   frontend:
     build:
-      context: ./
-      dockerfile: ./frontend/Dockerfile
+      context: ./frontend
+      dockerfile: ./Dockerfile
   backend-api:
-    command: air ./cmd/main.go -b 0.0.0.0
+    build:
+      context: ./backend
+      dockerfile: ./Dev.Dockerfile
     volumes:
-      - .:/usr/src/app
+      - ./backend/:/usr/src/app
     ports:
-      - "8095:8095"
-    build: .
+      - "8095:8080"
   postgres:
     ports:
       - "5433:5432"

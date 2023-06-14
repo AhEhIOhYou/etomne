@@ -3,9 +3,11 @@ version: '3.8'
 services:
   frontend:
     build:
-      context: ./
-      dockerfile: ./frontend/Dockerfile
+      context: ./frontend
+      dockerfile: ./Dockerfile
     image: dengoose/model3d-frontend:latest
   backend-api:
-    build: .
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
     image: dengoose/model3d-backend:latest
