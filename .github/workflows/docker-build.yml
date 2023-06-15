@@ -25,6 +25,7 @@ jobs:
   deploy:
     name: Деплой на сервер
     runs-on: ubuntu-latest
+    needs: [docker-build]
     steps:
       - name: Пул Докер образов, git pull и перезапуск сервера
         uses: appleboy/ssh-action@v0.1.10
