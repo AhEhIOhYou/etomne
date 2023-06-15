@@ -22,20 +22,21 @@ jobs:
       - name: Push containers
         run:
           docker-compose -f docker-compose.build.yml push
-#  deploy:
-#    name: Деплой кода на сервер
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Пул Докер образов и перезапуск сервера
-#        uses: appleboy/ssh-action@v0.1.10
-#        with:
-#          host: ${{ secrets.SSH_HOST }}
-#          username: ${{ secrets.SSH_USERNAME }}
-#          password: ${{ secrets.SSH_PASSWORD }}
-#          port: ${{ secrets.SSH_PORT }}
-#          script_stop: true
-#          script: |
-#            cd /root/etomne
-#            docker-compose -f docker-compose.build.yml pull
-#            docker-compose -f docker-compose.yml -f docker-compose.test-server.yml down
-#            docker-compose -f docker-compose.yml -f docker-compose.test-server.yml up -d
+  deploy:
+    name: Деплой на сервер
+    runs-on: ubuntu-latest
+    steps:
+      - name: Пул Докер образов, git pull и перезапуск сервера
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          script: |
+            cd /root/etomne
+            git pull
+            docker-compose -f docker-compose.build.yml pull
+            docker-compose -f docker-compose.yml -f docker-compose.test-server.yml down
+            docker-compose -f docker-compose.yml -f docker-compose.test-server.yml up -d
