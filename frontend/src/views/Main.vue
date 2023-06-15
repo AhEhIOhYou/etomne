@@ -34,7 +34,7 @@ export default {
       const accessToken = $cookies.get("access_token");
       const modelId = model.model.id;
       axios.delete(`/api/model/${modelId}`,
-      {
+      { 
         data: { 
           id: modelId
         }, 
@@ -49,7 +49,6 @@ export default {
         if(models.length <= 1) {
           this.loadMoreModels();
         }
-        console.log(response);
       })
       .catch(error => {
         console.log(error);

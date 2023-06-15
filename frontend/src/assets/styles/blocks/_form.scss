@@ -170,7 +170,6 @@
     grid-template-columns: repeat(2, 1fr);
     align-items: flex-start;
     column-gap: 1rem;
-    row-gap: 1.5rem;
 
     @media (max-width: 767px) {
       grid-template-columns: 1fr;
@@ -203,6 +202,10 @@
     -webkit-tap-highlight-color: transparent;
     min-width: 11rem;
     width: 100%;
+
+    &:not(:last-child) {
+      margin-bottom: 1.5rem;
+    }
 
     @media (max-width: 767px) {
       min-width: auto;

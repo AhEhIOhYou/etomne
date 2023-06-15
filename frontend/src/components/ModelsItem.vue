@@ -4,7 +4,7 @@
       <h2 class="model__title">{{ model.model.title }}</h2>
       <div class="model__swipers">
         <swiper
-          :slides-per-view="1"
+          :slides-per-view="1" 
           :space-between="20"
           :allowTouchMove="false"
           :modules="[Thumbs]"
@@ -12,18 +12,18 @@
           class="model__default-swiper"
         >
           <swiper-slide v-for="model in model.files.glb">
-            <model-viewer auto-rotate class="model__model" :src="'https://modelshowtime.serdcebolit.ru/' + model.url" camera-controls=""></model-viewer>
+            <model-viewer auto-rotate class="model__model" :src="getOrigin() + '/' + model.url" camera-controls=""></model-viewer>
           </swiper-slide>
           <swiper-slide v-for="img in model.files.img">
-            <img :src="'https://modelshowtime.serdcebolit.ru/' + img.url">
+            <img :src="getOrigin() + '/' + img.url">
           </swiper-slide>
           <swiper-slide v-for="video in model.files.video">
-            <video controls :src="'https://modelshowtime.serdcebolit.ru/' + video.url"></video>
+            <video controls :src="getOrigin() + '/' + video.url"></video>
           </swiper-slide>
         </swiper>
-        <swiper v-if="model.files.glb.length > 1 || model.files.img.length > 0" class="model__thumbs-swiper"
+        <swiper v-if="model.files.glb || model.files.img || model.files.other || model.files.video" class="model__thumbs-swiper"
           @swiper="setThumbsSwiper"
-          :slides-per-view="4"
+          :slides-per-view="2"
           :space-between="10"
           :freeMode="true"
           :watchSlidesProgress="true"
@@ -31,15 +31,20 @@
           :modules="[Thumbs, FreeMode, Navigation]"
           :mousewheel="true"
           :navigation="true"
+          :breakpoints="{
+            '768': {
+              slidesPerView: 4,
+            },
+          }"
         >
           <swiper-slide v-for="model in model.files.glb">
-            <model-viewer auto-rotate class="model__model" :src="'https://modelshowtime.serdcebolit.ru/' + model.url"></model-viewer>
+            <model-viewer auto-rotate class="model__model" :src="getOrigin() + '/' + model.url"></model-viewer>
           </swiper-slide>
           <swiper-slide v-for="img in model.files.img">
-            <img :src="'https://modelshowtime.serdcebolit.ru/' + img.url">
+            <img :src="getOrigin() + '/' + img.url">
           </swiper-slide>
           <swiper-slide v-for="video in model.files.video">
-            <video class="model__video" :src="'https://modelshowtime.serdcebolit.ru/' + video.url"></video>
+            <video class="model__video" :src="getOrigin() + '/' + video.url"></video>
           </swiper-slide>
         </swiper>
       </div>
@@ -51,9 +56,12 @@
         <h3 class="model__sub-title">Описание</h3>
         <div class="model__info-container">
           <p class="model__description">{{ model.model.description }}</p>
-          <ul class="model__actions"> 
+          <ul v-if="isAuth && (this.isAdmin || this.userId == model.author.id)" class="model__actions"> 
             <li class="model__action">
-              <button v-show="isAuth" @click="$emit('remove', model)" class="model__action-btn btn">Удалить</button>
+              <button @click="$router.push(`/${model.model.id}`)" class="model__action-btn btn btn--white">Редактировать</button>
+            </li>
+            <li class="model__action">
+              <button @click="$emit('remove', model)" class="model__action-btn btn">Удалить</button>
             </li>
           </ul>
         </div>
@@ -80,6 +88,9 @@ export default {
     toDateString(date) {
       return new Date(date).toLocaleDateString('ru-RU', { year: 'numeric', month: 'numeric', day: 'numeric' })
     },
+      getOrigin() {
+        return window.location.origin;
+      }
   },
   setup() {
     const thumbsSwiper = ref(null);
@@ -99,6 +110,14 @@ export default {
     model: {
       type: Object,
       required: true,
+    },
+    isAdmin: {
+      type: Boolean,
+      required: true,
+    },
+    userId: {
+      type: Number,
+      required: true
     }
   },
   computed: {

@@ -15,6 +15,11 @@
     height: 50px;
     transition: opacity 0.3s ease;
 
+    @media (max-width: 767px) {
+      width: 32px;
+      height: 32px;
+    }
+
     @media (hover: hover), screen {
       &:hover {
         opacity: 0.7;
@@ -26,9 +31,56 @@
     &.is-active {
       opacity: 0.6;
     }
+
+    @media (max-width: 767px) {
+      padding: 7px;
+    }
+
+    &--upload {
+      svg {
+        display: none;
+      }
+
+      svg path {
+        stroke: $color-navy-blue;
+      }
+
+      @media (max-width: 767px) {
+        svg {
+          display: block;
+        }
+
+        span {
+          display: none;
+        }
+      }
+    }
   }
 
   &__toggle {
     display: none;
+  }
+
+  &__item {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 5px;
+    row-gap: 5px;
+  }
+
+  &__lk {
+    &--small {
+      display: none;
+
+      @media(max-width: 767px) {
+        display: block;
+      }
+    }
+
+    &--big {
+      @media(max-width: 767px) {
+        display: none;
+      }
+    }
   }
 }

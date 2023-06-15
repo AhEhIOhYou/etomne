@@ -1,4 +1,5 @@
 import axios from "axios";
+import VueCookies from 'vue-cookies';
 
 export const registrationModule = {
     state: () => ({
@@ -13,7 +14,7 @@ export const registrationModule = {
         state.login = login;
       },
       setEmail(state, email) {
-        state.email = email;
+        state.email = email; 
       },
       setPassword(state, password) {
         state.password = password;
@@ -42,7 +43,7 @@ export const registrationModule = {
             password: state.password
           })
           .then(response => {
-            console.log(response);
+            window.location.href = '/authorization';
           })
           .catch(error => {
             console.log(error);

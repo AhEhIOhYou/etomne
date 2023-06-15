@@ -4,7 +4,7 @@ module.exports = defineConfig({
   devServer: {
     proxy: {
       '/api': {
-        target: 'https://modelshowtime.serdcebolit.ru',
+        target: 'http://model3d-api:8095',
         secure: false,
         changeOrigin: true,
       },

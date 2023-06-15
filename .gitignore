@@ -1,5 +1,12 @@
 .idea
 /upload
-/logs/
-/configs/.env
+/backend/logs/
+.env
 node_modules
+
+# Убираем билды го из репозитория
+/backend/tmp/
+
+# Убираем бд постгреса и redis из репозитория
+postgres-db/
+redis/

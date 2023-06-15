@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+  backend-api:
+    build:
+      context: ./backend
+      dockerfile: ./Dev.Dockerfile
+    volumes:
+      - ./backend/:/usr/src/app
+    ports:
+      - "8095:8080"
+  postgres:
+    ports:
+      - "5433:5432"
+  redis:
+    ports:
+      - "6378:6379"
