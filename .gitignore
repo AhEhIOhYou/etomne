@@ -3,6 +3,7 @@
 /backend/logs/
 .env
 node_modules
+/logs/
 
 # Убираем билды го из репозитория
 /backend/tmp/
